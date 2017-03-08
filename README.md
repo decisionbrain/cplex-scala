@@ -11,7 +11,7 @@ can be written as:
 
 ```
 #!scala
-    model.add(sum (for (i <- 1 until n) yield a(i) * x(i)) <= c(j)
+    model.add(sum (for (i <- 1 until n) yield a(i) * x(i)) <= c(j))
 ```
 
 To get up to speed, the easiest way to start with this library is to study the examples:
