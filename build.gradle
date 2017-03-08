@@ -1,0 +1,140 @@
+group 'com.decisionbrain'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+if (!hasProperty('cplexStudioHome')) {
+    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_DIR1263"]
+    if (!cplexStudioHome) {
+        cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
+    }
+    project.ext.set("cplexStudioHome", cplexStudioHome)
+}
+
+System.out.println("Using CPLEX : ${cplexStudioHome}")
+
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+project.ext.set("copyright", new File("copyright.txt").text)
+
+repositories {
+    // HACK: if we ask Gradle to refresh the dependencies, don't look at local repo!
+    if (!gradle.startParameter.refreshDependencies) {
+        mavenLocal()
+    }
+    mavenCentral()
+}
+
+configurations.all {
+    // check for SNAPSHOT Updates every time instead of every 24h
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+// Custom sourceSets
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        scala {
+            srcDirs = ['src/main/scala']
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        scala {
+            srcDirs = ['src/test/scala', 'src/examples/scala']
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
+}
+
+eclipse {
+    classpath {
+        downloadSources=true
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+    }
+}
+
+test {
+    String osName = System.getProperty("os.name").toLowerCase();
+    if (osName.contains("windows")) {
+        // Path to CPLEX Studio Windows native libraries:
+        environment "java.library.path", "$cplexStudioHome/opl/bin/x64_win64"
+        environment "PATH", "$cplexStudioHome/opl/bin/x64_win64"
+    } else if (osName.contains("linux")){
+        // Path to ODME Linux native libraries:
+        systemProperty "java.library.path", "$cplexStudioHome/opl/bin/x86-64_linux"
+    } else {
+         throw new Exception("OS not supported: $osName")
+    }
+    // Enable assertions for tests:
+    enableAssertions = true
+}
+
+
+javadoc {
+    doLast {
+        copy {
+            from "src"
+            include "**/doc-files/*.png"
+            into "$buildDir/docs/javadoc"
+        }
+    }
+    options.setHeader("<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\"></script>")
+    options.showFromPrivate()
+    options.setBottom("$copyright")
+}
+
+ext {
+    scalaVersion = '2.11.8'
+    scalaVersionShort = '2.11'
+}
+
+dependencies {
+    compile fileTree(dir: cplexStudioHome + "/opl/lib", include: ['*.jar'])
+
+    compile 'org.slf4j:slf4j-api:1.7.10'
+    compile 'commons-lang:commons-lang:2.6'
+    compile('org.scala-lang:scala-library:2.11.8')
+
+    testCompile "org.hamcrest:hamcrest-core:1.3"
+    testCompile "org.hamcrest:hamcrest-library:1.3"
+    testCompile('org.mockito:mockito-all:1.9.5')
+    testCompile("junit:junit:4.12")
+    testCompile("org.scalatest:scalatest_$scalaVersionShort:3.0.1")
+    testCompile 'org.slf4j:slf4j-simple:1.7.10'
+}
+
+test {
+    allJvmArgs = ["-ea", "-Djava.library.path=\"$cplexStudioHome/cplex/bin/x64_win64;$cplexStudioHome/opl/bin/x64_win64;\""]
+}
+
+task listJars << {
+    configurations.compile.each { File file -> println file.name }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+    description = 'Install Gradle Wrapper'
+}
+

@@ -1,17 +1,51 @@
-*.class
+# Compiled source #
+###################
 *.log
+*.class
 
-# sbt specific
-.cache
-.history
-.lib/
-dist/*
-target/
-lib_managed/
-src_managed/
-project/boot/
-project/plugins/project/
+# Eclipse #
+###########
+.metadata/
 
-# Scala-IDE specific
-.scala_dependencies
-.worksheet
+# IntelliJ #
+############
+.idea/
+*.iml
+
+# Gradle #
+##########
+.gradle/
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+*.lib
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Other files #
+######################
+*.*~
+*.orig
+*.log.*
+*.lp
+*.clp
+*.crf
+*.xml
+build/
