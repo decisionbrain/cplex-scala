@@ -8,10 +8,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 if (!hasProperty('cplexStudioHome')) {
-    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_DIR1263"]
-    if (!cplexStudioHome) {
-        cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
-    }
+    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
     project.ext.set("cplexStudioHome", cplexStudioHome)
 }
 
