@@ -2,16 +2,16 @@ A scala library for IBM ILOG CPLEX.
 
 This library combines functional programming, mathematical programming and constraint programming allowing to 
 model optimization problems with a syntax that is close to the standard presentation of these problems in textbooks and 
-scientific papers. For instance, an expression such as:
+scientific papers. For instance, a constraint such as:
  
 
-![](equation.jpg)
+![](equation.gif)
 
 can be written as:
 
 ```
 #!scala
-    sum (for (i <- 1 until n) yield a(i) * x(i))
+    model.add(sum (for (i <- 1 until n) yield a(i) * x(i)) <= c(j)
 ```
 
 To get up to speed, the easiest way to start with this library is to study the examples:
