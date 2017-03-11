@@ -11,15 +11,23 @@ apply plugin: 'eclipse'
 // Maven repository configuration
 //
 
-def maven = System.getProperty("user.home") + '/.gradle/maven.gradle'
+def mavenFilename = 'maven.gradle'
+def gradleHome = System.getProperty("user.home") + '/.gradle/'
 
-if (file(maven).exists()) {
-    System.out.println("Importing gradle file $maven")
-    apply from: maven
+if (file(gradleHome + mavenFilename).exists()) {
+    def filename = gradleHome + mavenFilename
+    println("Importing gradle file $filename")
+    apply from: filename
+}
+else if (file(mavenFilename).exists()) {
+    def filename = mavenFilename
+    println("Importing gradle file $filename")
+    apply from: filename
 }
 else {
-    println("Warning: File $maven not found")
+    println("Warning: File $mavenFilename not found")
 }
+
 
 //
 // CPLEX Home
