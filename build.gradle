@@ -7,6 +7,21 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+//
+// Maven repository configuration
+//
+
+def maven = System.getProperty("user.home") + '/.gradle/maven.gradle'
+
+if (file(maven).exists()) {
+    System.out.println("Importing gradle file $maven")
+    apply from: maven
+}
+
+//
+// CPLEX Home
+//
+
 if (!hasProperty('cplexStudioHome')) {
     def cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
     project.ext.set("cplexStudioHome", cplexStudioHome)
