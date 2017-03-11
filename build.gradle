@@ -17,6 +17,9 @@ if (file(maven).exists()) {
     System.out.println("Importing gradle file $maven")
     apply from: maven
 }
+else {
+    println("Warning: File $maven not found")
+}
 
 //
 // CPLEX Home
