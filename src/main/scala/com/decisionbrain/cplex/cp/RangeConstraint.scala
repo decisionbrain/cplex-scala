@@ -10,7 +10,10 @@ import ilog.concert.IloRange
 import ilog.cp.IloCP
 
 /**
-  * Created by dgodard on 09/02/2017.
+  * Constructor of class RangeConstraint.
+  *
+  * @param r is a CPLEX range constraint
+  * @param model is the constraint programming model
   */
 class RangeConstraint(r: IloRange)(implicit model: CpModel) extends Constraint(r) {
 

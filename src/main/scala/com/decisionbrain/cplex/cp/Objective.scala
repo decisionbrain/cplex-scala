@@ -86,7 +86,8 @@ class Objective(o: IloObjective)(implicit model: CpModel) extends Addable {
 
   /**
     * Convert the objective to a character string.
-    * @return
+    *
+    * @return a character string
     */
   override def toString: String = o.toString
 }

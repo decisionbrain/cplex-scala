@@ -1,5 +1,5 @@
 group 'com.decisionbrain'
-version '1.0.0'
+version '1.0.1'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -7,11 +7,34 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+//
+// Maven repository configuration
+//
+
+def mavenFilename = 'maven.gradle'
+def gradleHome = System.getProperty("user.home") + '/.gradle/'
+
+if (file(gradleHome + mavenFilename).exists()) {
+    def filename = gradleHome + mavenFilename
+    println("Importing gradle file $filename")
+    apply from: filename
+}
+else if (file(mavenFilename).exists()) {
+    def filename = mavenFilename
+    println("Importing gradle file $filename")
+    apply from: filename
+}
+else {
+    println("Warning: File $mavenFilename not found")
+}
+
+
+//
+// CPLEX Home
+//
+
 if (!hasProperty('cplexStudioHome')) {
-    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_DIR1263"]
-    if (!cplexStudioHome) {
-        cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
-    }
+    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
     project.ext.set("cplexStudioHome", cplexStudioHome)
 }
 

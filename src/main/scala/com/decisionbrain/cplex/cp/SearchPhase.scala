@@ -9,7 +9,7 @@ package com.decisionbrain.cplex.cp
 import ilog.cp.IloSearchPhase
 
 /**
-  * Constructor of class Objective.
+  * Constructor of class SearchPhase.
   *
   * @param s is the CPO search phase
   * @param model is the constraint programming model
@@ -17,19 +17,30 @@ import ilog.cp.IloSearchPhase
 class SearchPhase(s: IloSearchPhase)(implicit model: CpModel) {
 
   /**
-    * Returns the CPLEX objective.
+    * Returns the CPLEX search phase.
     *
-    * @return the CPLEX objective
+    * @return the CPLEX search phase
     */
   def getIloSearchPhase(): IloSearchPhase = s
 
   /**
-    * Convert the objective to a character string.
+    * Convert the search phase to a character string.
     * @return
     */
   override def toString: String = s.toString
 }
 
+/**
+  * Companion object for class SearchPhase
+  */
 object SearchPhase {
+
+  /**
+    * Creates and returns a new search phase.
+    *
+    * @param s is the CPLEX search phase
+    * @param model is the constraint programming model
+    * @return a new search phase
+    */
   def apply(s: IloSearchPhase)(implicit model: CpModel) = new SearchPhase(s)
 }
