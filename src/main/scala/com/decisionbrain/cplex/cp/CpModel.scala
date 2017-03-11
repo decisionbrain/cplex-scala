@@ -362,13 +362,53 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[NumExpr]) : NumExpr = {
+    NumExpr(cp.max(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExpr*) : NumExpr = {
+    NumExpr(cp.max(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
+  }
+
+  /**
     * Returns the minimum of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: NumExprArray) : NumExpr = {
-    NumExpr(cp.max(exprs.toIloArray))(implicitly(this))
+    NumExpr(cp.min(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[NumExpr]) : NumExpr = {
+    NumExpr(cp.min(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExpr*) : NumExpr = {
+    NumExpr(cp.min(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
   }
 
   /**
@@ -1499,6 +1539,24 @@ class CpModel(name: String=null) {
     Constraint(cp.alwaysIn(f.getIloCumulFunctionExpr(), start, end, vmin, vmax))(implicitly(this))
 
   /**
+    * Creates and returns a piecewise linear function defined everywhere. The array point contains the n breakpoints of
+    * the function such that point [i-1] <= point [i] for i = 1, . . ., n-1. The array slope contains the n+1 slopes of
+    * the n+1 segments of the function. The values a and fa must be coordinates of a point such that fa = f(a).
+    *
+    * When point[i-1] = point[i], there is a step at the x-coordinate point[i-1] and its height is slope[i] to reach
+    * the y-coordinate of point[i].
+    *
+    * @param point is the array of breakpoints
+    * @param slope is the array of slopes
+    * @param a is x-coordinate
+    * @param fa the y-coordinate
+    * @return a piecewise linear function
+    */
+  def piecewiseLinearFunction(point: Array[Double], slope: Array[Double], a: Double, fa: Double): NumToNumSegmentFunction = {
+    cp.piecewiseLinearFunction(point, slope, a, fa)
+  }
+
+  /**
     * Add an addable object in the model.
     *
     * @param a is the object to add to the model
@@ -1903,6 +1961,8 @@ object CpModel {
   type TransitionDistance = IloTransitionDistance
   type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
+  type NumToNumStepFunction = IloNumToNumStepFunction
+  type NumToNumSegmentFunction = IloNumToNumSegmentFunction
 
   /**
     * Create and return a new mathematical programming model.
@@ -1953,12 +2013,44 @@ object CpModel {
   def max(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.max(exprs)
 
   /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.max(exprs)
+
+  /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.max(exprs)
+
+  /**
     * Returns the minimum of a set of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.min(exprs)
 
   /**
     * Creates a new constrained integer expression equal to the number of variables that are equals to the
