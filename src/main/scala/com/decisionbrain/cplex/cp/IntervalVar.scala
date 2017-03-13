@@ -206,8 +206,8 @@ class IntervalVar(v: IloIntervalVar)(implicit model: CpModel) extends Addable {
     * @param intensity is the intensity function
     * @param granularity is the granularity of the intensity function
     */
-  def setIntensity(intensity: IloNumToNumStepFunction, granularity: Int = 100) =
-    v.setIntensity(intensity, granularity)
+  def setIntensity(intensity: NumToNumStepFunction, granularity: Int = 100) =
+    v.setIntensity(intensity.getIloNumToNumStepFunction(), granularity)
 
   /**
     *

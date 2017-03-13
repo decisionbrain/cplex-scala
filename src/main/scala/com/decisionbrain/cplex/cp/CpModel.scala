@@ -307,9 +307,9 @@ class CpModel(name: String=null) {
   def intervalVar(sizeMin: Int,
                   sizeMax: Int,
                   optional: Boolean,
-                  intensity: IloNumToNumStepFunction,
+                  intensity: NumToNumStepFunction,
                   granularity: Int): IntervalVar =
-    IntervalVar(cp.intervalVar(sizeMin, sizeMax, optional, intensity, granularity))(implicitly(this))
+    IntervalVar(cp.intervalVar(sizeMin, sizeMax, optional, intensity.getIloNumToNumStepFunction(), granularity))(implicitly(this))
 
   /**
     * Return the sum of numeric expressions.
@@ -1031,6 +1031,57 @@ class CpModel(name: String=null) {
     NumExpr(cp.sizeEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
 
   /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot start at a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot start at a point where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid start constraint
+    */
+  def forbidStart(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    Constraint(cp.forbidStart(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot end at a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot end at a point where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid end constraint
+    */
+  def forbidEnd(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    Constraint(cp.forbidEnd(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot contain a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot overlap intervals where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid extent constraint
+    */
+  def forbidExtent(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    Constraint(cp.forbidExtent(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+
+  /**
     * This method creates a no-overlap constraint on the set of interval variables defined by array a.
     * Note: This constraint cannot be used in a logical constraint.
     *
@@ -1539,6 +1590,18 @@ class CpModel(name: String=null) {
     Constraint(cp.alwaysIn(f.getIloCumulFunctionExpr(), start, end, vmin, vmax))(implicitly(this))
 
   /**
+    * This method creates a step function defined everywhere with value 0.
+    *
+    * @return a step function
+    */
+  def numToNumStepFunction(): NumToNumStepFunction =
+    NumToNumStepFunction(cp.numToNumStepFunction())(implicitly(this))
+
+
+  def numToNumStepFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumStepFunctionCursor =
+    cp.numToNumSegmentFunctionCursor(f, x)
+
+  /**
     * Creates and returns a piecewise linear function defined everywhere. The array point contains the n breakpoints of
     * the function such that point [i-1] <= point [i] for i = 1, . . ., n-1. The array slope contains the n+1 slopes of
     * the n+1 segments of the function. The values a and fa must be coordinates of a point such that fa = f(a).
@@ -1961,8 +2024,8 @@ object CpModel {
   type TransitionDistance = IloTransitionDistance
   type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
-  type NumToNumStepFunction = IloNumToNumStepFunction
   type NumToNumSegmentFunction = IloNumToNumSegmentFunction
+  type NumToNumStepFunctionCursor = IloNumToNumSegmentFunctionCursor
 
   /**
     * Create and return a new mathematical programming model.
@@ -2629,6 +2692,57 @@ object CpModel {
     */
   def sizeEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.sizeEval(a, f, absVal)
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot start at a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot start at a point where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid start constraint
+    */
+  def forbidStart(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    model.forbidStart(v, f)
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot end at a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot end at a point where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid end constraint
+    */
+  def forbidEnd(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    model.forbidEnd(v, f)
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, it cannot contain a
+    * value t such that f(t)=0.
+    *
+    * Typically, this constraint can be used in combination with an intensity function to state that the interval
+    * variable cannot overlap intervals where its intensity function is null.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param v is the interval variable
+    * @param f is the step function
+    * @param model is the constraint programming model
+    * @return a new forbid extent constraint
+    */
+  def forbidExtent(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
+    model.forbidExtent(v, f)
 
   /**
     * This method creates a no-overlap constraint on the set of interval variables defined by array a.

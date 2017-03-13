@@ -39,7 +39,7 @@ To run the tests, do:
 $ gradle test
 ```
 
-Reports are generated in directory `\build\reports\tests`
+Reports are generated in directory `build/reports/tests`.
 
 To generate the scala docs, do:
 
@@ -47,4 +47,4 @@ To generate the scala docs, do:
 $ gradle scaladoc
 ```
 
-The scala documentation is generated in directory `build/docs/scaladoc`
+The scala documentation is generated in directory `build/docs/scaladoc`.
