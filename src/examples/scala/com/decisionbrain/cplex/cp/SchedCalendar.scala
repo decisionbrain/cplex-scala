@@ -19,8 +19,8 @@ import ilog.cp.IloCP
 object SchedCalendar {
 
   val nbWorkers = 3
-  val nbHouses = 5
-  val nbTasks   = 10
+
+  val houses = List(31, 0, 90, 120, 90) // 5 houses with different release dates
 
   val tasks = List(
     ("masonry", 35), // pair of task name and duration
@@ -36,9 +36,10 @@ object SchedCalendar {
   )
 
 
+
   implicit var model: CpModel = _
 
-  var allTaskVars: List[IntervalVar] = _
+  var allTaskVars: Map[String, IntervalVar] = _
   var endVars: List[IntExpr] = _
   var joeTaskVars: List[IntervalVar] = _
   var jimTaskVars: List[IntervalVar] = _
@@ -46,7 +47,7 @@ object SchedCalendar {
   var joeCalendar: NumToNumStepFunction = _
   var jimCalendar: NumToNumStepFunction = _
 
-  def makeHouse(id: Int): (IntExpr, Iterable[IntervalVar], Iterable[IntervalVar], Iterable[IntervalVar]) = {
+  def makeHouse(id: Int, rd: Int): (IntExpr, Iterable[IntervalVar], Iterable[IntervalVar], Iterable[IntervalVar]) = {
 
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
           yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
@@ -67,6 +68,8 @@ object SchedCalendar {
     model.add(taskVars("garden") < taskVars("moving"))
     model.add(taskVars("painting") < taskVars("moving"))
 
+    taskVars("masonry").setStartMin(rd)
+
     val joeTaskVars = List(taskVars("masonry")
       , taskVars("carpentry")
       , taskVars("roofing")
@@ -84,12 +87,12 @@ object SchedCalendar {
 
     model = CpModel("SchedCumul")
 
-    val results = for (h <- 0 until nbHouses) yield makeHouse(h)
+    val results = for ((rd, index) <- houses.zipWithIndex) yield makeHouse(index, rd)
 
-    endVars = results.map(_._1).toList
-    allTaskVars = results.flatMap(_._2).toList
-    joeTaskVars = results.flatMap(_._3).toList
-    jimTaskVars = results.flatMap(_._4).toList
+    endVars = results.map(_._1)
+    allTaskVars = results.flatMap(_._2).map(v => (v.getName().getOrElse(""), v)).toMap
+    joeTaskVars = results.flatMap(_._3)
+    jimTaskVars = results.flatMap(_._4)
 
     model.add(noOverlap(joeTaskVars))
     model.add(noOverlap(jimTaskVars))

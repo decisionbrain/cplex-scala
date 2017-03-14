@@ -23,11 +23,12 @@ class SchedCalendarTest extends FunSuite with Matchers {
     status should equal(true)
     model.getObjectiveValue() should equal(638.0 +- epsilon)
 
-    SchedCalendar.joeTaskVars(0).getName() should equal ("H0-masonry")
-    model.getStart(SchedCalendar.joeTaskVars(0)) should equal (0)
-    model.getEnd(SchedCalendar.joeTaskVars(0)) should equal (54)
-    model.getSize(SchedCalendar.joeTaskVars(0)) should equal (35)
-    model.getLength(SchedCalendar.joeTaskVars(0)) should equal (54)
+    SchedCalendar.allTaskVars("H1-masonry") should not equal None
+    val joeFirstTask = SchedCalendar.allTaskVars("H1-masonry")
+    model.getStart(joeFirstTask) should equal (0)
+    model.getEnd(joeFirstTask) should equal (54)
+    model.getSize(joeFirstTask) should equal (35)
+    model.getLength(joeFirstTask) should equal (54)
 
     model.end()
   }
