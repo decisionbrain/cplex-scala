@@ -23,6 +23,12 @@ class SchedCalendarTest extends FunSuite with Matchers {
     status should equal(true)
     model.getObjectiveValue() should equal(638.0 +- epsilon)
 
+    SchedCalendar.joeTaskVars(0).getName() should equal ("H0-masonry")
+    model.getStart(SchedCalendar.joeTaskVars(0)) should equal (0)
+    model.getEnd(SchedCalendar.joeTaskVars(0)) should equal (54)
+    model.getSize(SchedCalendar.joeTaskVars(0)) should equal (35)
+    model.getLength(SchedCalendar.joeTaskVars(0)) should equal (54)
+
     model.end()
   }
 }

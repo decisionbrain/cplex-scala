@@ -43,6 +43,9 @@ object SchedCalendar {
   var joeTaskVars: List[IntervalVar] = _
   var jimTaskVars: List[IntervalVar] = _
 
+  var joeCalendar: NumToNumStepFunction = _
+  var jimCalendar: NumToNumStepFunction = _
+
   def makeHouse(id: Int): (IntExpr, Iterable[IntervalVar], Iterable[IntervalVar], Iterable[IntervalVar]) = {
 
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
@@ -92,9 +95,9 @@ object SchedCalendar {
     model.add(noOverlap(jimTaskVars))
 
 
-    val joeCalendar = model.numToNumStepFunction
+    joeCalendar = model.numToNumStepFunction
     joeCalendar.setValue(0, 2 * 365, 100)
-    val jimCalendar = model.numToNumStepFunction
+    jimCalendar = model.numToNumStepFunction
     jimCalendar.setValue(0, 2 * 365, 100)
 
     /* WEEK ENDS. */
@@ -115,9 +118,6 @@ object SchedCalendar {
     jimCalendar.setValue(306, 313, 0)
     jimCalendar.setValue(397, 411, 0)
     jimCalendar.setValue(565, 579, 0)
-
-//    println("Joe: " + joeCalendar.toString())
-//    println("Jim: " + jimCalendar)
 
     for (i <- joeTaskVars.indices) {
       joeTaskVars(i).setIntensity(joeCalendar)
@@ -150,12 +150,17 @@ object SchedCalendar {
     if (status) {
       println(s"Solution status: $status")
       println("Solution with objective " + model.getObjectiveValue())
-      for (i <- allTaskVars.indices) {
-        println(model.getDomain(allTaskVars(i)))
-      }
+      println("Joe Calendar: " + joeCalendar)
+      println("Jim Calendar: " + jimCalendar)
+      println("Joe Schedule:")
+      for (v <- SchedCalendar.joeTaskVars)
+        println("\t" + model.getDomain(v))
+      println("Jim Schedule:")
+      for (v <- SchedCalendar.jimTaskVars)
+        println("\t" + model.getDomain(v))
     }
 
-    true
+    status
   }
 
   def run(): Boolean = {
