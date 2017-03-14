@@ -1597,9 +1597,16 @@ class CpModel(name: String=null) {
   def numToNumStepFunction(): NumToNumStepFunction =
     NumToNumStepFunction(cp.numToNumStepFunction())(implicitly(this))
 
-
-  def numToNumStepFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumStepFunctionCursor =
-    cp.numToNumSegmentFunctionCursor(f, x)
+  /**
+    * This method creates a cursor to inspect step function f. This cursor lets you iterate forward or backward over
+    * the steps of the function. The cursor initially specifies the step of the function that contains x.
+    *
+    * @param f is the step function
+    * @param x is the initial step
+    * @return a new step function cursor
+    */
+  def numToNumStepFunctionCursor(f: NumToNumStepFunction, x: Double = -IloCP.Infinity): NumToNumStepFunctionCursor =
+    cp.numToNumStepFunctionCursor(f.getIloNumToNumStepFunction(), x)
 
   /**
     * Creates and returns a piecewise linear function defined everywhere. The array point contains the n breakpoints of
@@ -1839,7 +1846,6 @@ class CpModel(name: String=null) {
     */
   def getDomain(v: IntervalVar): String = cp.getDomain(v.getIloIntervalVar())
 
-
   /**
     * This member function assumes that the cumul function expression f is fixed. It returns the number of segments of
     * the corresponding stepwise non-negative function. A segment is an interval [start, end) on which the value of f
@@ -2022,10 +2028,10 @@ object CpModel {
 
   type IntervalSequenceVar = IloIntervalSequenceVar
   type TransitionDistance = IloTransitionDistance
-  type Solution = IloSolution
+  type Solution = IloSolutionS
   type MultiCriterionExpr = IloMultiCriterionExpr
   type NumToNumSegmentFunction = IloNumToNumSegmentFunction
-  type NumToNumStepFunctionCursor = IloNumToNumSegmentFunctionCursor
+  type NumToNumStepFunctionCursor = IloNumToNumStepFunctionCursor
 
   /**
     * Create and return a new mathematical programming model.

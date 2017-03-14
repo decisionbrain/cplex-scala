@@ -9,6 +9,7 @@ package com.decisionbrain.cplex.cp
 import com.decisionbrain.cplex.cp.CpModel.NumArray
 import ilog.concert.IloNumToNumStepFunction
 import ilog.concert.cppimpl.IloConcertUtils
+import ilog.cp.IloCP
 
 /**
   * Constructor of class NumToNumStepFunction.
@@ -26,14 +27,16 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
   def getIloNumToNumStepFunction(): IloNumToNumStepFunction = f
 
   /**
+    * This member function returns the left-most point of the definition interval of the invoking step function.
     *
-    * @return
+    * @return the first point of the definition interval
     */
   def getDefinitionIntervalMin(): Double = f.getDefinitionIntervalMin
 
   /**
+    * This member function returns the right-most point of the definition interval of the invoking step function.
     *
-    * @return
+    * @return the last point of the definition interval
     */
   def getDefinitionIntervalMax(): Double = f.getDefinitionIntervalMax
 
@@ -44,8 +47,22 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
     */
   def getValue(x: Double): Double = f.getValue(x)
 
+  /**
+    * This member function returns the minimal value of the invoking step function on the interval [x1, x2).
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @return the minimal value of the step function on the given interval
+    */
   def getMin(x1: Double, x2: Double): Double = f.getMin(x1, x2)
 
+  /**
+    * This member function returns the maximal value of the invoking step function on the interval [x1, x2).
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @return the maximal value of the step function on the given interval
+    */
   def getMax(x1: Double, x2: Double): Double = f.getMax(x1, x2)
 
   /**
@@ -66,54 +83,203 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
     */
   def setValue(x1: Double, x2: Double, v: Double): Unit = f.setValue(x1, x2, v)
 
+  /**
+    * This member function adds v to the value of the invoking step function everywhere on the interval [x1, x2).
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @param v is the value added to the step function on the given interval
+    */
   def addValue(x1: Double, x2: Double, v: Double): Unit = f.addValue(x1, x2, v)
 
-  def add(f: NumToNumStepFunction): Unit = this.f.add(f.getIloNumToNumStepFunction())
-
+  /**
+    * This member function sets the value of the invoking step function to be the minimum between the current value and
+    * the value of <em>f</em> everywhere on the definition interval of the invoking function. The definition interval
+    * of <em>f</em> must be the same as the one of the invoking step function.
+    *
+    * @param f is the other step function
+    */
   def setMin(f: NumToNumStepFunction): Unit = this.f.setMin(f.getIloNumToNumStepFunction())
+
+  /**
+    * This member function sets the value of the invoking step function to be the minimum between the current value and
+    * the value of <em>f</em> everywhere on the definition interval of the invoking function. The definition interval
+    * of <em>f</em> must be the same as the one of the invoking step function.
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @param v is the minimal value
+    */
   def setMin(x1: Double, x2: Double, v: Double): Unit = f.setMin(x1, x2, v)
 
+  /**
+    * This member function sets the value of the invoking step function to be the maximum between the current value and
+    * the value of <em>f</em> everywhere on the definition interval of the invoking function. The interval of definition
+    * of <em>f</em> must be the same as that of the invoking step function.
+    *
+    * @param f is the other step function
+    */
   def setMax(f: NumToNumStepFunction): Unit = this.f.setMax(f.getIloNumToNumStepFunction())
+
+  /**
+    * This member function sets the value of the invoking step function to be the maximum between the current value and
+    * <em>v</em> everywhere on the interval <em>[x1, x2)</em>.
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @param v is the maximal value
+    */
   def setMax(x1: Double, x2: Double, v: Double): Unit  = f.setMin(x1, x2, v)
 
+  /**
+    * This member function multiplies by <em>k</em> the scale of x for the invoking step function, <em>k</em> must be a
+    * nonnegative numeric value. More precisely, if the invoking function was defined over an interval
+    * <em>[xMin, xMax)</em>, it will be redefined over the interval <em>[k*xMin, k*xMax)</em> and the value at
+    * <em>x</em> will be the former value at <em>x/k</em>.
+    *
+    * @param k is the scaling factor
+    */
   def dilate(k: Double): Unit = f.dilate(k)
 
+  /**
+    * This member function initializes the invoking function as a step function whose steps are defined by the two
+    * arguments arrays <em>x</em> and <em>v</em>. More precisely, if <em>n</em> is the size of array <em>x</em>, size
+    * of array <em>v<em> must be <em>n+1</em> and, if the invoking function is defined on the interval
+    * <em>[xMin,xMax)</em>, its values will be:
+    * <ul>
+    *   <li>v[0] on interval [xMin,x[0]),</li>
+    *   <li>v[i] on interval [x[i-1],x[i]) for all i in [0,n-1],</li>
+    *   <li>v[n] on interval [x[n-1],xMax).</li>
+    *
+    * @param x is the array of points
+    * @param v is the array of values
+    */
   def setSteps(x: NumArray, v: NumArray): Unit = {
     setSteps(x.toArray, v.toArray)
   }
 
+  /**
+    * This member function initializes the invoking function as a step function whose steps are defined by the two
+    * arguments arrays <em>x</em> and <em>v</em>. More precisely, if <em>n</em> is the size of array <em>x</em>, size
+    * of array <em>v<em> must be <em>n+1</em> and, if the invoking function is defined on the interval
+    * <em>[xMin,xMax)</em>, its values will be:
+    * <ul>
+    *   <li>v[0] on interval [xMin,x[0]),</li>
+    *   <li>v[i] on interval [x[i-1],x[i]) for all i in [0,n-1],</li>
+    *   <li>v[n] on interval [x[n-1],xMax).</li>
+    * </ul>
+    *
+    * @param x is the array of points
+    * @param v is the array of values
+    */
   def setSteps(x: Array[Double], v: Array[Double]): Unit = {
     val xa = IloConcertUtils.ToCppIloNumArray(model.cp.getEnvImpl, x)
     val va = IloConcertUtils.ToCppIloNumArray(model.cp.getEnvImpl, v)
     f.setSteps(xa, va)
   }
 
-  def setPeriodic(f: IloNumToNumStepFunction, x0: Double, n: Double, dval: Double): Unit =
+  /**
+    * This member function initializes the invoking function as a step function that repeats the step function f, n
+    * times after x0. More precisely, if f is defined on [xfpMin,xfpMax) and if the invoking function is defined on
+    * [xMin,xMax), the value of the invoking function will be:
+    * <ul>
+    *   <li>dval on [xMin, x0),</li
+    *   <li>f((x-x0) % (xfpMax-xfpMin)) for x in [x0, Min(x0+n*(xfpMax-xfpMin), xMax)),</li>
+    *   <li>dval on [Min(x0+n*(xfpMax-xfpMin), xMax), xMax).</li>
+    * </ul>
+    *
+    * @param f is the other step function
+    * @param x0 is the starting point
+    * @param n is the number of repetitions
+    * @param dval is the default value
+    */
+  def setPeriodic(f: IloNumToNumStepFunction, x0: Double, n: Double = IloCP.Infinity, dval: Double = 0): Unit =
     this.f.setPeriodic(f, x0, n, dval)
 
-  def setPeriodic(f: IloNumToNumStepFunction, x0: Double, n: Double): Unit =
-    this.f.setPeriodic(f, x0, n)
-
-  def setPeriodic(f: IloNumToNumStepFunction, x0: Double): Unit =
-    this.f.setPeriodic(f, x0)
-
-  def setPeriodicValue(x1: Double, x2: Double, f: NumToNumStepFunction, offset: Double): Unit =
+  /**
+    * This member function changes the value of the invoking function on the interval [x1,x2). On this interval, the
+    * invoking function is set to equal a repetition of the pattern function f with an initial offset of offset. The
+    * invoking function is not modified outside the interval [x1,x2). More precisely, if [min,max) denotes the
+    * definition interval of f, for all t in [x1,x2), the invoking function at t is set to equal
+    * f(min + (offset+t-x1)%(max-min))) where % denotes the modulo operator. By default, the offset is equal to 0.
+    *
+    * @param x1 is the start of the interval
+    * @param x2 is the end of the interval
+    * @param f is the other step function
+    * @param offset is the offset
+    */
+  def setPeriodicValue(x1: Double, x2: Double, f: NumToNumStepFunction, offset: Double = 0): Unit =
     this.f.setPeriodicValue(x1, x2, f.getIloNumToNumStepFunction(), offset)
 
-  def setPeriodicValue(x1: Double, x2: Double, f: NumToNumStepFunction): Unit =
-    this.f.setPeriodicValue(x1, x2, f.getIloNumToNumStepFunction())
-
-  def sub(f: NumToNumStepFunction): Unit = this.f.sub(f.getIloNumToNumStepFunction())
-
-  def prod(k: Double): Unit = this.f.prod(k)
-
-  def shift(dx: Double): Unit = this.f.shift(dx)
-
-  def shift(dx: Double, dval: Double): Unit = f.shift(dx, dval)
+  /**
+    * This function adds the argument function fct to the invoking step function.
+    *
+    * @param f
+    */
+  def +=(f: NumToNumStepFunction): Unit = this.f.add(f.getIloNumToNumStepFunction())
 
   /**
+    * Returns a new step function that is the sum of this step function and and the step function given as argument.
     *
-    * @return
+    * @param f is the other step function
+    * @return a new step function that is the sum of the two step functions
+    */
+  def +(f: NumToNumStepFunction): NumToNumStepFunction = {
+    val nf = getIloNumToNumStepFunction().copy()
+    nf.add(f.getIloNumToNumStepFunction())
+    NumToNumStepFunction(nf)
+  }
+
+  /**
+    * Returns a new step function that is the sum of this step function and and the step function given as argument.
+    *
+    * @param f is the other step function
+    * @return a new step function that is the sum of the two step functions
+    */
+  def -(f: NumToNumStepFunction): NumToNumStepFunction = {
+    val nf = getIloNumToNumStepFunction().copy()
+    nf.sub(f.getIloNumToNumStepFunction())
+    NumToNumStepFunction(nf)
+  }
+
+  /**
+    * This operator subtracts the argument function fct from the invoking step function.
+    *
+    * @param f is the other step function
+    */
+  def -=(f: NumToNumStepFunction): Unit = this.f.sub(f.getIloNumToNumStepFunction())
+
+  /**
+    * This operator multiplies by a factor k the value of the invoking step function everywhere on the definition
+    * interval.
+    *
+    * @param k is the factor
+    */
+  def *=(k: Double): Unit = this.f.prod(k)
+
+  /**
+    * This member function shifts the invoking function from dx to the right if dx > 0 or from -dx to the left if dx <
+    * 0. It has no effect if dx = 0. More precisely, if the invoking function is defined on [xMin,xMax) and dx > 0, the
+    * new value of the invoking function is:
+    * <ul>
+    *   <li>dval on the interval [xMin, xMin+dx),</li>
+    *   <li>for all x in [xMin+dx, xMax), the former value at x-dx.</li>
+    * </ul>
+    * If dx < 0, the new value of the invoking function is:
+    * <ul>
+    *   <li>for all x in [xMin, xMax+dx), the former value at x-dx,</li>
+    *   <li>dval on the interval [xMax+dx,xMax).</li>
+    * </ul>
+    *
+    * @param dx is the shift on x
+    * @param dval is the default value
+    */
+  def shift(dx: Double, dval: Double = 0): Unit = f.shift(dx, dval)
+
+  /**
+    * Converts the step function to a character string?
+    *
+    * @return a character string
     */
   override def toString() = {
     val xmin = f.getDefinitionIntervalMin
@@ -122,7 +288,7 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
     var prevV = .0
     val builder = new StringBuilder
     builder.append("NumToNuMStepFunction: [").append(xmin).append(" .. ").append(xmax).append(") {")
-    val cursor = model.cp.numToNumStepFunctionCursor(f, f.getDefinitionIntervalMin)
+    val cursor = model.numToNumStepFunctionCursor(this, this.getDefinitionIntervalMin)
     while (cursor.ok()) {
       val x = cursor.getSegmentMin
       val v = cursor.getValue
