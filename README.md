@@ -9,8 +9,7 @@ scientific papers. For instance, a constraint such as:
 
 can be written as:
 
-```
-#!scala
+```scala
     model.add(sum (for (i <- 1 to n) yield a(i) * x(i)) <= c(j))
 ```
 
