@@ -2028,7 +2028,7 @@ object CpModel {
 
   type IntervalSequenceVar = IloIntervalSequenceVar
   type TransitionDistance = IloTransitionDistance
-  type Solution = IloSolutionS
+  type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
   type NumToNumSegmentFunction = IloNumToNumSegmentFunction
   type NumToNumStepFunctionCursor = IloNumToNumStepFunctionCursor
