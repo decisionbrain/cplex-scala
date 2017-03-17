@@ -14,9 +14,6 @@ import com.decisionbrain.cplex.cp.CpModel._
 import scala.reflect.ClassTag
 
 
-/**
-  * Created by dgodard on 11/02/2017.
-  */
 class CpModel(name: String=null) {
 
   val cp = new IloCP()
@@ -1159,6 +1156,18 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * This method creates an instance of state function with transition distance t.
+    *
+    * @param tdist is the transition distance between states
+    * @param name is the name of the state function
+    * @return a state function
+    */
+  def stateFunction(tdist: TransitionDistance=null, name: String=null): StateFunction = {
+    cp.stateFunction(tdist, name)
+  }
+
+
+  /**
     * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
     * the distance start(b)-start(a) between the start of interval a and the start of interval b must be greater than or
     * equal to z.
@@ -1584,10 +1593,154 @@ class CpModel(name: String=null) {
     * @param end is the end of the interval
     * @param vmin is the minimum value of the function
     * @param vmax is the maximum value of the function
-    * @return a new constraint on the value of the function
+    * @return a new constraint on the cumul function expression
     */
   def alwaysIn(f: CumulFunctionExpr, start: Int, end: Int, vmin: Int, vmax: Int): Constraint =
     Constraint(cp.alwaysIn(f.getIloCumulFunctionExpr(), start, end, vmin, vmax))(implicitly(this))
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, the value of cumul
+    * function expression f should be always within the range [vmin,vmax] between the start and the end of a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param a is the interval variable
+    * @param vmin is the minimum value of the cumul function expression
+    * @param vmax is the maximum value of the cumul function expression
+    * @return a constraint on the cumul function expression
+    */
+  def alwaysIn(f: CumulFunctionExpr, a: IntervalVar, vmin: Int, vmax: Int): Constraint =
+    Constraint(cp.alwaysIn(f.getIloCumulFunctionExpr(), a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that, if it is defined, the value of state function f remains in
+    * the range [vmin,vmax] for any point t in the interval of integers [start,end).
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start interval
+    * @param end is the end of the interval
+    * @param vmin is the minumum value of the state function
+    * @param vmax is the maximum value of the state function
+    * @return a new constraint on the state function
+    */
+  def alwaysIn(f: StateFunction, start: Int, end: Int, vmin: Int, vmax: Int): Constraint =
+    Constraint(cp.alwaysIn(f, start, end, vmin, vmax))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that whenever interval variable a is present, the value of state
+    * function f, if defined, remains in the range [vmin,vmax] for any point t between the start and the end of
+    * interval variable a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @param vmin is the minumum value of the state function
+    * @param vmax is the maximum value of the state function
+    * @return a new constraint on the state function
+    */
+  def alwaysIn(f: StateFunction, a: IntervalVar, vmin: Int, vmax: Int): Constraint =
+    Constraint(cp.alwaysIn(f, a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
+
+  /**
+    * This function returns a constraint that states that the value of cumul function expression f should be always
+    * equal to v between start and end.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @param v is the value of the cumul function on the interval
+    * @return a new constraint on the cumul function expression
+    */
+  def alwaysEqual(f: CumulFunctionExpr, start: Int, end: Int, v: Int): Constraint =
+    Constraint(cp.alwaysEqual(f.getIloCumulFunctionExpr(), start, end, v))(implicitly(this))
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, the value of cumul
+    * function expression f should be always equal to v between the start and the end of a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param a is the interval variable
+    * @param v is the value of the cumul funcfion expression if the interval variable is present
+    * @return a new constraint on the cumul functoin expression
+    */
+  def alwaysEqual(f: CumulFunctionExpr, a: IntervalVar, v: Int) =
+    Constraint(cp.alwaysEqual(f.getIloCumulFunctionExpr(), a.getIloIntervalVar(), v))(implicitly(this))
+
+  /**
+    * Returns a constraint that ensures that state function f is defined everywhere on the interval
+    * [start,end) and remains equal to value v over this interval.
+    *
+    * As the optional boolean values startAlign and endAlign are not specified, start and end are not required to be
+    * synchronized with the intervals of the state function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @param v is the value of the state function on the interval
+    * @param startAlign is a boolean value: when true, it requires the start be synchronized with the intervals of the
+    *                   state function
+    * @param endAlign is a boolean value: when true, it requires the start be synchronized with the intervals of the
+    *                   state function
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, start: Int, end: Int, v: Int, startAlign:Boolean=false, endAlign:Boolean=false): Constraint =
+    Constraint(cp.alwaysEqual(f, start, end, v, startAlign, endAlign))(implicitly(this))
+
+  /**
+    * Returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains equal to value v over this
+    * interval.
+    *
+    * By default, the start and the end of the inverval variable are not required to be synchronized with an interval
+    * of the state function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @param v is the state of the function over the interval variable if present
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int): Constraint =
+    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, false, false))(implicitly(this))
+
+  /**
+    * Returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains equal to value v over this
+    * interval.
+    *
+    * The boolean values startAlign and endAlign allow synchronizing the start and end of interval variable a with the
+    * intervals of the state function:
+    * <ul>
+    *   <li>When startAlign is true, it means that whenever interval variable a is present, the start of a must be the
+    *   start of an interval of the state function.</li>
+    *   <li>When endAlign is true, it means that whenever interval variable a is present, the end of a must be the end
+    *   of an interval of the state function.</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a v is the interval variable
+    * @param v is the state of the function over the inverval variable if present
+    * @param startAlign is a boolean value specifying if the start must be synchronized with the interval of the
+    *                   state function
+    * @param endAlign is a boolean value specifying it the end must be synchronized with the intervals of the state
+    *                 function
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
+    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
 
   /**
     * This method creates a step function defined everywhere with value 0.
@@ -1624,6 +1777,41 @@ class CpModel(name: String=null) {
     */
   def piecewiseLinearFunction(point: Array[Double], slope: Array[Double], a: Double, fa: Double): NumToNumSegmentFunction = {
     cp.piecewiseLinearFunction(point, slope, a, fa)
+  }
+
+  /**
+    * This method returns an instance of transition distance of the specified size i. Initially, the transition
+    * distance between any two indices is 0. You need to fill the transition distance using the member function
+    * setValue.
+    *
+    * @param size is the size of the transition distance
+    * @param name is the name of the transition distance
+    * @return a transition distance
+    */
+  def transitionDistance(size: Int, name: String=null): TransitionDistance =
+    cp.transitionDistance(size, name)
+
+  /**
+    * This method returns an instance of transition distance. The 2-dimensional integer array argument dtable gives
+    * the values of the transition distance.
+    *
+    * @param dtable is the 2-dimensional integer array for the transition distances
+    * @return a transition distance
+    */
+  def transitionDistance(dtable: Array[Array[Int]]): TransitionDistance = {
+    cp.transitionDistance(dtable)
+  }
+
+  /**
+    * This method returns an instance of transition distance. The 2-dimensional integer array argument dtable gives
+    * the values of the transition distance.
+    *
+    * @param dtable is the 2-dimensional integer array for the transition distances
+    * @param name is the name of the transition distance
+    * @return a transition distance
+    */
+  def transitionDistance(dtable: Array[Array[Int]], name: String): TransitionDistance = {
+    cp.transitionDistance(dtable, name)
   }
 
   /**
@@ -1905,6 +2093,62 @@ class CpModel(name: String=null) {
     */
   def getSegmentEnd(f: CumulFunctionExpr, i: Int) = cp.getSegmentEnd(f.getIloCumulFunctionExpr(), i)
 
+  /**
+    * This member function assumes that state function f is fixed. It returns the number of segments of the
+    * corresponding stepwise function. A segment is an interval [start, end) on which the value of f is constant. If
+    * the state function is not defined, the value is IloCP.NoState, elsewhere the value is a non-negative integer. An
+    * assertion is violated if state function f is not fixed.
+    *
+    * This function can be used to print the content of a state function as illustrated by the following code sample:
+    *
+    * <pre>
+    *   <code>
+    *     for (i <- 0 until model.getNumberOfSegments(f))
+    *       println("[" + model.getSegmentStart(f, i)
+    *          + ","  + model.getSegmentEnd(f, i)
+    *          + "):" + model.getSegmentValue(f, i))
+    *   </code>
+    * </pre>
+    *
+    * @param f is the state function
+    * @return the number of segments of the state function
+    */
+  def getNumberOfSegments(f: StateFunction): Int = cp.getNumberOfSegments(f)
+
+  /**
+    * This member function assumes that state function f is fixed. It returns the value of the ith segment of the
+    * corresponding stepwise function. A segment is an interval [start, end) on which the value of f is constant. If
+    * the state function is not defined, the returned value is IloCP.NoState, elsewhere the returned value is a
+    * non-negative integer.
+    *
+    * @param f is the state function
+    * @param i is index of the segment
+    * @return the value of the state function on the segment
+    */
+  def getSegmentValue(f: StateFunction, i: Int): Int = cp.getSegmentValue(f, i)
+
+  /**
+    * This member function assumes that state function f is fixed. It returns the start of the ith segment of the
+    * corresponding stepwise function. A segment is an interval [start, end) on which the value of f is constant.
+    * If the state function is not defined, the value is IloCP.NoState, elsewhere the value is a non-negative integer.
+    *
+    * @param f is the state function
+    * @param i is the index of the segment
+    * @return the start of the segment
+    */
+  def getSegmentStart(f: StateFunction, i: Int): Int = cp.getSegmentStart(f, i)
+
+  /**
+    * This member function assumes that state function f is fixed. It returns the end of the ith segment of the
+    * corresponding stepwise function. A segment is an interval [start, end) on which the value of f is constant. If
+    * the state function is not defined, the value is IloCP.NoState, elsewhere the value is a non-negative integer.
+    *
+    * @param f is the cumul function expression
+    * @param i is the index of the segment
+    * @return the end of the ith segment
+    */
+  def getSegmentEnd(f: StateFunction, i: Int) = cp.getSegmentEnd(f, i)
+
   //
   // Solutions
   //
@@ -2032,6 +2276,7 @@ object CpModel {
   type MultiCriterionExpr = IloMultiCriterionExpr
   type NumToNumSegmentFunction = IloNumToNumSegmentFunction
   type NumToNumStepFunctionCursor = IloNumToNumStepFunctionCursor
+  type StateFunction = IloStateFunction
 
   /**
     * Create and return a new mathematical programming model.
@@ -2995,6 +3240,150 @@ object CpModel {
     */
   def alwaysIn(f: CumulFunctionExpr, start: Int, end: Int, vmin: Int, vmax: Int)(implicit model: CpModel): Constraint =
     model.alwaysIn(f, start, end, vmin, vmax)
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, the value of cumul
+    * function expression f should be always within the range [vmin,vmax] between the start and the end of a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param a is the interval variable
+    * @param vmin is the minimum value of the cumul function expression
+    * @param vmax is the maximum value of the cumul function expression
+    * @return a constraint on the cumul function expression
+    */
+  def alwaysIn(f: CumulFunctionExpr, a: IntervalVar, vmin: Int, vmax: Int)(implicit model: CpModel): Constraint =
+    model.alwaysIn(f, a, vmin, vmax)
+
+  /**
+    * This function returns a constraint that ensures that, if it is defined, the value of state function f remains in
+    * the range [vmin,vmax] for any point t in the interval of integers [start,end).
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start interval
+    * @param end is the end of the interval
+    * @param vmin is the minumum value of the state function
+    * @param vmax is the maximum value of the state function
+    * @return a new constraint on the state function
+    */
+  def alwaysIn(f: StateFunction, start: Int, end: Int, vmin: Int, vmax: Int)(implicit model: CpModel): Constraint =
+    model.alwaysIn(f, start, end, vmin, vmax)
+
+  /**
+    * This function returns a constraint that ensures that whenever interval variable a is present, the value of state
+    * function f, if defined, remains in the range [vmin,vmax] for any point t between the start and the end of
+    * interval variable a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @param vmin is the minumum value of the state function
+    * @param vmax is the maximum value of the state function
+    * @return a new constraint on the state function
+    */
+  def alwaysIn(f: StateFunction, a: IntervalVar, vmin: Int, vmax: Int)(implicit model: CpModel): Constraint =
+    model.alwaysIn(f, a, vmin, vmax)
+
+  /**
+    * This function returns a constraint that states that the value of cumul function expression f should be always
+    * equal to v between start and end.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @param v is the value of the cumul function on the interval
+    * @return a new constraint on the cumul function expression
+    */
+  def alwaysEqual(f: CumulFunctionExpr, start: Int, end: Int, v: Int)(implicit model: CpModel): Constraint =
+    model.alwaysEqual(f, start, end, v)
+
+  /**
+    * This function returns a constraint that states that whenever interval variable a is present, the value of cumul
+    * function expression f should be always equal to v between the start and the end of a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the cumul function expression
+    * @param a is the interval variable
+    * @param v is the value of the cumul funcfion expression if the interval variable is present
+    * @return a new constraint on the cumul functoin expression
+    */
+  def alwaysEqual(f: CumulFunctionExpr, a: IntervalVar, v: Int)(implicit model: CpModel): Constraint =
+    model.alwaysEqual(f, a, v)
+
+  /**
+    * Returns a constraint that ensures that state function f is defined everywhere on the interval
+    * [start,end) and remains equal to value v over this interval.
+    *
+    * As the optional boolean values startAlign and endAlign are not specified, start and end are not required to be
+    * synchronized with the intervals of the state function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @param v is the value of the state function on the interval
+    * @param startAlign is a boolean value: when true, it requires the start be synchronized with the intervals of the
+    *                   state function
+    * @param endAlign is a boolean value: when true, it requires the start be synchronized with the intervals of the
+    *                   state function
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, start: Int, end: Int, v: Int, startAlign:Boolean=false, endAlign:Boolean=false)(implicit model: CpModel): Constraint =
+    model.alwaysEqual(f, start, end, v, startAlign, endAlign)
+
+  /**
+    * Returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains equal to value v over this
+    * interval.
+    *
+    * By default, the start and the end of the inverval variable are not required to be synchronized with an interval
+    * of the state function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a v is the interval variable
+    * @param v is the state of the function over the inverval variable if present
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int)(implicit model: CpModel): Constraint =
+    model.alwaysEqual(f, a, v)
+
+  /**
+    * Returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains equal to value v over this
+    * interval.
+    *
+    * The boolean values startAlign and endAlign allow synchronizing the start and end of interval variable a with the
+    * intervals of the state function:
+    * <ul>
+    *   <li>When startAlign is true, it means that whenever interval variable a is present, the start of a must be the
+    *   start of an interval of the state function.</li>
+    *   <li>When endAlign is true, it means that whenever interval variable a is present, the end of a must be the end
+    *   of an interval of the state function.</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a v is the interval variable
+    * @param v is the state of the function over the inverval variable if present
+    * @param startAlign is a boolean value specifying if the start must be synchronized with the interval of the
+    *                   state function
+    * @param endAlign is a boolean value specifying it the end must be synchronized with the intervals of the state
+    *                 function
+    * @return a new constraint on the state function
+    */
+  def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int, startAlign:Boolean, endAlign:Boolean)(implicit model: CpModel): Constraint =
+    model.alwaysEqual(f, a, v, startAlign, endAlign)
 
   /**
     * Creates and returns an objective object to minimize the expression <em>expr</em>.
