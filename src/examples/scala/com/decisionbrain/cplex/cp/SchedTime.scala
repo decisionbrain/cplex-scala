@@ -38,7 +38,7 @@ object SchedTime {
     if (useFunction) {
       val arrX = Array(rd)
       val arrV = Array(-weight, 0.0)
-      val f: NumToNumSegmentFunction = model.piecewiseLinearFunction(arrX, arrV, rd, 0.0)
+      val f = model.piecewiseLinearFunction(arrX, arrV, rd, 0.0)
       return startEval(task,f)
     } else {
       return weight * max(.0, rd - startOf(task))

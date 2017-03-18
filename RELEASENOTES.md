@@ -1,6 +1,18 @@
+# Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
+
 ## cplex-scala v1.2.1-SNAPSHOT
 
-  * 
+  * Add iterators for cumul function expression, state function, step function and piecewise 
+  linear function. Furthermore, these functions are now iterables and this allow to iterate like 
+  this:
+  ```scala
+     val f = model.numToNumStepFunction()
+     ...
+     for (s <- f) {
+        println("[" + s.start + " .. " + s.end + ") -> " + s.value)
+     }
+  ```
+  
   
 ## cplex-scala v1.2.0
 

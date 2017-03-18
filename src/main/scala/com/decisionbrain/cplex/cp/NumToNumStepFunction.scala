@@ -12,12 +12,33 @@ import ilog.concert.cppimpl.IloConcertUtils
 import ilog.cp.IloCP
 
 /**
+  * Iterator on step function.
+  *
+  * @param f is the step function
+  * @param model is the constraint programming model
+  */
+class NumToNumStepFunctionIterator(f: NumToNumStepFunction)(implicit model: CpModel) extends Iterator[Segment[Double]] {
+
+  val cursor = model.numToNumStepFunctionCursor(f, f.getDefinitionIntervalMin())
+
+  override def hasNext: Boolean = cursor.ok()
+
+  override def next(): Segment[Double] = {
+    val segment = new Segment[Double](cursor.getSegmentMin,
+      cursor.getSegmentMax,
+      cursor.getValue)
+    cursor.next
+    segment
+  }
+}
+
+/**
   * Constructor of class NumToNumStepFunction.
   *
   * @param f is a CPLEX step function
   * @param model is the constraint programming model
   */
-class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) {
+class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) extends Iterable[Segment[Double]] {
 
   /**
     * Returns the CPLEX step function
@@ -287,20 +308,20 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
     var prevX = xmin
     var prevV = .0
     val builder = new StringBuilder
-    builder.append("NumToNuMStepFunction: [").append(xmin).append(" .. ").append(xmax).append(") {")
-    val cursor = model.numToNumStepFunctionCursor(this, this.getDefinitionIntervalMin)
-    while (cursor.ok()) {
-      val x = cursor.getSegmentMin
-      val v = cursor.getValue
+    builder.append("NumToNumStepFunction: [").append(xmin).append(" .. ").append(xmax).append(") {")
+    for (s <- this) {
+      val x = s.start
+      val v = s.value
       if (prevX < x) builder.append("[").append(prevX).append(" .. ").append(x).append(") -> ").append(prevV).append(" ; ")
       prevX = x
       prevV = v
-      cursor.next()
     }
     builder.append("[").append(prevX).append(" .. ").append(xmax).append(") -> ").append(prevV).append(" ; ")
     builder.append("}")
     builder.toString
   }
+
+  override def iterator: Iterator[Segment[Double]] = new NumToNumStepFunctionIterator(this)
 }
 
 object NumToNumStepFunction {

@@ -7,8 +7,28 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.Addable
-import ilog.concert.{IloAddable, IloCumulFunctionExpr, IloNumExpr}
+import ilog.concert.{IloAddable, IloCumulFunctionExpr}
 
+/**
+  * Iterator on cumul function expression.
+  *
+  * @param f is the cumul function expression
+  * @param model is the constraint programming model
+  */
+class CumulFunctionExprIterator(f: CumulFunctionExpr)(implicit model: CpModel) extends Iterator[Segment[Int]] {
+
+  var cursor: Int = 0
+
+  override def hasNext: Boolean = cursor < model.getNumberOfSegments(f)
+
+  override def next(): Segment[Int] = {
+    val segment = new Segment[Int](model.getSegmentStart(f, cursor),
+      model.getSegmentEnd(f, cursor),
+      model.getSegmentValue(f, cursor))
+    cursor += 1
+    segment
+  }
+}
 
 /**
   * Class for numeric expressions
@@ -16,7 +36,7 @@ import ilog.concert.{IloAddable, IloCumulFunctionExpr, IloNumExpr}
   * @param expr  is the numeric expression
   * @param model is the constraint programming model
   */
-class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel) extends Addable {
+class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel) extends Addable with Iterable[Segment[Int]] {
 
   /**
     * Returns the constraint programming model
@@ -122,6 +142,15 @@ class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel)
     * @return the CPLEX addable object
     */
   override def getIloAddable(): IloAddable = expr
+
+  /**
+    * Returns an iterator on the cumul function expression. This member function assumes that the cumul function expression f is
+    * fixed.
+    *
+    * @return an iterator on the cumul function expression
+    */
+  def iterator(): CumulFunctionExprIterator = new CumulFunctionExprIterator(this)
+
 }
 
 object CumulFunctionExpr {

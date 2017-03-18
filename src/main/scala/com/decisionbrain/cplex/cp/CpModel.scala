@@ -985,8 +985,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the start of the interval variable
     */
-  def startEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.startEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def startEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.startEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the end of
@@ -998,8 +998,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the end of the interval variable
     */
-  def endEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.endEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def endEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.endEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the length of
@@ -1011,8 +1011,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the length of the interval variable
     */
-  def lengthEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.lengthEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def lengthEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.lengthEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the size of
@@ -1024,8 +1024,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the size of the interval variable
     */
-  def sizeEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.sizeEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def sizeEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.sizeEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a constraint that states that whenever interval variable a is present, it cannot start at a
@@ -1163,7 +1163,7 @@ class CpModel(name: String=null) {
     * @return a state function
     */
   def stateFunction(tdist: TransitionDistance=null, name: String=null): StateFunction = {
-    cp.stateFunction(tdist, name)
+    StateFunction(cp.stateFunction(tdist, name))(implicitly(this))
   }
 
 
@@ -1627,7 +1627,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysIn(f: StateFunction, start: Int, end: Int, vmin: Int, vmax: Int): Constraint =
-    Constraint(cp.alwaysIn(f, start, end, vmin, vmax))(implicitly(this))
+    Constraint(cp.alwaysIn(f.getIloStateFunction(), start, end, vmin, vmax))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present, the value of state
@@ -1643,7 +1643,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysIn(f: StateFunction, a: IntervalVar, vmin: Int, vmax: Int): Constraint =
-    Constraint(cp.alwaysIn(f, a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
+    Constraint(cp.alwaysIn(f.getIloStateFunction(), a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should be always
@@ -1694,7 +1694,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, start: Int, end: Int, v: Int, startAlign:Boolean=false, endAlign:Boolean=false): Constraint =
-    Constraint(cp.alwaysEqual(f, start, end, v, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), start, end, v, startAlign, endAlign))(implicitly(this))
 
   /**
     * Returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1712,7 +1712,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int): Constraint =
-    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, false, false))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), a.getIloIntervalVar(), v, false, false))(implicitly(this))
 
   /**
     * Returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1740,7 +1740,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is defined everywhere on the interval
@@ -1758,7 +1758,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, start: Int, end: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysConstant(f, start, end, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), start, end, startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is defined everywhere on the interval
@@ -1773,7 +1773,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, start: Int, end: Int): Constraint =
-    Constraint(cp.alwaysConstant(f, start, end))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), start, end))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1790,7 +1790,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, a: IntervalVar, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar(), startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), a.getIloIntervalVar(), startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1805,7 +1805,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, a: IntervalVar): Constraint =
-    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar()))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), a.getIloIntervalVar()))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is undefined everywhere on the interval of
@@ -1820,7 +1820,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysNoState(f: StateFunction, start: Int, end: Int): Constraint =
-    Constraint(cp.alwaysNoState(f, start, end))(implicitly(this))
+    Constraint(cp.alwaysNoState(f.getIloStateFunction(), start, end))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1835,7 +1835,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysNoState(f: StateFunction, a: IntervalVar): Constraint =
-    Constraint(cp.alwaysNoState(f, a.getIloIntervalVar()))(implicitly(this))
+    Constraint(cp.alwaysNoState(f.getIloStateFunction(), a.getIloIntervalVar()))(implicitly(this))
 
   /**
     * This method creates a step function defined everywhere with value 0.
@@ -1871,8 +1871,19 @@ class CpModel(name: String=null) {
     * @return a piecewise linear function
     */
   def piecewiseLinearFunction(point: Array[Double], slope: Array[Double], a: Double, fa: Double): NumToNumSegmentFunction = {
-    cp.piecewiseLinearFunction(point, slope, a, fa)
+    NumToNumSegmentFunction(cp.piecewiseLinearFunction(point, slope, a, fa))(implicitly(this))
   }
+
+  /**
+    * This method creates a cursor to inspect a piecewise linear function f. This cursor lets you iterate forward or backward over
+    * the steps of the function. The cursor initially specifies the step of the function that contains x.
+    *
+    * @param f is the segment function
+    * @param x is the initial position of the cursor
+    * @return a new segment function cursor
+    */
+  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumSegmentFunctionCursor =
+    cp.numToNumSegmentFunctionCursor(f.getIloNumToNumSegmentFunction(), x)
 
   /**
     * This method returns an instance of transition distance of the specified size i. Initially, the transition
@@ -2208,7 +2219,7 @@ class CpModel(name: String=null) {
     * @param f is the state function
     * @return the number of segments of the state function
     */
-  def getNumberOfSegments(f: StateFunction): Int = cp.getNumberOfSegments(f)
+  def getNumberOfSegments(f: StateFunction): Int = cp.getNumberOfSegments(f.getIloStateFunction())
 
   /**
     * This member function assumes that state function f is fixed. It returns the value of the ith segment of the
@@ -2220,7 +2231,7 @@ class CpModel(name: String=null) {
     * @param i is index of the segment
     * @return the value of the state function on the segment
     */
-  def getSegmentValue(f: StateFunction, i: Int): Int = cp.getSegmentValue(f, i)
+  def getSegmentValue(f: StateFunction, i: Int): Int = cp.getSegmentValue(f.getIloStateFunction(), i)
 
   /**
     * This member function assumes that state function f is fixed. It returns the start of the ith segment of the
@@ -2231,7 +2242,7 @@ class CpModel(name: String=null) {
     * @param i is the index of the segment
     * @return the start of the segment
     */
-  def getSegmentStart(f: StateFunction, i: Int): Int = cp.getSegmentStart(f, i)
+  def getSegmentStart(f: StateFunction, i: Int): Int = cp.getSegmentStart(f.getIloStateFunction(), i)
 
   /**
     * This member function assumes that state function f is fixed. It returns the end of the ith segment of the
@@ -2242,7 +2253,7 @@ class CpModel(name: String=null) {
     * @param i is the index of the segment
     * @return the end of the ith segment
     */
-  def getSegmentEnd(f: StateFunction, i: Int) = cp.getSegmentEnd(f, i)
+  def getSegmentEnd(f: StateFunction, i: Int) = cp.getSegmentEnd(f.getIloStateFunction(), i)
 
   //
   // Solutions
@@ -2369,9 +2380,8 @@ object CpModel {
   type TransitionDistance = IloTransitionDistance
   type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
-  type NumToNumSegmentFunction = IloNumToNumSegmentFunction
   type NumToNumStepFunctionCursor = IloNumToNumStepFunctionCursor
-  type StateFunction = IloStateFunction
+  type NumToNumSegmentFunctionCursor = IloNumToNumSegmentFunctionCursor
 
   /**
     * Create and return a new mathematical programming model.
@@ -2997,7 +3007,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the start of the interval variable
     */
-  def startEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def startEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.startEval(a, f, absVal)
 
   /**
@@ -3010,7 +3020,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the end of the interval variable
     */
-  def endEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def endEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.endEval(a, f, absVal)
 
   /**
@@ -3023,7 +3033,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the length of the interval variable
     */
-  def lengthEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def lengthEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.lengthEval(a, f, absVal)
 
   /**
@@ -3036,7 +3046,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the size of the interval variable
     */
-  def sizeEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def sizeEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.sizeEval(a, f, absVal)
 
   /**

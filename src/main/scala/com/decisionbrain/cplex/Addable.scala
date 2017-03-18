@@ -9,9 +9,6 @@ package com.decisionbrain.cplex
 import ilog.concert.IloAddable
 
 
-/**
-  * Created by dgodard on 10/02/2017.
-  */
 trait Addable {
 
   /**

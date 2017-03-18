@@ -136,22 +136,21 @@ object SchedCumul {
     if (status) {
       println(s"Solution status: $status")
       println("Solution with objective " + model.getObjectiveValue())
-      for (i <- 0 until allTaskVars.size) {
-        println(model.getDomain(allTaskVars(i)))
+      for (v <- allTaskVars) {
+        println(model.getDomain(v))
       }
-      for (s <- 0 until model.getNumberOfSegments(cash)) {
-        System.out.println(
-          "Cash is " + model.getSegmentValue(cash, s) +
-            " in [" + model.getSegmentStart(cash, s) +
-            " .. " + (model.getSegmentEnd(cash, s)) +
-            ")"
+      for (s <- cash) {
+        println("Cash is " + s.value +
+          " in [" + s.start +
+          " .. " + s.end +
+          ")"
         )
       }
-      for (s <- 0 until model.getNumberOfSegments(workersUsage)) {
-        System.out.println(
-          "# Workers  is " + model.getSegmentValue(workersUsage, s) +
-            " in [" + model.getSegmentStart(workersUsage, s) +
-            " .. " + (model.getSegmentEnd(workersUsage, s)) +
+      for (s <- workersUsage) {
+        println(
+          "# Workers is " + s.value +
+            " in [" + s.start +
+            " .. " + s.end +
             ")"
         )
       }
