@@ -1,4 +1,4 @@
-## cplex-scala v1.1.1
+## cplex-scala v1.2.0
 
 ### Constraint Programming
 
