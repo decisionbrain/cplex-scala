@@ -1,5 +1,7 @@
 ## cplex-scala v1.1.1
 
+### Constraint Programming
+
  * Add state function
  * and constraints `alwaysIn`, `alwaysEqual`, `alwaysConstant` and `alwaysNoState` on state functions
  * Add example `SchedState.scala`
@@ -10,7 +12,7 @@
 
 ## cplex-scala v1.1.0
 
-###README
+### README
 
   * Use syntax highlighting for scala code blocks
   * Update README: specify version of Java JDK used for testing
