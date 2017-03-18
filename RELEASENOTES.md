@@ -1,4 +1,12 @@
+## cplex-scala v1.2.1-SNAPSHOT
+
+  * 
+  
 ## cplex-scala v1.2.0
+
+### README
+
+ * Add a link to IBM ILOG CPLEX Studio Community Edition download page in the README
 
 ### Constraint Programming
 
@@ -8,7 +16,6 @@
  * Add missing precedence constraints in companion object of CpModel
  * Add constraints `alwaysEqual` on cumul functions
  * Add integer division on integer expression
- * Add a link to IBM ILOG CPLEX Studio Community Edition download page in the README
 
 ## cplex-scala v1.1.0
 
