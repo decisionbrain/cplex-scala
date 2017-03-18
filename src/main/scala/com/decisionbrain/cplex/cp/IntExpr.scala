@@ -89,6 +89,24 @@ class IntExpr(expr: IloIntExpr)(implicit model: CpModel) extends NumExpr(expr) {
   }
 
   /**
+    * Creates and returns the integer division e1 / e2.
+    *
+    * @param e2 is the divisor
+    * @return an integer expression equals to the integer division e1 / e2.
+    */
+  def /(e2: IntExpr): IntExpr =
+    IntExpr(model.cp.div(this.expr, e2.getIloIntExpr()))
+
+  /**
+    * Creates and returns the integer division e1 / e2.
+    *
+    * @param e2 is the divisor
+    * @return an integer expression equals to the integer division e1 / e2.
+    */
+  def /(e2: Int): IntExpr =
+    IntExpr(model.cp.div(this.expr, e2))
+
+  /**
     * Creates and returns the constraint <em>expr1 != expr2</em>.
     *
     * @param e is the numeric expression of the new not-equal-to constraint.

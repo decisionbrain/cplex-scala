@@ -1743,6 +1743,101 @@ class CpModel(name: String=null) {
     Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
 
   /**
+    * This function returns a constraint that ensures that state function f is defined everywhere on the interval
+    * [start,end) and remains constant over this interval.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @param startAlign is a boolean value; when it is true, the start of the interval is synchronized with the start
+    *                   of an interval of the state function
+    * @param endAlign is a boolean value; when it is true, the end of the interval is synchronized with the end of an
+    *                 interval of the state function
+    * @return a new constraint on the state function
+    */
+  def alwaysConstant(f: StateFunction, start: Int, end: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
+    Constraint(cp.alwaysConstant(f, start, end, startAlign, endAlign))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that state function f is defined everywhere on the interval
+    * [start,end) and remains constant over this interval. By default, the start and the end of the interval is not
+    * synchronized with the intervals of the state function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @return a new constraint on the state function
+    */
+  def alwaysConstant(f: StateFunction, start: Int, end: Int): Constraint =
+    Constraint(cp.alwaysConstant(f, start, end))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains constant over this interval.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @param startAlign is a boolean value; when it is true, the start of the interval variable is synchronized with the
+    *                   start of an interval of the state function if present
+    * @param endAlign is a boolean value; when it is true, the end of the interval variable is synchronized with the
+    *                 end of an interval of the state function if present
+    * @return a new constraint on the state function
+    */
+  def alwaysConstant(f: StateFunction, a: IntervalVar, startAlign:Boolean, endAlign:Boolean): Constraint =
+    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar(), startAlign, endAlign))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that whenever interval variable a is present state function f is
+    * defined everywhere between the start and the end of interval variable a and remains constant over this interval.
+    * By default, the start and the end of the interval variable are not synchronized with the intervals of the state
+    * function.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @return a new constraint on the state function
+    */
+  def alwaysConstant(f: StateFunction, a: IntervalVar): Constraint =
+    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar()))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that state function f is undefined everywhere on the interval of
+    * integers [start,end). This constraint will ensure, in particular, that no interval variable that requires the
+    * function to be defined (see alwaysEqual, alwaysConstant) can overlap the interval [start,end).
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param start is the start of the interval
+    * @param end is the end of the interval
+    * @return a new constraint on the state function
+    */
+  def alwaysNoState(f: StateFunction, start: Int, end: Int): Constraint =
+    Constraint(cp.alwaysNoState(f, start, end))(implicitly(this))
+
+  /**
+    * This function returns a constraint that ensures that whenever interval variable a is present state function f is
+    * undefined everywhere between the start and the end of interval variable a. This constraint will ensure, in
+    * particular, that no interval variable that requires the function to be defined (see alwaysEqual, alwaysConstant)
+    * can overlap interval variable a.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is the state function
+    * @param a is the interval variable
+    * @return a new constraint on the state function
+    */
+  def alwaysNoState(f: StateFunction, a: IntervalVar): Constraint =
+    Constraint(cp.alwaysNoState(f, a.getIloIntervalVar()))(implicitly(this))
+
+  /**
     * This method creates a step function defined everywhere with value 0.
     *
     * @return a step function
@@ -3039,16 +3134,227 @@ object CpModel {
 
   /**
     * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
-    * the distance start(b)-end(a)between the end of interval a and the start of interval b must be greater than or
-    * equal to 0.
+    * the distance start(b)-start(a) between the start of interval a and the start of interval b must be greater than or
+    * equal to z.
     * Note: This constraint cannot be used in a logical constraint.
     *
     * @param a is an interval variable
     * @param b is an interval variable
+    * @param z is the minimum delay the start of b and the start of a
     * @return a precedence constraint
     */
-  def endBeforeStart(a: IntervalVar, b: IntervalVar)(implicit model: CpModel): Constraint =
-    model.endBeforeStart(a, b)
+  def startBeforeStart(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.startBeforeStart(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance start(b)-start(a) between the start of interval a and the start of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the start of b and the start of a
+    * @return a precedence constraint
+    */
+  def startBeforeStart(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.startBeforeStart(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-start(a) between the end of interval a and the start of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the start of b and the start of a
+    * @return a precedence constraint
+    */
+  def startBeforeEnd(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.startBeforeEnd(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-start(a) between the start of interval a and the end of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the start of b and the start of a
+    * @return a precedence constraint
+    */
+  def startBeforeEnd(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.startBeforeEnd(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance start(b)-end(a) between the start of interval a and the end of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the end of b and the start of a
+    * @return a precedence constraint
+    */
+  def endBeforeStart(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.endBeforeStart(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance start(b)-end(a) between the end of interval a and the start of interval b must be greater than or
+    * equal to integer expression z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the start of b and the end of a
+    * @return a precedence constraint
+    */
+  def endBeforeStart(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.endBeforeStart(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-end(a) between the end of interval a and the start of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the end of b and the end of a
+    * @return a precedence constraint
+    */
+  def endBeforeEnd(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.endBeforeEnd(a, b, z)
+
+  /**
+    * Creates and returns a precedence constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-end(a) between the end of interval a and the start of interval b must be greater than or
+    * equal to z.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param b is an interval variable
+    * @param z is the minimum delay the end of b and the end of a
+    * @return a precedence constraint
+    */
+  def endBeforeEnd(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.endBeforeEnd(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance start(b)-start(a)between the start of interval a and the start of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def startAtStart(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.startAtStart(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance start(b)-start(a)between the start of interval a and the start of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def startAtStart(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.startAtStart(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-start(a)between the start of interval a and the end of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def startAtEnd(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.startAtEnd(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present,
+    * the distance end(b)-start(a)between the start of interval a and the end of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def startAtEnd(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.startAtEnd(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance start(b)-end(a)between the end of interval a and the start of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def endAtStart(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.endAtStart(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance start(b)-end(a)between the end of interval a and the start of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def endAtStart(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.endAtStart(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance end(b)-end(a)between the end of interval a and the end of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def endAtEnd(a: IntervalVar, b: IntervalVar, z: Int = 0)(implicit model: CpModel): Constraint =
+    model.endAtEnd(a, b, z)
+
+  /**
+    * This function returns a constraint that states that whenever both interval variables a and b are present, the
+    * distance end(b)-end(a)between the end of interval a and the end of interval b must be equal to z.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+
+    * @param a is the first interval variable
+    * @param b is the second interval variable
+    * @param z is the minimum delay
+    * @return a precedence constraint
+    */
+  def endAtEnd(a: IntervalVar, b: IntervalVar, z: IntExpr)(implicit model: CpModel): Constraint =
+    model.endAtEnd(a, b, z)
 
   /**
     * This method creates an alternative constraint between interval variable a and the set of interval variables in

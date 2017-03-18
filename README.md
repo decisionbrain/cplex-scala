@@ -18,10 +18,12 @@ To get up to speed, the easiest way to start with this library is to study the e
  * src/examples/mp: examples of optimization models based on mathematical programming
  * src/examples/cp: examples of optimization models based on constraint programming
 
-This library has been tested using IBM ILOG CPLEX 12.6.1, 12.6.2, 12.6.3, 12.7.0, Scala 2.11.8 and Java JDK 1.8.0_121.
+This library has been tested using IBM ILOG CPLEX 12.6.3 and 12.7.0, Scala 2.11.8 and Java JDK 1.8.0_121. If you want 
+to play with this library and do not have a license of CPLEX, you can download 
+[IBM ILOG CPLEX Optimization Studio Community Edition](https://www-01.ibm.com/software/websphere/products/optimization/cplex-studio-community-edition/)
 
 To build the library install gradle 2.10 and set the environment variable `CPLEX_STUDIO_HOME` (e.g. 
-on windows `C:\IBM\ILOG\CPLEX_Studio1263`).  
+on windows `C:\IBM\ILOG\CPLEX_Studio127`).  
 
 Then do:
 
