@@ -16,14 +16,14 @@ import ilog.cp.IloCP
   * @param f is the piecewise linear function
   * @param model is the constraint programming model
   */
-class NumToNumSegmentFunctionIterator(f: NumToNumSegmentFunction)(implicit model: CpModel) extends Iterator[Segment[Double]] {
+class NumToNumSegmentFunctionIterator(f: NumToNumSegmentFunction)(implicit model: CpModel) extends Iterator[NumSegment] {
 
   val cursor = model.numToNumSegmentFunctionCursor(f, f.getDefinitionIntervalMin())
 
   override def hasNext: Boolean = cursor.ok()
 
-  override def next(): Segment[Double] = {
-    val segment = new Segment[Double](cursor.getSegmentMin,
+  override def next(): NumSegment = {
+    val segment = NumSegment(cursor.getSegmentMin,
       cursor.getSegmentMax,
       cursor.getValueLeft,
       cursor.getValueRight)
@@ -38,7 +38,7 @@ class NumToNumSegmentFunctionIterator(f: NumToNumSegmentFunction)(implicit model
   * @param f is a CPLEX piecewise linear function
   * @param model is the constraint programming model
   */
-class NumToNumSegmentFunction(f: IloNumToNumSegmentFunction)(implicit model: CpModel) extends Iterable[Segment[Double]] {
+class NumToNumSegmentFunction(f: IloNumToNumSegmentFunction)(implicit model: CpModel) extends Iterable[NumSegment] {
 
   /**
     * Returns the CPLEX piecewise linear function
@@ -285,7 +285,7 @@ class NumToNumSegmentFunction(f: IloNumToNumSegmentFunction)(implicit model: CpM
     builder.toString
   }
 
-  override def iterator: Iterator[Segment[Double]] = new NumToNumSegmentFunctionIterator(this)
+  override def iterator: Iterator[NumSegment] = new NumToNumSegmentFunctionIterator(this)
 }
 
 object NumToNumSegmentFunction {
