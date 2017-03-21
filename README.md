@@ -18,8 +18,10 @@ To get up to speed, the easiest way to start with this library is to study the e
  * src/examples/mp: examples of optimization models based on mathematical programming
  * src/examples/cp: examples of optimization models based on constraint programming
 
-This library has been tested using IBM ILOG CPLEX 12.6.x and 12.7.0, Scala 2.11.8 and Java JDK 1.8.0_121. We use Scala 
-2.11.8 to keep compatibility with Java 6.
+This library has been tested using IBM ILOG CPLEX 12.6.x and 12.7.0, Scala 2.11.8 and Java JDK 1.8.0_121 on Windows 10 
+64 bits. Port to 32 bits or Linux should be fairly easy, see file `build.gradle`. Similarly, port to a more recent 
+version of Scala should be straightforward, the reason we use Scala 2.11.8 is to keep compatibility with Java 6 and 
+thus with IBM ILOG Decision Optimization 3.9.
 
 If you want to play with this library and do not have a license of CPLEX, you can download the  
 [Community Edition of IBM ILOG CPLEX Optimization Studio](https://www-01.ibm.com/software/websphere/products/optimization/cplex-studio-community-edition/)
