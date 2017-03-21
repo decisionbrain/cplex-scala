@@ -17,14 +17,14 @@ import ilog.cp.IloCP
   * @param f is the step function
   * @param model is the constraint programming model
   */
-class NumToNumStepFunctionIterator(f: NumToNumStepFunction)(implicit model: CpModel) extends Iterator[Segment[Double]] {
+class NumToNumStepFunctionIterator(f: NumToNumStepFunction)(implicit model: CpModel) extends Iterator[ConstantSegment[Double]] {
 
   val cursor = model.numToNumStepFunctionCursor(f, f.getDefinitionIntervalMin())
 
   override def hasNext: Boolean = cursor.ok()
 
-  override def next(): Segment[Double] = {
-    val segment = new Segment[Double](cursor.getSegmentMin,
+  override def next(): ConstantSegment[Double] = {
+    val segment = new ConstantSegment[Double](cursor.getSegmentMin,
       cursor.getSegmentMax,
       cursor.getValue)
     cursor.next
@@ -38,7 +38,7 @@ class NumToNumStepFunctionIterator(f: NumToNumStepFunction)(implicit model: CpMo
   * @param f is a CPLEX step function
   * @param model is the constraint programming model
   */
-class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) extends Iterable[Segment[Double]] {
+class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) extends Iterable[ConstantSegment[Double]] {
 
   /**
     * Returns the CPLEX step function
@@ -321,7 +321,7 @@ class NumToNumStepFunction(f: IloNumToNumStepFunction)(implicit model: CpModel) 
     builder.toString
   }
 
-  override def iterator: Iterator[Segment[Double]] = new NumToNumStepFunctionIterator(this)
+  override def iterator: Iterator[ConstantSegment[Double]] = new NumToNumStepFunctionIterator(this)
 }
 
 object NumToNumStepFunction {

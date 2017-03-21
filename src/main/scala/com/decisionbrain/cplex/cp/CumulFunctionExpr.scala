@@ -15,14 +15,14 @@ import ilog.concert.{IloAddable, IloCumulFunctionExpr}
   * @param f is the cumul function expression
   * @param model is the constraint programming model
   */
-class CumulFunctionExprIterator(f: CumulFunctionExpr)(implicit model: CpModel) extends Iterator[Segment[Int]] {
+class CumulFunctionExprIterator(f: CumulFunctionExpr)(implicit model: CpModel) extends Iterator[ConstantSegment[Int]] {
 
   var cursor: Int = 0
 
   override def hasNext: Boolean = cursor < model.getNumberOfSegments(f)
 
-  override def next(): Segment[Int] = {
-    val segment = new Segment[Int](model.getSegmentStart(f, cursor),
+  override def next(): ConstantSegment[Int] = {
+    val segment = new ConstantSegment[Int](model.getSegmentStart(f, cursor),
       model.getSegmentEnd(f, cursor),
       model.getSegmentValue(f, cursor))
     cursor += 1
@@ -36,7 +36,7 @@ class CumulFunctionExprIterator(f: CumulFunctionExpr)(implicit model: CpModel) e
   * @param expr  is the numeric expression
   * @param model is the constraint programming model
   */
-class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel) extends Addable with Iterable[Segment[Int]] {
+class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel) extends Addable with Iterable[ConstantSegment[Int]] {
 
   /**
     * Returns the constraint programming model

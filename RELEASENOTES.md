@@ -2,7 +2,7 @@
 
 ## cplex-scala v1.2.1-SNAPSHOT
 
-  * Add iterators for cumul function expression, state function, step function and piecewise 
+  * Functional programming: add iterators for cumul function expression, state function, step function and piecewise 
   linear function. Furthermore, these functions are now iterables and this allow to iterate like 
   this:
   ```scala

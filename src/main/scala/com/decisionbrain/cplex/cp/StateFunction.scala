@@ -14,14 +14,14 @@ import ilog.concert.IloStateFunction
   * @param f is the state function
   * @param model is the constraint programming model
   */
-class StateFunctionIterator(f: StateFunction)(implicit model: CpModel) extends Iterator[Segment[Int]] {
+class StateFunctionIterator(f: StateFunction)(implicit model: CpModel) extends Iterator[ConstantSegment[Int]] {
 
   var cursor: Int = 0
 
   override def hasNext: Boolean = cursor < model.getNumberOfSegments(f)
 
-  override def next(): Segment[Int] = {
-    val segment = new Segment[Int](model.getSegmentStart(f, cursor),
+  override def next(): ConstantSegment[Int] = {
+    val segment = new ConstantSegment[Int](model.getSegmentStart(f, cursor),
       model.getSegmentEnd(f, cursor),
       model.getSegmentValue(f, cursor))
     cursor += 1
@@ -30,12 +30,12 @@ class StateFunctionIterator(f: StateFunction)(implicit model: CpModel) extends I
 }
 
 /**
-  * Constructor of class NumToNumStepFunction.
+  * Constructor of class StateFunction.
   *
   * @param f is a CPLEX step function
   * @param model is the constraint programming model
   */
-class StateFunction(f: IloStateFunction)(implicit model: CpModel) extends Iterable[Segment[Int]] {
+class StateFunction(f: IloStateFunction)(implicit model: CpModel) extends Iterable[ConstantSegment[Int]] {
 
   /**
     * Returns the CPLEX step function
@@ -50,7 +50,7 @@ class StateFunction(f: IloStateFunction)(implicit model: CpModel) extends Iterab
     *
     * @return an iterator on the state function expression
     */
-  override def iterator: Iterator[Segment[Int]] = new StateFunctionIterator(this)
+  override def iterator: Iterator[ConstantSegment[Int]] = new StateFunctionIterator(this)
 }
 
 object StateFunction {

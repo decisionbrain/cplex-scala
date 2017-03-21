@@ -50,9 +50,8 @@ object Color {
 
     if (status) {
       println(s"Solution status: $status")
-      for (country <- countries.toList) {
+      for (country <- countries) {
         println("\t" + country + ": " + allColors(model.getValue(colors(country))))
-//        println(c)
       }
     }
 

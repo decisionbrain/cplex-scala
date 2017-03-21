@@ -39,9 +39,9 @@ object SchedTime {
       val arrX = Array(rd)
       val arrV = Array(-weight, 0.0)
       val f = model.piecewiseLinearFunction(arrX, arrV, rd, 0.0)
-      return startEval(task,f)
+      startEval(task,f)
     } else {
-      return weight * max(.0, rd - startOf(task))
+      weight * max(.0, rd - startOf(task))
     }
   }
 
@@ -50,9 +50,9 @@ object SchedTime {
       val arrX = Array(dd)
       val arrV = Array(0.0, weight)
       val f = model.piecewiseLinearFunction(arrX, arrV, dd, 0.0)
-      return endEval(task,f)
+      endEval(task,f)
     } else {
-      return weight * max(.0, endOf(task) - dd)
+      weight * max(.0, endOf(task) - dd)
     }
   }
 
