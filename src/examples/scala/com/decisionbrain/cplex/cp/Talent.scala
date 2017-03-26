@@ -92,7 +92,7 @@ object Talent {
 
     val slot = model.intVars(numScenes, 0, numScenes -1)
 
-    model.add(inverse(scene.toArray, slot.toArray))
+    model.add(inverse(scene, slot))
 
     for (a <- 0 until numActors) {
 
