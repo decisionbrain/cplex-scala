@@ -12,6 +12,8 @@
         println("[" + s.start + " .. " + s.end + ") -> " + s.value)
      }
   ```
+  * Add type `IntSet`, factory methods and iterator.
+  * Add scala API for inverse constraint and add example `Talent.scala`.
   
   
 ## cplex-scala v1.2.0

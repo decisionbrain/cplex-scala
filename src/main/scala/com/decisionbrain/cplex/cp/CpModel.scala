@@ -10,6 +10,7 @@ import com.decisionbrain.cplex.Addable
 import ilog.concert._
 import ilog.cp.IloCP
 import com.decisionbrain.cplex.cp.CpModel._
+import ilog.concert.cppimpl.{IloConcertUtils, IloIntVarArray}
 
 import scala.reflect.ClassTag
 
@@ -725,6 +726,49 @@ class CpModel(name: String=null) {
     val v = weights.toArray
     val u = used.getIloIntExpr()
     Constraint(cp.pack(l, w, v, u))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @return a new inverse constraint
+    */
+  def inverse(f: IntVarArray, invf: IntVarArray): Constraint = {
+    val g = IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, f.toIloArray[IloNumVar])
+    val invg = IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, invf.toIloArray[IloNumVar])
+    Constraint(cp.inverse(g, invg))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @return a new inverse constraint
+    */
+  def inverse(f: Array[IntVar], invf: Array[IntVar]): Constraint = {
+    val g = f.map(e => e.getIloNumVar())
+    val invg = invf.map(e => e.getIloNumVar())
+    Constraint(cp.inverse(
+      IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, g),
+      IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, invg)
+    ))(implicitly(this))
   }
 
   /**
@@ -1921,6 +1965,23 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * Creates and returns a new set of integer values.
+    *
+    * @param values is an array of integer values
+    * @return a set of integer values
+    */
+  def intSet(values: IntArray): IntSet = IntSet(cp.intSet(values.toArray))(implicitly(this))
+
+  /**
+    * Creates and returns a new set of integer values.
+    *
+    * @param values is an array of integer values
+    * @return a set of integer values
+    */
+  def intSet(values: Array[Int]): IntSet = IntSet(cp.intSet(values))(implicitly(this))
+
+
+  /**
     * Add an addable object in the model.
     *
     * @param a is the object to add to the model
@@ -2748,6 +2809,42 @@ object CpModel {
     */
   def pack(load: Array[IntExpr], where: Array[IntExpr], weight: Array[Int], used: IntExpr)(implicit model: CpModel): Constraint =
     model.pack(load, where, weight, used)
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @param model is the contraint programming model
+    * @return a new inverse constraint
+    */
+  def inverse(f: IntVarArray, invf: IntVarArray)(implicit model: CpModel): Constraint =
+    model.inverse(f, invf)
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @param model is the contraint programming model
+    * @return a new inverse constraint
+    */
+  def inverse(f: Array[IntVar], invf: Array[IntVar])(implicit model: CpModel): Constraint =
+    model.inverse(f, invf)
 
   /**
     * This function returns a constraint that states that interval variable a is present. Typically, this constraint is
@@ -3949,7 +4046,7 @@ object CpModel {
     /**
       * Converts to CPLEX array
       */
-    def toIloArray: Array[IloIntVar] = vars.map(v => v.getIloIntVar()).toArray
+    def toIloArray[B >: IloIntVar: ClassTag]: Array[B] = vars.map(v => v.getIloIntVar()).toArray
 
     /**
       * Returns an iterator.
