@@ -101,8 +101,8 @@ object Talent {
       val position = for (s <- actorInScene(a))
         yield slot(s)
 
-      val firstSlot = model.min(position)
-      val lastSlot = model.max(position)
+      val firstSlot = min(position)
+      val lastSlot = max(position)
 
       for (s <- 0 until numScenes if !actorInScene(a).contains(s)) {
         val wait = (firstSlot <= slot(s)) && (slot(s) <= lastSlot)
