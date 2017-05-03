@@ -2932,7 +2932,7 @@ object CpModel {
     * @return an interger expression that represents the type of the previous interval variable in the sequence
     */
   def typeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0)(implicit model: CpModel): IntExpr =
-    typeOfPrevious(seq, a, firstVal, absVal)
+    model.typeOfPrevious(seq, a, firstVal, absVal)
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is next to
