@@ -8,7 +8,6 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.{Addable, ObjectiveSense}
 import ilog.concert._
-import ilog.cplex.IloCplex
 
 /**
   * Created by dgodard on 10/02/2017.

@@ -8,7 +8,6 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Addable
 import ilog.concert.{IloAddable, IloNumVar, IloNumVarType}
-import ilog.cplex.IloCplex
 
 /**
   * Class for numeric variables.

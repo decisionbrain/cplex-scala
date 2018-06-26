@@ -8,7 +8,6 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Addable
 import ilog.concert.{IloAddable, IloConstraint}
-import ilog.cplex.IloCplex
 
 /**
   * Class for constraints.

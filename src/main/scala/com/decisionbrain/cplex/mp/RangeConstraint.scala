@@ -7,7 +7,6 @@
 package com.decisionbrain.cplex.mp
 
 import ilog.concert.IloRange
-import ilog.cplex.IloCplex
 
 /**
   * Created by dgodard on 09/02/2017.

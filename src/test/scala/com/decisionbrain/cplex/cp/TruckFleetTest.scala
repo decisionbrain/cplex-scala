@@ -17,7 +17,7 @@ class TruckFleetTest extends FunSuite with Matchers {
 
   test("TruckFleet") {
     val model = TruckFleet.build()
-    val status = model.solve(timeLimit=30, solutionLimit=10, logPeriod=3000)
+    val status = model.solve(timeLimit=30, solutionLimit=12, logPeriod=3000)
 
     status should equal(true)
 

@@ -7,7 +7,7 @@
 package com.decisionbrain.cplex.mp
 
 import ilog.concert.IloNumExpr
-import ilog.cplex.IloCplex
+import ilog.opl.IloCplex
 
 /**
   * Class for numeric expressions

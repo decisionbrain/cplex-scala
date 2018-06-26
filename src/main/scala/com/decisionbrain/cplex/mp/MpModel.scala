@@ -8,7 +8,7 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Addable
 import com.decisionbrain.cplex.mp.NumExpr.{LinearIntExpr, LinearNumExpr}
-import ilog.cplex.IloCplex
+import ilog.opl.IloCplex
 
 
 /**
