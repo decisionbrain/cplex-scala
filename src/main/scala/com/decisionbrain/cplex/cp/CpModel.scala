@@ -1,16 +1,16 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.Addable
-import ilog.concert._
-import ilog.cp.IloCP
 import com.decisionbrain.cplex.cp.CpModel._
-import ilog.concert.cppimpl.{IloConcertUtils, IloIntVarArray}
+import ilog.concert._
+import ilog.concert.cppimpl.IloConcertUtils
+import ilog.cp.IloCP
 
 import scala.reflect.ClassTag
 
