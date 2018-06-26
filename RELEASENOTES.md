@@ -14,6 +14,7 @@
   ```
   * Add type `IntSet`, factory methods and iterator.
   * Add scala API for inverse constraint and add example `Talent.scala`.
+  * port to CPLEX 12.8
   
   
 ## cplex-scala v1.2.0
