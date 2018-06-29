@@ -14,7 +14,22 @@
   ```
   * Add type `IntSet`, factory methods and iterator.
   * Add scala API for inverse constraint and add example `Talent.scala`.
-  * port to CPLEX 12.8
+  * Port to CPLEX 12.8
+  * Port to Scala 2.12.6
+  * Add new signature for method alternative with only two parameters
+  * Add method getFirst, getLast, getNext and getPrev in class CpModel to get rescpectively the first interval variable
+  in the sequence, the last interval variable in the sequence, the next interval variable in the sequence, the previous
+  interval variable in the sequence.
+  * IntervalSequenceVariable is now a proper class. It implements the Trait Iterable: one can write something like this:
+  ```scala
+    val seq = model.intervalSequenceVar()
+    ...
+    for (x <- seq) {
+      System.out.println(model.getDomain(x))
+    }
+  ```
+  * Add example SchedSetup: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
+  times and forbidden transisions
   
   
 ## cplex-scala v1.2.0

@@ -277,6 +277,17 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * This method creates an instance of sequence variable on the set of interval variables.
+    *
+    * @param vars is an array of interval variables
+    * @param types is an array of the type of each interval variable
+    * @return a sequence variable
+    */
+  def intervalSequenceVar(vars: Array[IntervalVar], types: Array[Int]): IntervalSequenceVar =
+    IntervalSequenceVar(cp.intervalSequenceVar(vars.map(v => v.getIloIntervalVar()), types))(implicitly(this))
+
+
+  /**
     * Returns a constraint that is always true or false.
     *
     * @return a constraint that is always true
@@ -841,7 +852,7 @@ class CpModel(name: String=null) {
     * @return an interger expression that represents the type of the next interval variable in the sequence
     */
   def typeOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.typeOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.typeOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the type of the interval variable that is previous to
@@ -857,7 +868,7 @@ class CpModel(name: String=null) {
     * @return an interger expression that represents the type of the previous interval variable in the sequence
     */
   def typeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.typeOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.typeOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is next to
@@ -872,7 +883,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the start of the next interval variable in the sequence
     */
   def startOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.startOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.startOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is previous to
@@ -887,7 +898,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the start of the previous interval variable in the sequence
     */
   def startOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.startOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.startOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the end of the interval variable that is next to
@@ -902,7 +913,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the end of the next interval variable in the sequence
     */
   def endOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.endOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.endOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the end of the interval variable that is previous to
@@ -917,7 +928,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the end of the previous interval variable in the sequence
     */
   def endOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.endOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.endOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the size of the interval variable that is next to
@@ -932,7 +943,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the size of the next interval variable in the sequence
     */
   def sizeOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.sizeOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.sizeOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the size of the interval variable that is previous to
@@ -947,7 +958,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the size of the previous interval variable in the sequence
     */
   def sizeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.sizeOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.sizeOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the interval variable that is next to
@@ -962,7 +973,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the length of the next interval variable in the sequence
     */
   def lengthOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.lengthOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.lengthOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the interval variable that is previous to
@@ -977,7 +988,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the length of the previous interval variable in the sequence
     */
   def lengthOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.lengthOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.lengthOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the overlap of interval variable a1
@@ -1156,9 +1167,9 @@ class CpModel(name: String=null) {
     */
   def noOverlap(seq: IntervalSequenceVar, tdist: TransitionDistance=null, direct: Boolean=false): Constraint =
     if (Option(tdist).isEmpty)
-      Constraint(cp.noOverlap(seq))(implicitly(this))
+      Constraint(cp.noOverlap(seq.getIloIntervalSequenceVar()))(implicitly(this))
     else
-      Constraint(cp.noOverlap(seq, tdist, direct))(implicitly(this))
+      Constraint(cp.noOverlap(seq.getIloIntervalSequenceVar(), tdist, direct))(implicitly(this))
 
   /**
     * This method creates a span constraint between interval variable a and the set of interval variables bs.
@@ -1498,6 +1509,21 @@ class CpModel(name: String=null) {
     */
   def alternative(a: IntervalVar, bs: Array[IntervalVar], value: Int) = {
     val c = cp.alternative(a.getIloIntervalVar(), bs.map((v) => v.getIloIntervalVar()), value)
+    Constraint(c)(implicitly(this))
+  }
+
+  /**
+    * This method creates an alternative constraint between interval variable a and the set of interval variables in
+    * the array bs with cardinality c. If a is present, c intervals in bs will be selected by the alternative
+    * constraint.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param bs is a set of interval variables
+    * @return an alternative constraint
+    */
+  def alternative(a: IntervalVar, bs: Array[IntervalVar]) = {
+    val c = cp.alternative(a.getIloIntervalVar(), bs.map((v) => v.getIloIntervalVar()))
     Constraint(c)(implicitly(this))
   }
 
@@ -2203,6 +2229,46 @@ class CpModel(name: String=null) {
   def getDomain(v: IntervalVar): String = cp.getDomain(v.getIloIntervalVar())
 
   /**
+    * Returns the fisrt interval variable in the sequence variable. This member function assumes that the sequence
+    * * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the first interval variable in the sequence variable
+    */
+  def getFirst(seq: IntervalSequenceVar): IntervalVar =
+    IntervalVar(cp.getFirst(seq.getIloIntervalSequenceVar()))(implicitly(this))
+
+  /**
+    * Returns the last interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the last interval varaible in the sequence variable
+    */
+  def getLast(seq: IntervalSequenceVar): IntervalVar =
+    IntervalVar(cp.getLast(seq.getIloIntervalSequenceVar()))(implicitly(this))
+
+  /**
+    * Returns the next interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the next interval variable in the sequence variable
+    */
+  def getNext(seq: IntervalSequenceVar, a: IntervalVar): IntervalVar =
+    IntervalVar(cp.getNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar()))(implicitly(this))
+
+  /**
+    * Returns the previous interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the previous interval variable in the sequence variable
+    */
+  def getPrev(seq: IntervalSequenceVar, a: IntervalVar): IntervalVar =
+    IntervalVar(cp.getPrev(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar()))(implicitly(this))
+
+  /**
     * This member function assumes that the cumul function expression f is fixed. It returns the number of segments of
     * the corresponding stepwise non-negative function. A segment is an interval [start, end) on which the value of f
     * is constant. An exception is thrown if the cumul function expression f is not fixed.
@@ -2438,7 +2504,6 @@ object CpModel {
   // Types definition in case we need to encapsulate CPO types later
   //
 
-  type IntervalSequenceVar = IloIntervalSequenceVar
   type TransitionDistance = IloTransitionDistance
   type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
@@ -3521,6 +3586,19 @@ object CpModel {
     */
   def alternative(a: IntervalVar, bs: Array[IntervalVar], name: String)(implicit model: CpModel): Constraint =
     model.alternative(a, bs, name)
+
+  /**
+    * This method creates an alternative constraint between interval variable a and the set of interval variables in
+    * the array bs with cardinality c. If a is present, c intervals in bs will be selected by the alternative
+    * constraint.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param bs is an array of interval variables
+    * @return an alternative constraint
+    */
+  def alternative(a: IntervalVar, bs: Array[IntervalVar])(implicit model: CpModel): Constraint =
+    model.alternative(a, bs)
 
   /**
     * This function returns an elementary cumul function expression that, whenever interval variable a is present, is
