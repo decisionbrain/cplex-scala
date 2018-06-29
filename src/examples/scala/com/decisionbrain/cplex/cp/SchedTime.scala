@@ -1,14 +1,12 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.cp.CpModel._
-import ilog.concert.IloNumToNumSegmentFunction
-import ilog.cp.IloCP
 
 /**
   * This is a problem of building a house. The masonry, roofing, painting, etc. must be scheduled.  Some tasks must
@@ -38,10 +36,10 @@ object SchedTime {
     if (useFunction) {
       val arrX = Array(rd)
       val arrV = Array(-weight, 0.0)
-      val f: NumToNumSegmentFunction = model.piecewiseLinearFunction(arrX, arrV, rd, 0.0)
-      return startEval(task,f)
+      val f = model.piecewiseLinearFunction(arrX, arrV, rd, 0.0)
+      startEval(task,f)
     } else {
-      return weight * max(.0, rd - startOf(task))
+      weight * max(.0, rd - startOf(task))
     }
   }
 
@@ -50,9 +48,9 @@ object SchedTime {
       val arrX = Array(dd)
       val arrV = Array(0.0, weight)
       val f = model.piecewiseLinearFunction(arrX, arrV, dd, 0.0)
-      return endEval(task,f)
+      endEval(task,f)
     } else {
-      return weight * max(.0, endOf(task) - dd)
+      weight * max(.0, endOf(task) - dd)
     }
   }
 

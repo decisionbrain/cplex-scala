@@ -11,15 +11,18 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FunSuite, Matchers}
 
 @RunWith(classOf[JUnitRunner])
-class SchedSquareTest extends FunSuite with Matchers {
+class SchedSetupTest extends FunSuite with Matchers {
 
   val epsilon = 1e-6
 
-  test("SchedSquare") {
-    val model = SchedSquare.build()
-    val status = model.solve()
+  test("SchedSetup") {
+    val model = SchedSetup.build()
+
+    val status = SchedSetup.solve()
 
     status should equal(true)
+    // Note: optimal solution is 178 obtained by increasing the fail limit (see method solve)
+    model.getObjectiveValue() should be <= 199.0
 
     model.end()
   }

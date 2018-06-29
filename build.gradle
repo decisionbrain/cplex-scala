@@ -1,5 +1,11 @@
+/*
+ * Source file provided under Apache License, Version 2.0, January 2004,
+ * http://www.apache.org/licenses/
+ * (c) Copyright DecisionBrain SAS 2016,2017
+ */
+
 group 'com.decisionbrain'
-version '1.2.0'
+version '1.3.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -61,10 +67,10 @@ configurations.all {
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java']
+            srcDirs = ['src/main/java', 'src/examples/java']
         }
         scala {
-            srcDirs = ['src/main/scala']
+            srcDirs = ['src/main/scala', 'src/examples/scala']
         }
         resources {
             srcDir 'src/main/resources'
@@ -75,7 +81,7 @@ sourceSets {
             srcDirs = ['src/test/java']
         }
         scala {
-            srcDirs = ['src/test/scala', 'src/examples/scala']
+            srcDirs = ['src/test/scala']
         }
         resources {
             srcDir 'src/test/resources'
@@ -126,8 +132,8 @@ javadoc {
 }
 
 ext {
-    scalaVersion = '2.11.8'
-    scalaVersionShort = '2.11'
+    scalaVersion = '2.12.6'
+    scalaVersionShort = '2.12'
 }
 
 dependencies {
@@ -135,7 +141,7 @@ dependencies {
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
-    compile('org.scala-lang:scala-library:2.11.8')
+    compile('org.scala-lang:scala-library:2.12.6')
 
     testCompile "org.hamcrest:hamcrest-core:1.3"
     testCompile "org.hamcrest:hamcrest-library:1.3"
@@ -154,7 +160,7 @@ task listJars << {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '4.8.1'
     description = 'Install Gradle Wrapper'
 }
 

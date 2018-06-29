@@ -1,13 +1,13 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.mp
 
 import ilog.concert.IloNumExpr
-import ilog.cplex.IloCplex
+import ilog.opl.IloCplex
 
 /**
   * Class for numeric expressions

@@ -1,7 +1,7 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
@@ -133,30 +133,30 @@ object SchedState {
         println(model.getDomain(t))
       }
       println("Workers Usage:")
-      for (s <- 0 until model.getNumberOfSegments(workersUsage)) {
+      for (s <- workersUsage) {
         System.out.println(
-          "# Workers  is " + model.getSegmentValue(workersUsage, s) +
-            " in [" + model.getSegmentStart(workersUsage, s) +
-            " .. " + model.getSegmentEnd(workersUsage, s) +
+          "# Workers  is " + s.value +
+            " in [" + s.start +
+            " .. " + s.end +
             ")"
         )
       }
       println("House States:")
       for (h <- houseStates.indices) {
         val houseState = houseStates(h)
-        for (i <- 0 until model.getNumberOfSegments(houseState)) {
+        for (s <- houseState) {
           print("House " + h + " has state ")
-          val s = model.getSegmentValue(houseState, i)
-          if (s == clean)                 print("Clean")
-          else if (s == dirty)            print("Dirty")
-          else if (s == IloCP.NoState)    print("None")
+          val v = s.value
+          if (v == clean)                 print("Clean")
+          else if (v == dirty)            print("Dirty")
+          else if (v == IloCP.NoState)    print("None")
           else                            print("Unknown (problem)")
           print(" from ")
-          if (model.getSegmentStart(houseState, i) == IloCP.IntervalMin)  print("Min")
-          else print(model.getSegmentStart(houseState, i))
+          if (s.start == IloCP.IntervalMin)  print("Min")
+          else print(s.start)
           System.out.print(" to ")
-          if (model.getSegmentEnd(houseState, i) == IloCP.IntervalMax)    println("Max")
-          else println(model.getSegmentEnd(houseState, i) - 1)
+          if (s.end == IloCP.IntervalMax)    println("Max")
+          else println(s.end - 1)
         }
       }
 

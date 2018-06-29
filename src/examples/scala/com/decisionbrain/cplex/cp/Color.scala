@@ -1,7 +1,7 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
@@ -50,9 +50,8 @@ object Color {
 
     if (status) {
       println(s"Solution status: $status")
-      for (country <- countries.toList) {
+      for (country <- countries) {
         println("\t" + country + ": " + allColors(model.getValue(colors(country))))
-//        println(c)
       }
     }
 

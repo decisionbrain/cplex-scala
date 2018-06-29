@@ -1,4 +1,42 @@
+# Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
+
+## cplex-scala v1.3.0
+
+  * Functional programming: add iterators for cumul function expression, state function, step function and piecewise 
+  linear function. Furthermore, these functions are now iterables and this allow to iterate like 
+  this:
+  ```scala
+     val f = model.numToNumStepFunction()
+     ...
+     for (s <- f) {
+        println("[" + s.start + " .. " + s.end + ") -> " + s.value)
+     }
+  ```
+  * Add type `IntSet`, factory methods and iterator.
+  * Add scala API for inverse constraint and add example `Talent.scala`.
+  * Port to CPLEX 12.8
+  * Port to Scala 2.12.6
+  * Add new signature for method alternative with only two parameters
+  * Add method getFirst, getLast, getNext and getPrev in class CpModel to get rescpectively the first interval variable
+  in the sequence, the last interval variable in the sequence, the next interval variable in the sequence, the previous
+  interval variable in the sequence.
+  * IntervalSequenceVariable is now a proper class. It implements the Trait Iterable: one can write something like this:
+  ```scala
+    val seq = model.intervalSequenceVar()
+    ...
+    for (x <- seq) {
+      System.out.println(model.getDomain(x))
+    }
+  ```
+  * Add example SchedSetup: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
+  times and forbidden transisions
+  
+  
 ## cplex-scala v1.2.0
+
+### README
+
+ * Add a link to IBM ILOG CPLEX Studio Community Edition download page in the README
 
 ### Constraint Programming
 
@@ -8,7 +46,6 @@
  * Add missing precedence constraints in companion object of CpModel
  * Add constraints `alwaysEqual` on cumul functions
  * Add integer division on integer expression
- * Add a link to IBM ILOG CPLEX Studio Community Edition download page in the README
 
 ## cplex-scala v1.1.0
 

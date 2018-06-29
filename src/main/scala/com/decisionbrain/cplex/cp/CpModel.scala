@@ -1,15 +1,16 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.Addable
-import ilog.concert._
-import ilog.cp.IloCP
 import com.decisionbrain.cplex.cp.CpModel._
+import ilog.concert._
+import ilog.concert.cppimpl.IloConcertUtils
+import ilog.cp.IloCP
 
 import scala.reflect.ClassTag
 
@@ -274,6 +275,17 @@ class CpModel(name: String=null) {
     })(collection.breakOut)
     dict
   }
+
+  /**
+    * This method creates an instance of sequence variable on the set of interval variables.
+    *
+    * @param vars is an array of interval variables
+    * @param types is an array of the type of each interval variable
+    * @return a sequence variable
+    */
+  def intervalSequenceVar(vars: Array[IntervalVar], types: Array[Int]): IntervalSequenceVar =
+    IntervalSequenceVar(cp.intervalSequenceVar(vars.map(v => v.getIloIntervalVar()), types))(implicitly(this))
+
 
   /**
     * Returns a constraint that is always true or false.
@@ -728,6 +740,49 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @return a new inverse constraint
+    */
+  def inverse(f: IntVarArray, invf: IntVarArray): Constraint = {
+    val g = IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, f.toIloArray[IloNumVar])
+    val invg = IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, invf.toIloArray[IloNumVar])
+    Constraint(cp.inverse(g, invg))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @return a new inverse constraint
+    */
+  def inverse(f: Array[IntVar], invf: Array[IntVar]): Constraint = {
+    val g = f.map(e => e.getIloNumVar())
+    val invg = invf.map(e => e.getIloNumVar())
+    Constraint(cp.inverse(
+      IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, g),
+      IloConcertUtils.ToCppIloIntVarArray(cp.getEnvImpl, invg)
+    ))(implicitly(this))
+  }
+
+  /**
     * This function returns a constraint that states that interval variable a is present. Typically, this constraint is
     * used in combination with other constraints.
     *
@@ -797,7 +852,7 @@ class CpModel(name: String=null) {
     * @return an interger expression that represents the type of the next interval variable in the sequence
     */
   def typeOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.typeOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.typeOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the type of the interval variable that is previous to
@@ -813,7 +868,7 @@ class CpModel(name: String=null) {
     * @return an interger expression that represents the type of the previous interval variable in the sequence
     */
   def typeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.typeOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.typeOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is next to
@@ -828,7 +883,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the start of the next interval variable in the sequence
     */
   def startOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.startOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.startOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is previous to
@@ -843,7 +898,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the start of the previous interval variable in the sequence
     */
   def startOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.startOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.startOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the end of the interval variable that is next to
@@ -858,7 +913,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the end of the next interval variable in the sequence
     */
   def endOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.endOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.endOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the end of the interval variable that is previous to
@@ -873,7 +928,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the end of the previous interval variable in the sequence
     */
   def endOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.endOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.endOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the size of the interval variable that is next to
@@ -888,7 +943,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the size of the next interval variable in the sequence
     */
   def sizeOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.sizeOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.sizeOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the size of the interval variable that is previous to
@@ -903,7 +958,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the size of the previous interval variable in the sequence
     */
   def sizeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.sizeOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.sizeOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the interval variable that is next to
@@ -918,7 +973,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the length of the next interval variable in the sequence
     */
   def lengthOfNext(seq: IntervalSequenceVar, a: IntervalVar, lastVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.lengthOfNext(seq, a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
+    IntExpr(cp.lengthOfNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), lastVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the interval variable that is previous to
@@ -933,7 +988,7 @@ class CpModel(name: String=null) {
     * @return an integer expression that is the length of the previous interval variable in the sequence
     */
   def lengthOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0): IntExpr =
-    IntExpr(cp.lengthOfPrevious(seq, a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
+    IntExpr(cp.lengthOfPrevious(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar(), firstVal, absVal))(implicitly(this))
 
   /**
     * This function returns an integer expression that represents the length of the overlap of interval variable a1
@@ -985,8 +1040,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the start of the interval variable
     */
-  def startEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.startEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def startEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.startEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the end of
@@ -998,8 +1053,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the end of the interval variable
     */
-  def endEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.endEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def endEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.endEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the length of
@@ -1011,8 +1066,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the length of the interval variable
     */
-  def lengthEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.lengthEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def lengthEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.lengthEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a numerical expression that represents the value of function f evaluated on the size of
@@ -1024,8 +1079,8 @@ class CpModel(name: String=null) {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the size of the interval variable
     */
-  def sizeEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0): NumExpr =
-    NumExpr(cp.sizeEval(a.getIloIntervalVar(), f, absVal))(implicitly(this))
+  def sizeEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0): NumExpr =
+    NumExpr(cp.sizeEval(a.getIloIntervalVar(), f.getIloNumToNumSegmentFunction(), absVal))(implicitly(this))
 
   /**
     * This function returns a constraint that states that whenever interval variable a is present, it cannot start at a
@@ -1112,9 +1167,9 @@ class CpModel(name: String=null) {
     */
   def noOverlap(seq: IntervalSequenceVar, tdist: TransitionDistance=null, direct: Boolean=false): Constraint =
     if (Option(tdist).isEmpty)
-      Constraint(cp.noOverlap(seq))(implicitly(this))
+      Constraint(cp.noOverlap(seq.getIloIntervalSequenceVar()))(implicitly(this))
     else
-      Constraint(cp.noOverlap(seq, tdist, direct))(implicitly(this))
+      Constraint(cp.noOverlap(seq.getIloIntervalSequenceVar(), tdist, direct))(implicitly(this))
 
   /**
     * This method creates a span constraint between interval variable a and the set of interval variables bs.
@@ -1163,7 +1218,7 @@ class CpModel(name: String=null) {
     * @return a state function
     */
   def stateFunction(tdist: TransitionDistance=null, name: String=null): StateFunction = {
-    cp.stateFunction(tdist, name)
+    StateFunction(cp.stateFunction(tdist, name))(implicitly(this))
   }
 
 
@@ -1458,6 +1513,21 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * This method creates an alternative constraint between interval variable a and the set of interval variables in
+    * the array bs with cardinality c. If a is present, c intervals in bs will be selected by the alternative
+    * constraint.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param bs is a set of interval variables
+    * @return an alternative constraint
+    */
+  def alternative(a: IntervalVar, bs: Array[IntervalVar]) = {
+    val c = cp.alternative(a.getIloIntervalVar(), bs.map((v) => v.getIloIntervalVar()))
+    Constraint(c)(implicitly(this))
+  }
+
+  /**
     * This function returns an elementary cumul function expression that, whenever interval variable a is present, is
     * equal to v between the start and the end of interval variable a and equal to 0 everywhere else. When interval
     * variable a is absent, the function is the constant nul function.
@@ -1627,7 +1697,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysIn(f: StateFunction, start: Int, end: Int, vmin: Int, vmax: Int): Constraint =
-    Constraint(cp.alwaysIn(f, start, end, vmin, vmax))(implicitly(this))
+    Constraint(cp.alwaysIn(f.getIloStateFunction(), start, end, vmin, vmax))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present, the value of state
@@ -1643,7 +1713,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysIn(f: StateFunction, a: IntervalVar, vmin: Int, vmax: Int): Constraint =
-    Constraint(cp.alwaysIn(f, a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
+    Constraint(cp.alwaysIn(f.getIloStateFunction(), a.getIloIntervalVar(), vmin, vmax))(implicitly(this))
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should be always
@@ -1694,7 +1764,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, start: Int, end: Int, v: Int, startAlign:Boolean=false, endAlign:Boolean=false): Constraint =
-    Constraint(cp.alwaysEqual(f, start, end, v, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), start, end, v, startAlign, endAlign))(implicitly(this))
 
   /**
     * Returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1712,7 +1782,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int): Constraint =
-    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, false, false))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), a.getIloIntervalVar(), v, false, false))(implicitly(this))
 
   /**
     * Returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1740,7 +1810,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysEqual(f, a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysEqual(f.getIloStateFunction(), a.getIloIntervalVar(), v, startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is defined everywhere on the interval
@@ -1758,7 +1828,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, start: Int, end: Int, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysConstant(f, start, end, startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), start, end, startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is defined everywhere on the interval
@@ -1773,7 +1843,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, start: Int, end: Int): Constraint =
-    Constraint(cp.alwaysConstant(f, start, end))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), start, end))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1790,7 +1860,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, a: IntervalVar, startAlign:Boolean, endAlign:Boolean): Constraint =
-    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar(), startAlign, endAlign))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), a.getIloIntervalVar(), startAlign, endAlign))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1805,7 +1875,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysConstant(f: StateFunction, a: IntervalVar): Constraint =
-    Constraint(cp.alwaysConstant(f, a.getIloIntervalVar()))(implicitly(this))
+    Constraint(cp.alwaysConstant(f.getIloStateFunction(), a.getIloIntervalVar()))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that state function f is undefined everywhere on the interval of
@@ -1820,7 +1890,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysNoState(f: StateFunction, start: Int, end: Int): Constraint =
-    Constraint(cp.alwaysNoState(f, start, end))(implicitly(this))
+    Constraint(cp.alwaysNoState(f.getIloStateFunction(), start, end))(implicitly(this))
 
   /**
     * This function returns a constraint that ensures that whenever interval variable a is present state function f is
@@ -1835,7 +1905,7 @@ class CpModel(name: String=null) {
     * @return a new constraint on the state function
     */
   def alwaysNoState(f: StateFunction, a: IntervalVar): Constraint =
-    Constraint(cp.alwaysNoState(f, a.getIloIntervalVar()))(implicitly(this))
+    Constraint(cp.alwaysNoState(f.getIloStateFunction(), a.getIloIntervalVar()))(implicitly(this))
 
   /**
     * This method creates a step function defined everywhere with value 0.
@@ -1871,8 +1941,19 @@ class CpModel(name: String=null) {
     * @return a piecewise linear function
     */
   def piecewiseLinearFunction(point: Array[Double], slope: Array[Double], a: Double, fa: Double): NumToNumSegmentFunction = {
-    cp.piecewiseLinearFunction(point, slope, a, fa)
+    NumToNumSegmentFunction(cp.piecewiseLinearFunction(point, slope, a, fa))(implicitly(this))
   }
+
+  /**
+    * This method creates a cursor to inspect a piecewise linear function f. This cursor lets you iterate forward or backward over
+    * the steps of the function. The cursor initially specifies the step of the function that contains x.
+    *
+    * @param f is the segment function
+    * @param x is the initial position of the cursor
+    * @return a new segment function cursor
+    */
+  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumSegmentFunctionCursor =
+    cp.numToNumSegmentFunctionCursor(f.getIloNumToNumSegmentFunction(), x)
 
   /**
     * This method returns an instance of transition distance of the specified size i. Initially, the transition
@@ -1908,6 +1989,23 @@ class CpModel(name: String=null) {
   def transitionDistance(dtable: Array[Array[Int]], name: String): TransitionDistance = {
     cp.transitionDistance(dtable, name)
   }
+
+  /**
+    * Creates and returns a new set of integer values.
+    *
+    * @param values is an array of integer values
+    * @return a set of integer values
+    */
+  def intSet(values: IntArray): IntSet = IntSet(cp.intSet(values.toArray))(implicitly(this))
+
+  /**
+    * Creates and returns a new set of integer values.
+    *
+    * @param values is an array of integer values
+    * @return a set of integer values
+    */
+  def intSet(values: Array[Int]): IntSet = IntSet(cp.intSet(values))(implicitly(this))
+
 
   /**
     * Add an addable object in the model.
@@ -2023,8 +2121,9 @@ class CpModel(name: String=null) {
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but CP Optimizer has not been able to prove its feasibility.
     */
-  def solve(timeLimit: Double = IloCP.Infinity, logPeriod: Int = IloCP.IntMin) = {
+  def solve(timeLimit: Double = IloCP.Infinity, solutionLimit: Int = IloCP.IntMax, logPeriod: Int = IloCP.IntMin) = {
     cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
+    cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
     if (logPeriod >= 0) cp.setParameter(IloCP.IntParam.LogPeriod, logPeriod)
     cp.solve()
   }
@@ -2130,6 +2229,46 @@ class CpModel(name: String=null) {
   def getDomain(v: IntervalVar): String = cp.getDomain(v.getIloIntervalVar())
 
   /**
+    * Returns the fisrt interval variable in the sequence variable. This member function assumes that the sequence
+    * * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the first interval variable in the sequence variable
+    */
+  def getFirst(seq: IntervalSequenceVar): IntervalVar =
+    IntervalVar(cp.getFirst(seq.getIloIntervalSequenceVar()))(implicitly(this))
+
+  /**
+    * Returns the last interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the last interval varaible in the sequence variable
+    */
+  def getLast(seq: IntervalSequenceVar): IntervalVar =
+    IntervalVar(cp.getLast(seq.getIloIntervalSequenceVar()))(implicitly(this))
+
+  /**
+    * Returns the next interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the next interval variable in the sequence variable
+    */
+  def getNext(seq: IntervalSequenceVar, a: IntervalVar): IntervalVar =
+    IntervalVar(cp.getNext(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar()))(implicitly(this))
+
+  /**
+    * Returns the previous interval variable in the sequence variable. This member function assumes that the sequence
+    * variable is fixed.
+    *
+    * @param seq is the sequence variable
+    * @return the previous interval variable in the sequence variable
+    */
+  def getPrev(seq: IntervalSequenceVar, a: IntervalVar): IntervalVar =
+    IntervalVar(cp.getPrev(seq.getIloIntervalSequenceVar(), a.getIloIntervalVar()))(implicitly(this))
+
+  /**
     * This member function assumes that the cumul function expression f is fixed. It returns the number of segments of
     * the corresponding stepwise non-negative function. A segment is an interval [start, end) on which the value of f
     * is constant. An exception is thrown if the cumul function expression f is not fixed.
@@ -2208,7 +2347,7 @@ class CpModel(name: String=null) {
     * @param f is the state function
     * @return the number of segments of the state function
     */
-  def getNumberOfSegments(f: StateFunction): Int = cp.getNumberOfSegments(f)
+  def getNumberOfSegments(f: StateFunction): Int = cp.getNumberOfSegments(f.getIloStateFunction())
 
   /**
     * This member function assumes that state function f is fixed. It returns the value of the ith segment of the
@@ -2220,7 +2359,7 @@ class CpModel(name: String=null) {
     * @param i is index of the segment
     * @return the value of the state function on the segment
     */
-  def getSegmentValue(f: StateFunction, i: Int): Int = cp.getSegmentValue(f, i)
+  def getSegmentValue(f: StateFunction, i: Int): Int = cp.getSegmentValue(f.getIloStateFunction(), i)
 
   /**
     * This member function assumes that state function f is fixed. It returns the start of the ith segment of the
@@ -2231,7 +2370,7 @@ class CpModel(name: String=null) {
     * @param i is the index of the segment
     * @return the start of the segment
     */
-  def getSegmentStart(f: StateFunction, i: Int): Int = cp.getSegmentStart(f, i)
+  def getSegmentStart(f: StateFunction, i: Int): Int = cp.getSegmentStart(f.getIloStateFunction(), i)
 
   /**
     * This member function assumes that state function f is fixed. It returns the end of the ith segment of the
@@ -2242,7 +2381,7 @@ class CpModel(name: String=null) {
     * @param i is the index of the segment
     * @return the end of the ith segment
     */
-  def getSegmentEnd(f: StateFunction, i: Int) = cp.getSegmentEnd(f, i)
+  def getSegmentEnd(f: StateFunction, i: Int) = cp.getSegmentEnd(f.getIloStateFunction(), i)
 
   //
   // Solutions
@@ -2365,13 +2504,11 @@ object CpModel {
   // Types definition in case we need to encapsulate CPO types later
   //
 
-  type IntervalSequenceVar = IloIntervalSequenceVar
   type TransitionDistance = IloTransitionDistance
   type Solution = IloSolution
   type MultiCriterionExpr = IloMultiCriterionExpr
-  type NumToNumSegmentFunction = IloNumToNumSegmentFunction
   type NumToNumStepFunctionCursor = IloNumToNumStepFunctionCursor
-  type StateFunction = IloStateFunction
+  type NumToNumSegmentFunctionCursor = IloNumToNumSegmentFunctionCursor
 
   /**
     * Create and return a new mathematical programming model.
@@ -2740,6 +2877,42 @@ object CpModel {
     model.pack(load, where, weight, used)
 
   /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @param model is the contraint programming model
+    * @return a new inverse constraint
+    */
+  def inverse(f: IntVarArray, invf: IntVarArray)(implicit model: CpModel): Constraint =
+    model.inverse(f, invf)
+
+  /**
+    * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the
+    * inverse constraint guarantees that:
+    * <ul>
+    *   <li>for all i in the interval [0, n-1], invf[f[i]]==i</li>
+    *   <li>for all j in the interval [0, n-1], f[invf[j]]==j</li>
+    * </ul>
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param f is a array of integer variable
+    * @param invf is an array of integer variable
+    * @param model is the contraint programming model
+    * @return a new inverse constraint
+    */
+  def inverse(f: Array[IntVar], invf: Array[IntVar])(implicit model: CpModel): Constraint =
+    model.inverse(f, invf)
+
+  /**
     * This function returns a constraint that states that interval variable a is present. Typically, this constraint is
     * used in combination with other constraints.
     *
@@ -2825,7 +2998,7 @@ object CpModel {
     * @return an interger expression that represents the type of the previous interval variable in the sequence
     */
   def typeOfPrevious(seq: IntervalSequenceVar, a: IntervalVar, firstVal: Int, absVal: Int=0)(implicit model: CpModel): IntExpr =
-    typeOfPrevious(seq, a, firstVal, absVal)
+    model.typeOfPrevious(seq, a, firstVal, absVal)
 
   /**
     * This function returns an integer expression that represents the start of the interval variable that is next to
@@ -2997,7 +3170,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the start of the interval variable
     */
-  def startEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def startEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.startEval(a, f, absVal)
 
   /**
@@ -3010,7 +3183,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the end of the interval variable
     */
-  def endEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def endEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.endEval(a, f, absVal)
 
   /**
@@ -3023,7 +3196,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the length of the interval variable
     */
-  def lengthEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def lengthEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.lengthEval(a, f, absVal)
 
   /**
@@ -3036,7 +3209,7 @@ object CpModel {
     * @param absVal is the value returned if the interval variable is absent
     * @return an numeric expression of the value of function f on the size of the interval variable
     */
-  def sizeEval(a: IntervalVar, f: IloNumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
+  def sizeEval(a: IntervalVar, f: NumToNumSegmentFunction, absVal: Double=.0)(implicit model: CpModel): NumExpr =
     model.sizeEval(a, f, absVal)
 
   /**
@@ -3413,6 +3586,19 @@ object CpModel {
     */
   def alternative(a: IntervalVar, bs: Array[IntervalVar], name: String)(implicit model: CpModel): Constraint =
     model.alternative(a, bs, name)
+
+  /**
+    * This method creates an alternative constraint between interval variable a and the set of interval variables in
+    * the array bs with cardinality c. If a is present, c intervals in bs will be selected by the alternative
+    * constraint.
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param a is an interval variable
+    * @param bs is an array of interval variables
+    * @return an alternative constraint
+    */
+  def alternative(a: IntervalVar, bs: Array[IntervalVar])(implicit model: CpModel): Constraint =
+    model.alternative(a, bs)
 
   /**
     * This function returns an elementary cumul function expression that, whenever interval variable a is present, is
@@ -3939,7 +4125,7 @@ object CpModel {
     /**
       * Converts to CPLEX array
       */
-    def toIloArray: Array[IloIntVar] = vars.map(v => v.getIloIntVar()).toArray
+    def toIloArray[B >: IloIntVar: ClassTag]: Array[B] = vars.map(v => v.getIloIntVar()).toArray
 
     /**
       * Returns an iterator.

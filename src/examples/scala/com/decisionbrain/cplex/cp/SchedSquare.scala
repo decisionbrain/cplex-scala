@@ -1,13 +1,12 @@
 /*
  * Source file provided under Apache License, Version 2.0, January 2004,
  * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2017
+ * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.cp.CpModel._
-import com.decisionbrain.cplex.cp.CumulFunctionExprNumeric._
 
 /**
   * The aim of the square example is to place a set of small squares of different sizes into a large square.
