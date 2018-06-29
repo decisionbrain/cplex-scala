@@ -1,5 +1,9 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.4.0-SNAPSHOT
+
+  *  
+
 ## cplex-scala v1.3.0
 
   * Functional programming: add iterators for cumul function expression, state function, step function and piecewise 
