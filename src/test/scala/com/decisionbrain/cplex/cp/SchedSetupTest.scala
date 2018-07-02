@@ -21,9 +21,9 @@ class SchedSetupTest extends FunSuite with Matchers {
     val status = SchedSetup.solve()
 
     status should equal(true)
-    // Note: optimal solution is 178 obtained by increasing the fail limit (see method solve)
+    // Note: a solution with objective 174 can be obtained by increasing the fail limit (see method solve)
     model.getObjectiveValue() should be <= 199.0
 
     model.end()
-  }
+}
 }
