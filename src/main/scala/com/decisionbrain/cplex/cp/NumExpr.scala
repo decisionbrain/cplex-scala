@@ -16,6 +16,16 @@ import ilog.concert.IloNumExpr
   */
 class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
 
+  def canEqual(a: Any) = a.isInstanceOf[NumExpr]
+  override def equals(that: scala.Any): Boolean = {
+    that match {
+      case that: NumExpr => that.canEqual(this) && this.hashCode() == that.hashCode()
+      case _ => false
+    }
+  }
+
+  override def hashCode(): Int = return getIloNumExpr().hashCode()
+
   /**
     * Returns the constraint programming model
     *

@@ -202,11 +202,11 @@ class CpModel(name: String=null) {
     * @return an interval variable
     */
   def intervalVar(startMin: Int = 0,
-                  startMax: Int = IloCP.IntervalMax,
+                  startMax: Int = IntervalMax,
                   endMin: Int = 0,
-                  endMax: Int = IloCP.IntervalMax,
+                  endMax: Int = IntervalMax,
                   sizeMin: Int = 0,
-                  sizeMax: Int = IloCP.IntervalMax,
+                  sizeMax: Int = IntervalMax,
                   optional: Boolean=false, name: String="") = {
     val v = cp.intervalVar
     v.setStartMin(startMin)
@@ -262,11 +262,11 @@ class CpModel(name: String=null) {
     */
   def intervalVars[T](keys: Iterable[T],
                       startMin: Int = 0,
-                      startMax: Int = IloCP.IntervalMax,
+                      startMax: Int = IntervalMax,
                       endMin: Int = 0,
-                      endMax: Int = IloCP.IntervalMax,
+                      endMax: Int = IntervalMax,
                       sizeMin: Int = 0,
-                      sizeMax: Int = IloCP.IntervalMax,
+                      sizeMax: Int = IntervalMax,
                       optional: Boolean = false,
                       namer: (T) => String = (t: T) => "") : Map[T, IntervalVar] = {
     val dict: Map[T, IntervalVar] = keys.map(t => {
@@ -1302,7 +1302,7 @@ class CpModel(name: String=null) {
   def cumulFunctionExpr(v: Int=0, name: String=null): CumulFunctionExpr = {
     val expr = cp.cumulFunctionExpr(name)
     if (v != 0) {
-      val expr = cp.pulse(IloCP.IntervalMin, IloCP.IntervalMax, v)
+      val expr = cp.pulse(IntervalMin, IntervalMax, v)
       expr.setName(name)
       CumulFunctionExpr(expr)(implicitly(this))
     }
@@ -2023,7 +2023,7 @@ class CpModel(name: String=null) {
     * @param x is the initial step
     * @return a new step function cursor
     */
-  def numToNumStepFunctionCursor(f: NumToNumStepFunction, x: Double = -IloCP.Infinity): NumToNumStepFunctionCursor =
+  def numToNumStepFunctionCursor(f: NumToNumStepFunction, x: Double = -Infinity): NumToNumStepFunctionCursor =
     cp.numToNumStepFunctionCursor(f.getIloNumToNumStepFunction(), x)
 
   /**
@@ -2052,7 +2052,7 @@ class CpModel(name: String=null) {
     * @param x is the initial position of the cursor
     * @return a new segment function cursor
     */
-  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumSegmentFunctionCursor =
+  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -Infinity): NumToNumSegmentFunctionCursor =
     cp.numToNumSegmentFunctionCursor(f.getIloNumToNumSegmentFunction(), x)
 
   /**
@@ -2221,7 +2221,7 @@ class CpModel(name: String=null) {
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but CP Optimizer has not been able to prove its feasibility.
     */
-  def solve(timeLimit: Double = IloCP.Infinity, solutionLimit: Int = IloCP.IntMax, logPeriod: Int = IloCP.IntMin) = {
+  def solve(timeLimit: Double = Infinity, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
     cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
     cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
     if (logPeriod >= 0) cp.setParameter(IloCP.IntParam.LogPeriod, logPeriod)
@@ -2647,6 +2647,13 @@ class CpModel(name: String=null) {
 }
 
 object CpModel {
+
+  val Infinity: Double = IloCP.Infinity
+  val IntMin: Int = IloCP.IntMin
+  val IntMax: Int = IloCP.IntMax
+  val IntervalMin: Int = IloCP.IntervalMax
+  val IntervalMax: Int = IloCP.IntervalMax
+  val NoState: Int = IloCP.NoState
 
   //
   // Types definition in case we need to encapsulate CPO types later

@@ -7,19 +7,19 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.cp.CpModel._
-import ilog.concert.IloIntervalVar
 import ilog.cp.IloCP
 
 /**
   * This example solves a scheduling problem on two alternative heterogeneous machines. A set of tasks {a_1,...,a_n}
-  * has to be executed on either one of the two machines. Different types of tasks are distinguished, the type of task
+  * has to be executed on either one of the two machines. There are different types of tasks, the type of task
   * a_i is denoted tp_i.
   *
   * A machine m needs a sequence dependent setup time setup(tp,tp') to switch from a task of type tp to the next task
   * of type tp'. Furthermore some transitions tp->tp' are forbidden.
   *
   * The two machines are different: they process tasks with different speed and have different setup times and forbidden
-  * transitions.
+  * transitions. Furthermore, there is a learning curve i.e. the longer is the production of the same type and the more
+  * efficient is the production process.
   *
   * The objective is to minimize the makespan.
   *
@@ -58,6 +58,8 @@ object LearningCurve {
     2, 0, 3, 2, 2, 4, 1, 2, 4, 3
   )
 
+  val NbTaskTtypes = TaskType.max + 1
+
   val TaskIndex : Vector[Int]= (for (i <- 0 until NbTasks) yield i)(collection.breakOut)
 
   val TaskDurM1 = Vector(
@@ -76,8 +78,30 @@ object LearningCurve {
     2,  3, 14,  1,  1,  6, 19,  5, 17,  4
   )
 
+  val LearningCurve = Vector(
+    Vector((0, 5, 60), (5, 10, 65), (10, 15, 70), (15, 20, 75), (20, 25, 80), (25, 30, 85), (30, 35, 90), (35, 40, 95), (40, CpModel.IntervalMax, 100)),
+    Vector((0, 5, 60), (5, 10, 65), (10, 15, 70), (15, 20, 75), (20, 25, 80), (25, 30, 85), (30, 35, 90), (35, 40, 95), (40, CpModel.IntervalMax, 100)),
+    Vector((0, 5, 60), (5, 10, 65), (10, 15, 70), (15, 20, 75), (20, 25, 80), (25, 30, 85), (30, 35, 90), (35, 40, 95), (40, CpModel.IntervalMax, 100)),
+    Vector((0, 5, 60), (5, 10, 65), (10, 15, 70), (15, 20, 75), (20, 25, 80), (25, 30, 85), (30, 35, 90), (35, 40, 95), (40, CpModel.IntervalMax, 100)),
+    Vector((0, 5, 60), (5, 10, 65), (10, 15, 70), (15, 20, 75), (20, 25, 80), (25, 30, 85), (30, 35, 90), (35, 40, 95), (40, CpModel.IntervalMax, 100))
+  )
+
+/*
+  val LearningCurve = Vector(
+    Vector((0, CpModel.IntervalMax, 100)),
+    Vector((0, CpModel.IntervalMax, 100)),
+    Vector((0, CpModel.IntervalMax, 100)),
+    Vector((0, CpModel.IntervalMax, 100)),
+    Vector((0, CpModel.IntervalMax, 100))
+  )
+*/
+
+  // Initial Type on Machine M1 and M2
   val InitialType1 = -1
   val InitialType2 = -1
+
+  val LastProductionTime1 = 0
+  val LastProductionTime2 = 0
 
   implicit var model: CpModel = _
 
@@ -87,14 +111,25 @@ object LearningCurve {
   var si1 : IntervalSequenceVar = _
   var si2 : IntervalSequenceVar = _
 
-  var o1 : Array[IntVar] = _
-  var o2 : Array[IntVar] = _
+  var o : Array[IntVar] = _
 
-  var IndexOfTask : Map[IloIntervalVar, Int] = _
+  var IndexOfTask : Map[IntervalVar, Int] = _
+
+  var lca1: Array[IntervalVar] = _
+  var lca2: Array[IntervalVar] = _
 
   def build(): CpModel = {
 
-    model = CpModel("SchedSetup")
+    model = CpModel("LearningCurve")
+
+    var learningCurveStepFunction: Vector[NumToNumStepFunction] = (for (t <- 0 until NbTaskTtypes) yield {
+      val f = model.numToNumStepFunction
+      f.setValue(0, IntervalMax, 100)
+      for ((s, e, v) <- LearningCurve(t)) {
+        f.setValue(s, e, v)
+      }
+      f
+    })(collection.breakOut)
 
     // transition distance
 
@@ -103,9 +138,9 @@ object LearningCurve {
 
     for (i <- 0 until NbTypes; j <- 0 until NbTypes) {
       val d1 = SetupM1(i)(j)
-      setup1.setValue(i, j, if (d1 < 0) IloCP.IntervalMax else d1)
+      setup1.setValue(i, j, if (d1 < 0) IntervalMax else d1)
       val d2 = SetupM2(i)(j)
-      setup2.setValue(i, j, if (d2 < 0) IloCP.IntervalMax else d2)
+      setup2.setValue(i, j, if (d2 < 0) IntervalMax else d2)
     }
 
     // interval variables
@@ -117,6 +152,15 @@ object LearningCurve {
     val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
       model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
 
+    // interval variales for learning curve
+    lca1 = (for (i <- 0 until NbTasks) yield
+      model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
+    lca2 = (for (i <- 0 until NbTasks) yield
+      model.intervalVar(name="LCA" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+
+    // offset variables for learning curve
+    o = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_TP" + TaskType(i)))(collection.breakOut)
+
     // interval variables on machines are optional
 
     for (i <- 0 until NbTasks) {
@@ -125,19 +169,32 @@ object LearningCurve {
       a2(i).setSizeMin(TaskDurM2(i))
       a2(i).setOptional()
       model.add(alternative(a(i), Array(a1(i), a2(i))))
+      // interval variables for learning curve: time offset and intensity
+      lca1(i).setSizeMin(TaskDurM1(i))
+      lca1(i).setOptional()
+      lca1(i).setIntensity(learningCurveStepFunction(TaskType(i)))
+      model.add(startAtStart(lca1(i), a1(i), o(i)))
+      model.add(presenceOf(lca1(i)) == presenceOf(a1(i)))
+      model.add(lengthOf(a1(i)) == lengthOf(lca1(i)))
+      lca2(i).setSizeMin(TaskDurM2(i))
+      lca2(i).setOptional()
+      lca2(i).setIntensity(learningCurveStepFunction(TaskType(i)))
+      model.add(startAtStart(lca2(i), a2(i), o(i)))
+      model.add(presenceOf(lca2(i)) == presenceOf(a2(i)))
+      model.add(lengthOf(a2(i)) == lengthOf(lca2(i)))
     }
 
-    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i).getIloIntervalVar() -> i))(collection.breakOut)
-    IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i).getIloIntervalVar()-> i))(collection.breakOut)
+    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i))(collection.breakOut)
+    IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
 
     for (x <- a1) {
-      val index = IndexOfTask.getOrElse(x.getIloIntervalVar(), -1)
+      val index = IndexOfTask.getOrElse(x, -1)
       if (index < 0) {
         System.out.println("Cannot find index of interval " + x)
       }
     }
     for (x <- a2) {
-      val index = IndexOfTask.getOrElse(x.getIloIntervalVar(), -1)
+      val index = IndexOfTask.getOrElse(x, -1)
       if (index < 0) {
         System.out.println("Cannot find index of interval " + x)
       }
@@ -148,36 +205,36 @@ object LearningCurve {
     s1 = model.intervalSequenceVar(a1, TaskType.toArray)
     s2 = model.intervalSequenceVar(a2, TaskType.toArray)
 
-    si1 = model.intervalSequenceVar(a1, TaskIndex.toArray)
-    si2 = model.intervalSequenceVar(a2, TaskIndex.toArray)
-
     // no overlap constraints with setup times
     model.add(noOverlap(s1, setup1, true))
     model.add(noOverlap(s2, setup2, true))
+
+    // sequence variables with index as type
+    si1 = model.intervalSequenceVar(a1, TaskIndex.toArray)
+    si2 = model.intervalSequenceVar(a2, TaskIndex.toArray)
     model.add(noOverlap(si1))
     model.add(noOverlap(si2))
     model.add(sameSequence(s1, si1))
     model.add(sameSequence(s2, si2))
 
-
-    o1 = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
-    o2 = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
-
     for (i <- 0 until NbTasks) {
-      model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o1(i) == startOf(a1(i))))
-      model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o2(i) == startOf(a2(i))))
+      model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a1(i))))
+      model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
 
-      val expr1 =  model.element(o1.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
-      model.add((typeOfPrevious(s1, a1(i), -1, -1) == TaskType(i)) <= (o1(i) == expr1 + endOfPrevious(s1, a1(i), 0) - startOf(a1(i))))
-      val expr2 =  model.element(o2.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
-      model.add((typeOfPrevious(s2, a2(i), -1, -1) == TaskType(i)) <= (o2(i) == expr2+ endOfPrevious(s2, a2(i), 0) - startOf(a2(i))))
+      val expr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
+      model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr1 + endOfPrevious(s1, a1(i), LastProductionTime1) - startOf(a1(i))))
+      val expr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
+      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2+ endOfPrevious(s2, a2(i), LastProductionTime2) - startOf(a2(i))))
 
     }
 
     // minimize makespan
     model.add(minimize(max(for (v <- a) yield endOf(v))))
 
-    model.exportModel("learningcurve.cpo")
+    // do not branch on the interval variables for the learning curve
+    model.setSearchPhases(searchPhase(a ++ a1 ++ a2))
+
+//    model.exportModel("learningcurve.cpo")
 
     model
   }
@@ -188,7 +245,7 @@ object LearningCurve {
 
     //    model.exportModel("SchedSetup.cpo")
 
-    model.cp.setParameter(IloCP.IntParam.FailLimit, 1000000)
+    model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
     val status = model.solve(logPeriod=10000)
     //    val status = model.solve()
 
@@ -196,51 +253,58 @@ object LearningCurve {
       println(s"Solution status: $status")
       println("Solution with objective " + model.getObjectiveValue())
 
-      System.out.println("Machine 1: ")
-      for (x <- s1) {
-        System.out.println(model.getDomain(x))
-      }
+//      System.out.println("Machine 1: ")
+//      for (x <- s1) {
+//        System.out.println(model.getDomain(x))
+//      }
 
-      System.out.println("Previous index on Machine 1: ")
+      System.out.println("Nominal duration, previous index and offset on Machine 1: ")
       for (x <- si1) {
         System.out.print(model.getDomain(x))
+        System.out.print("; nominal duration : ")
+        System.out.print(TaskDurM1(IndexOfTask(x)))
         System.out.print("; previous : ")
-        System.out.print(model.getValue(typeOfPrevious(si1, x, IndexOfTask(x.getIloIntervalVar()), IndexOfTask(x.getIloIntervalVar()))))
-        System.out.print("; offset : ")
-        val o = o1(IndexOfTask(x.getIloIntervalVar()))
-        System.out.print(model.getMin(o) + ".." + model.getMax(o))
+        System.out.print(model.getValue(typeOfPrevious(si1, x, IndexOfTask(x), IndexOfTask(x))))
+        System.out.print("; learning curve offset : ")
+        val v = o(IndexOfTask(x))
+        System.out.print(model.getMin(v) + ".." + model.getMax(v))
         System.out.println()
       }
 
-      System.out.println("Machine 2: ")
-      for (x <- s2) {
-        System.out.println(model.getDomain(x))
-      }
+//      System.out.println("Machine 2: ")
+//      for (x <- s2) {
+//        System.out.println(model.getDomain(x))
+//      }
 
-      System.out.println("Previous index and offset on Machine 2: ")
+      System.out.println("Nominal duration, previous index and offset on Machine 2: ")
       for (x <- si2) {
         System.out.print(model.getDomain(x))
+        System.out.print("; nominal duration : ")
+        System.out.print(TaskDurM2(IndexOfTask(x)))
         System.out.print("; previous : ")
-        System.out.print(model.getValue(typeOfPrevious(si2, x, IndexOfTask(x.getIloIntervalVar()), IndexOfTask(x.getIloIntervalVar()))))
-        System.out.print("; offset : ")
-        val o = o2(IndexOfTask(x.getIloIntervalVar()))
-        System.out.print(model.getMin(o) + ".." + model.getMax(o))
+        System.out.print(model.getValue(typeOfPrevious(si2, x, IndexOfTask(x), IndexOfTask(x))))
+        System.out.print("; learning curve offset : ")
+        val v = o(IndexOfTask(x))
+        System.out.print(model.getMin(v) + ".." + model.getMax(v))
         System.out.println()
       }
 
-      System.out.println("Offsets")
-      System.out.println("Machine 1: ")
-      for (v <- o1) {
+/*
+      System.out.println("Offsets: ")
+      for (v <- o) {
         System.out.print(v)
         System.out.print(" : ")
         System.out.println(model.getMin(v) + " .. " + model.getMax(v))
       }
-      System.out.println("Machine 2: ")
-      for (v <- o2) {
-        System.out.print(v)
-        System.out.print(" : ")
-        System.out.println(model.getMin(v) + " .. " + model.getMax(v))
-      }
+
+      System.out.println("Learning curve interval variables on machine M1")
+      for (v <- lca1)
+        System.out.println(model.getDomain(v))
+
+      System.out.println("Learning curve interval variables on machine M2")
+      for (v <- lca2)
+        System.out.println(model.getDomain(v))
+*/
 
     } else {
       System.out.println("No solution found.")
