@@ -39,13 +39,19 @@
 ehthumbs.db
 Thumbs.db
 
+# CPLEX files #
+######################
+*.cpo
+*.lp
+
 # Other files #
 ######################
 *.*~
 *.orig
 *.log.*
-*.lp
 *.clp
 *.crf
 *.xml
 build/
+
+

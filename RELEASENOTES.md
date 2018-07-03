@@ -2,7 +2,8 @@
 
 ## cplex-scala v1.4.0-SNAPSHOT
 
-  *  
+  *  Add example `LearningCurve.scala`: a scheduling problem on two alternative heterogeneous machines with sequence 
+  dependent setup times, forbidden transisions and a learning curve when changing of type
 
 ## cplex-scala v1.3.0
 
@@ -32,7 +33,7 @@
       System.out.println(model.getDomain(x))
     }
   ```
-  * Add example SchedSetup: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
+  * Add example `SchedSetup.scala`: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
   times and forbidden transisions
   
   

@@ -114,6 +114,27 @@ class IntVar(v: IloIntVar)(implicit model: CpModel) extends IntExpr(v) with Adda
     * @return the CPLEX numeric variable
     */
   override def getIloAddable(): IloAddable = v
+
+  /**
+    * Return a character string that represents the integer variable.
+    *
+    * @return a character string
+    */
+  override def toString() : String = {
+    val strBuilder = new StringBuilder()
+    if (getName().isDefined) strBuilder.append(getName().get)
+    strBuilder.append("[")
+    val vmin = getMin()
+    val vmax = getMax()
+    strBuilder.append(vmin)
+    if (vmin < vmax) {
+      strBuilder.append("..")
+      strBuilder.append(vmax)
+    }
+    strBuilder.append("]")
+    strBuilder.toString()
+  }
+
 }
 
 object IntVar {
