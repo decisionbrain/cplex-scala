@@ -25,7 +25,8 @@ import ilog.cp.IloCP
   *
   * The model uses transition distances and noOverlap constraints to model machines setup times. The noOverlap
   * constraint is specified to enforce transition distance between immediate successors on the sequence. Forbidden
-  * transitions are modeled with a very large transition distance.
+  * transitions are modeled with a very large transition distance. The model uses also additional integer variables,
+  * interval variables and sequence variables and constraints for the learning curve.
   */
 
 object LearningCurve {
@@ -169,7 +170,8 @@ object LearningCurve {
       a2(i).setSizeMin(TaskDurM2(i))
       a2(i).setOptional()
       model.add(alternative(a(i), Array(a1(i), a2(i))))
-      // interval variables for learning curve: time offset and intensity
+      // interval variables for learning curve: time offset, intensity and relationship with the corresponding interval
+      // variables
       lca1(i).setSizeMin(TaskDurM1(i))
       lca1(i).setOptional()
       lca1(i).setIntensity(learningCurveStepFunction(TaskType(i)))
@@ -187,20 +189,6 @@ object LearningCurve {
     IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i))(collection.breakOut)
     IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
 
-    for (x <- a1) {
-      val index = IndexOfTask.getOrElse(x, -1)
-      if (index < 0) {
-        System.out.println("Cannot find index of interval " + x)
-      }
-    }
-    for (x <- a2) {
-      val index = IndexOfTask.getOrElse(x, -1)
-      if (index < 0) {
-        System.out.println("Cannot find index of interval " + x)
-      }
-    }
-
-
     // sequence variables (one per machine)
     s1 = model.intervalSequenceVar(a1, TaskType.toArray)
     s2 = model.intervalSequenceVar(a2, TaskType.toArray)
@@ -217,6 +205,7 @@ object LearningCurve {
     model.add(sameSequence(s1, si1))
     model.add(sameSequence(s2, si2))
 
+    // learning curve constraint model for time offsets
     for (i <- 0 until NbTasks) {
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a1(i))))
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
@@ -224,14 +213,14 @@ object LearningCurve {
       val expr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
       model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr1 + endOfPrevious(s1, a1(i), LastProductionTime1) - startOf(a1(i))))
       val expr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
-      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2+ endOfPrevious(s2, a2(i), LastProductionTime2) - startOf(a2(i))))
+      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2 + endOfPrevious(s2, a2(i), LastProductionTime2) - startOf(a2(i))))
 
     }
 
     // minimize makespan
     model.add(minimize(max(for (v <- a) yield endOf(v))))
 
-    // do not branch on the interval variables for the learning curve
+    // exclude from the search the learning curve interval variables
     model.setSearchPhases(searchPhase(a ++ a1 ++ a2))
 
 //    model.exportModel("learningcurve.cpo")
@@ -258,14 +247,14 @@ object LearningCurve {
 //        System.out.println(model.getDomain(x))
 //      }
 
-      System.out.println("Nominal duration, previous index and offset on Machine 1: ")
+      System.out.println("Machine 1: ")
       for (x <- si1) {
         System.out.print(model.getDomain(x))
         System.out.print("; nominal duration : ")
         System.out.print(TaskDurM1(IndexOfTask(x)))
         System.out.print("; previous : ")
         System.out.print(model.getValue(typeOfPrevious(si1, x, IndexOfTask(x), IndexOfTask(x))))
-        System.out.print("; learning curve offset : ")
+        System.out.print("; learning curve time offset : ")
         val v = o(IndexOfTask(x))
         System.out.print(model.getMin(v) + ".." + model.getMax(v))
         System.out.println()
@@ -276,21 +265,21 @@ object LearningCurve {
 //        System.out.println(model.getDomain(x))
 //      }
 
-      System.out.println("Nominal duration, previous index and offset on Machine 2: ")
+      System.out.println("Machine 2: ")
       for (x <- si2) {
         System.out.print(model.getDomain(x))
         System.out.print("; nominal duration : ")
         System.out.print(TaskDurM2(IndexOfTask(x)))
         System.out.print("; previous : ")
         System.out.print(model.getValue(typeOfPrevious(si2, x, IndexOfTask(x), IndexOfTask(x))))
-        System.out.print("; learning curve offset : ")
+        System.out.print("; learning curve time offset : ")
         val v = o(IndexOfTask(x))
         System.out.print(model.getMin(v) + ".." + model.getMax(v))
         System.out.println()
       }
 
 /*
-      System.out.println("Offsets: ")
+      System.out.println("Learning curve time offsets: ")
       for (v <- o) {
         System.out.print(v)
         System.out.print(" : ")
@@ -325,3 +314,73 @@ object LearningCurve {
   }
 
 }
+
+/**
+  * Solution obtained with fail limit set to 1000000 on a Lenovo T460s
+  *
+  * ! ----------------------------------------------------------------------------
+  * ! Search terminated by limit, 24 solutions found.
+  * ! Best objective         : 226 (gap is 88.05%)
+  * ! Best bound             : 27
+  * ! Number of branches     : 2�306�672
+  * ! Number of fails        : 1�000�281
+  * ! Total memory usage     : 19.6 MB (18.9 MB CP Optimizer + 0.7 MB Concert)
+  * ! Time spent in solve    : 108.92s (108.90s engine + 0.02s extraction)
+  * ! Search speed (br. / s) : 21�180.6
+  * ! ----------------------------------------------------------------------------
+  * Solution status: true
+  * Solution with objective 226.0
+  * Machine 1:
+  * A35_M1_TP0[1: 0 -- (5)5 --> 5]; nominal duration : 3; previous : 35; learning curve time offset : 0..0
+  * A38_M1_TP0[1: 5 -- (5)5 --> 10]; nominal duration : 3; previous : 35; learning curve time offset : 0..0
+  * A37_M1_TP0[1: 10 -- (7)7 --> 17]; nominal duration : 5; previous : 38; learning curve time offset : 0..0
+  * A25_M1_TP0[1: 17 -- (15)15 --> 32]; nominal duration : 12; previous : 37; learning curve time offset : 0..0
+  * A12_M1_TP3[1: 35 -- (7)7 --> 42]; nominal duration : 4; previous : 25; learning curve time offset : 35..35
+  * A0_M1_TP3[1: 42 -- (6)6 --> 48]; nominal duration : 4; previous : 12; learning curve time offset : 35..35
+  * A34_M1_TP3[1: 48 -- (2)2 --> 50]; nominal duration : 1; previous : 0; learning curve time offset : 35..35
+  * A39_M1_TP3[1: 50 -- (8)8 --> 58]; nominal duration : 6; previous : 34; learning curve time offset : 35..35
+  * A11_M1_TP4[1: 66 -- (21)21 --> 87]; nominal duration : 14; previous : 39; learning curve time offset : 66..66
+  * A18_M1_TP4[1: 87 -- (11)11 --> 98]; nominal duration : 9; previous : 11; learning curve time offset : 66..66
+  * A32_M1_TP4[1: 98 -- (20)20 --> 118]; nominal duration : 19; previous : 18; learning curve time offset : 66..66
+  * A22_M1_TP4[1: 118 -- (5)5 --> 123]; nominal duration : 5; previous : 32; learning curve time offset : 66..66
+  * A17_M1_TP4[1: 123 -- (2)2 --> 125]; nominal duration : 2; previous : 22; learning curve time offset : 66..66
+  * A48_M1_TP4[1: 125 -- (6)6 --> 131]; nominal duration : 6; previous : 17; learning curve time offset : 66..66
+  * A10_M1_TP4[1: 131 -- (11)11 --> 142]; nominal duration : 11; previous : 48; learning curve time offset : 66..66
+  * A45_M1_TP4[1: 142 -- (17)17 --> 159]; nominal duration : 17; previous : 10; learning curve time offset : 66..66
+  * A23_M1_TP2[1: 170 -- (13)13 --> 183]; nominal duration : 8; previous : 45; learning curve time offset : 170..170
+  * A6_M1_TP2[1: 183 -- (3)3 --> 186]; nominal duration : 2; previous : 23; learning curve time offset : 170..170
+  * A16_M1_TP1[1: 186 -- (14)14 --> 200]; nominal duration : 9; previous : 6; learning curve time offset : 186..186
+  * A46_M1_TP1[1: 200 -- (11)11 --> 211]; nominal duration : 8; previous : 16; learning curve time offset : 186..186
+  * A31_M1_TP1[1: 211 -- (7)7 --> 218]; nominal duration : 6; previous : 46; learning curve time offset : 186..186
+  * A3_M1_TP1[1: 218 -- (8)8 --> 226]; nominal duration : 7; previous : 31; learning curve time offset : 186..186
+  * Machine 2:
+  * A7_M2_TP0[1: 0 -- (4)4 --> 4]; nominal duration : 2; previous : 7; learning curve time offset : 0..0
+  * A41_M2_TP0[1: 4 -- (5)5 --> 9]; nominal duration : 3; previous : 7; learning curve time offset : 0..0
+  * A8_M2_TP0[1: 9 -- (8)8 --> 17]; nominal duration : 5; previous : 41; learning curve time offset : 0..0
+  * A4_M2_TP1[1: 22 -- (7)7 --> 29]; nominal duration : 4; previous : 8; learning curve time offset : 22..22
+  * A5_M2_TP1[1: 29 -- (13)13 --> 42]; nominal duration : 9; previous : 4; learning curve time offset : 22..22
+  * A29_M2_TP1[1: 42 -- (3)3 --> 45]; nominal duration : 2; previous : 5; learning curve time offset : 22..22
+  * A21_M2_TP1[1: 45 -- (19)19 --> 64]; nominal duration : 17; previous : 29; learning curve time offset : 22..22
+  * A2_M2_TP1[1: 64 -- (12)12 --> 76]; nominal duration : 12; previous : 21; learning curve time offset : 22..22
+  * A27_M2_TP3[1: 83 -- (10)10 --> 93]; nominal duration : 6; previous : 2; learning curve time offset : 83..83
+  * A42_M2_TP3[1: 93 -- (19)19 --> 112]; nominal duration : 14; previous : 27; learning curve time offset : 83..83
+  * A26_M2_TP3[1: 112 -- (7)7 --> 119]; nominal duration : 6; previous : 42; learning curve time offset : 83..83
+  * A49_M2_TP3[1: 119 -- (5)5 --> 124]; nominal duration : 4; previous : 26; learning curve time offset : 83..83
+  * A13_M2_TP3[1: 124 -- (1)1 --> 125]; nominal duration : 1; previous : 49; learning curve time offset : 83..83
+  * A33_M2_TP3[1: 125 -- (2)2 --> 127]; nominal duration : 2; previous : 13; learning curve time offset : 83..83
+  * A15_M2_TP3[1: 127 -- (3)3 --> 130]; nominal duration : 3; previous : 33; learning curve time offset : 83..83
+  * A1_M2_TP3[1: 130 -- (3)3 --> 133]; nominal duration : 3; previous : 15; learning curve time offset : 83..83
+  * A20_M2_TP2[1: 146 -- (26)26 --> 172]; nominal duration : 18; previous : 1; learning curve time offset : 146..146
+  * A40_M2_TP2[1: 172 -- (3)3 --> 175]; nominal duration : 2; previous : 20; learning curve time offset : 146..146
+  * A9_M2_TP2[1: 175 -- (10)10 --> 185]; nominal duration : 9; previous : 40; learning curve time offset : 146..146
+  * A24_M2_TP2[1: 185 -- (16)16 --> 201]; nominal duration : 15; previous : 9; learning curve time offset : 146..146
+  * A47_M2_TP2[1: 201 -- (5)5 --> 206]; nominal duration : 5; previous : 24; learning curve time offset : 146..146
+  * A30_M2_TP2[1: 206 -- (3)3 --> 209]; nominal duration : 3; previous : 47; learning curve time offset : 146..146
+  * A19_M2_TP2[1: 209 -- (2)2 --> 211]; nominal duration : 2; previous : 30; learning curve time offset : 146..146
+  * A44_M2_TP2[1: 211 -- (1)1 --> 212]; nominal duration : 1; previous : 19; learning curve time offset : 146..146
+  * A36_M2_TP2[1: 212 -- (1)1 --> 213]; nominal duration : 1; previous : 44; learning curve time offset : 146..146
+  * A43_M2_TP2[1: 213 -- (1)1 --> 214]; nominal duration : 1; previous : 36; learning curve time offset : 146..146
+  * A28_M2_TP2[1: 214 -- (1)1 --> 215]; nominal duration : 1; previous : 43; learning curve time offset : 146..146
+  * A14_M2_TP2[1: 215 -- (11)11 --> 226]; nominal duration : 11; previous : 28; learning curve time offset : 146..146
+  *
+  */
