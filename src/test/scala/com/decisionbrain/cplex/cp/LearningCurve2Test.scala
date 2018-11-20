@@ -11,18 +11,18 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FunSuite, Matchers}
 
 @RunWith(classOf[JUnitRunner])
-class LearningCurveTest extends FunSuite with Matchers {
+class LearningCurve2Test extends FunSuite with Matchers {
 
   val epsilon = 1e-6
 
-  test("LearningCurve") {
-    val model = LearningCurve.build()
+  test("LearningCurve2") {
+    val model = LearningCurve2.build()
 
-    val status = LearningCurve.solve(failLimit=10000, logPeriod=10000)
+    val status = LearningCurve2.solve(failLimit=10000, logPeriod=10000)
 
     status should equal(true)
     // Note: a solution with objective 174 can be obtained by increasing the fail limit (see method solve)
-    model.getObjectiveValue() should be <= 269.0
+    model.getObjectiveValue() should be <= 237.0
 
     model.end()
   }

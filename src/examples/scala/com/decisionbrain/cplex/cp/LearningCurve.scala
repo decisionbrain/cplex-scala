@@ -223,19 +223,18 @@ object LearningCurve {
     // exclude from the search the learning curve interval variables
     model.setSearchPhases(searchPhase(a ++ a1 ++ a2))
 
-//    model.exportModel("learningcurve.cpo")
-
     model
   }
 
-  def solve(): Boolean = {
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin): Boolean = {
 
     println(s"Solving model $model....")
 
-    //    model.exportModel("SchedSetup.cpo")
-
     model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
-    val status = model.solve(logPeriod=10000)
+
+    //    model.exportModel("learningcurve.cpo")
+
+    val status = model.solve(timeLimit, failLimit, solutionLimit, logPeriod)
     //    val status = model.solve()
 
     if (status) {
