@@ -260,7 +260,7 @@ object LearningCurve2 {
 
 //    model.cp.setParameter(IloCP.DoubleParam.TimeLimit, 600.0)
 //    model.cp.setParameter(IloCP.IntParam.SolutionLimit, 10)
-    model.cp.setParameter(IloCP.IntParam.FailLimit, 1000)
+    model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
 
 //    model.exportModel("learningcurve2.cpo")
 
