@@ -226,7 +226,7 @@ object LearningCurve {
     model
   }
 
-  def solve(): Boolean = {
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin): Boolean = {
 
     println(s"Solving model $model....")
 
@@ -234,7 +234,7 @@ object LearningCurve {
 
     //    model.exportModel("learningcurve.cpo")
 
-    val status = model.solve(logPeriod=10000)
+    val status = model.solve(timeLimit, failLimit, solutionLimit, logPeriod)
     //    val status = model.solve()
 
     if (status) {

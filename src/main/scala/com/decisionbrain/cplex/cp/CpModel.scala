@@ -2221,9 +2221,10 @@ class CpModel(name: String=null) {
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but CP Optimizer has not been able to prove its feasibility.
     */
-  def solve(timeLimit: Double = Infinity, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
-    if (solutionLimit < IntMax) cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
     if (timeLimit < Infinity) cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
+    if (failLimit > 0) cp.setParameter(IloCP.IntParam.FailLimit, failLimit)
+    if (solutionLimit < IntMax) cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
     if (logPeriod >= 0) cp.setParameter(IloCP.IntParam.LogPeriod, logPeriod)
     cp.solve()
   }

@@ -254,18 +254,13 @@ object LearningCurve2 {
     model
   }
 
-  def solve(): Boolean = {
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin): Boolean = {
 
     println(s"Solving model $model....")
 
-//    model.cp.setParameter(IloCP.DoubleParam.TimeLimit, 600.0)
-//    model.cp.setParameter(IloCP.IntParam.SolutionLimit, 10)
-    model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
-
 //    model.exportModel("learningcurve2.cpo")
 
-    val status = model.solve(logPeriod=10000)
-    //    val status = model.solve()
+    val status = model.solve(timeLimit, failLimit, solutionLimit, logPeriod)
 
     if (status) {
       println(s"Solution status: $status")
