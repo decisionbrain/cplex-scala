@@ -168,23 +168,23 @@ object LearningCurve2 {
       // variables
       lca1(i).setSizeMin(TaskDurM1(i))
       lca1(i).setOptional()
-      lca1(i).setIntensity(learningCurveStepFunction(TaskType(i)))
       model.add(startAtStart(lca1(i), a1(i), o(i)))
       model.add(presenceOf(lca1(i)) == presenceOf(a1(i)))
       model.add(sizeOf(a1(i)) == lengthOf(lca1(i)))
       lca2(i).setSizeMin(TaskDurM2(i))
       lca2(i).setOptional()
-      lca2(i).setIntensity(learningCurveStepFunction(TaskType(i)))
       model.add(startAtStart(lca2(i), a2(i), o(i)))
       model.add(presenceOf(lca2(i)) == presenceOf(a2(i)))
       model.add(sizeOf(a2(i)) == lengthOf(lca2(i)))
       // learning curve interval variable is an alternative of learning curve pattern interval variables
       for (j <- 0 until NbLearningCurves) {
         lcpa1(i)(j).setSizeMin(TaskDurM1(i))
+        lcpa1(i)(j).setSizeMax(TaskDurM1(i))
         lcpa1(i)(j).setOptional()
         lcpa1(i)(j).setIntensity(learningCurveStepFunction(j))
         model.add(startAtStart(lcpa1(i)(j), a1(i), o(i)))
         lcpa2(i)(j).setSizeMin(TaskDurM2(i))
+        lcpa2(i)(j).setSizeMax(TaskDurM2(i))
         lcpa2(i)(j).setOptional()
         lcpa2(i)(j).setIntensity(learningCurveStepFunction(j))
         model.add(startAtStart(lcpa2(i)(j), a2(i), o(i)))
@@ -194,7 +194,7 @@ object LearningCurve2 {
     }
 
     IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i))(collection.breakOut)
-    IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
+    IndexOfTask = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
 
     // sequence variables (one per machine)
     s1 = model.intervalSequenceVar(a1, TaskType.toArray)
@@ -220,11 +220,11 @@ object LearningCurve2 {
 
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a1(i))))
       val prevOffsetExpr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
-      model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr1 + endOfPrevious(s1, a1(i), LastProductionTime1) - startOf(a1(i))))
+      model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr1 + startOf(a1(i)) - endOfPrevious(s1, a1(i), LastProductionTime1)))
 
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
       val prevOffsetExpr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
-      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr2 + endOfPrevious(s2, a2(i), LastProductionTime2) - startOf(a2(i))))
+      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr2 + startOf(a2(i)) - endOfPrevious(s2, a2(i), LastProductionTime2)))
 
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (prevType(i) == typeOfPrevious(s1, a1(i), if (InitialType1 < 0) TaskType(i) else InitialType1, TaskType(i))))
       val prevTypeExpr1 =  model.element(prevType.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))

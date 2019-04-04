@@ -2,8 +2,11 @@
 
 ## cplex-scala v1.4.0-SNAPSHOT
 
-  *  Add example `LearningCurve.scala`: a scheduling problem on two alternative heterogeneous machines with sequence 
+  *  Add examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 
   dependent setup times, forbidden transisions and a learning curve when changing of type
+  * Fix bugs with parameters timeLimit and solutionLimit in method solve of CpModel
+  * Port to CPLEX 12.9
+  * Update copyright to 2019
 
 ## cplex-scala v1.3.0
 

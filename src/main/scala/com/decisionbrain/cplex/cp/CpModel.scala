@@ -2222,9 +2222,9 @@ class CpModel(name: String=null) {
     *         but CP Optimizer has not been able to prove its feasibility.
     */
   def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
-    if (timeLimit < Infinity) cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
+    if (timeLimit < Infinity) cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
     if (failLimit > 0) cp.setParameter(IloCP.IntParam.FailLimit, failLimit)
-    if (solutionLimit < IntMax) cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
+    if (solutionLimit < IntMax) cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
     if (logPeriod >= 0) cp.setParameter(IloCP.IntParam.LogPeriod, logPeriod)
     cp.solve()
   }

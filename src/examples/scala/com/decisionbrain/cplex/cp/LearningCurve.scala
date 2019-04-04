@@ -153,7 +153,7 @@ object LearningCurve {
     val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
       model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
 
-    // interval variales for learning curve
+    // interval variables for learning curve
     lca1 = (for (i <- 0 until NbTasks) yield
       model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
     lca2 = (for (i <- 0 until NbTasks) yield
@@ -173,12 +173,14 @@ object LearningCurve {
       // interval variables for learning curve: time offset, intensity and relationship with the corresponding interval
       // variables
       lca1(i).setSizeMin(TaskDurM1(i))
+      lca1(i).setSizeMax(TaskDurM1(i))
       lca1(i).setOptional()
       lca1(i).setIntensity(learningCurveStepFunction(TaskType(i)))
       model.add(startAtStart(lca1(i), a1(i), o(i)))
       model.add(presenceOf(lca1(i)) == presenceOf(a1(i)))
       model.add(lengthOf(a1(i)) == lengthOf(lca1(i)))
       lca2(i).setSizeMin(TaskDurM2(i))
+      lca2(i).setSizeMax(TaskDurM2(i))
       lca2(i).setOptional()
       lca2(i).setIntensity(learningCurveStepFunction(TaskType(i)))
       model.add(startAtStart(lca2(i), a2(i), o(i)))
@@ -211,10 +213,9 @@ object LearningCurve {
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
 
       val expr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
-      model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr1 + endOfPrevious(s1, a1(i), LastProductionTime1) - startOf(a1(i))))
+      model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr1 + startOf(a1(i)) - endOfPrevious(s1, a1(i), LastProductionTime1)))
       val expr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
-      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2 + endOfPrevious(s2, a2(i), LastProductionTime2) - startOf(a2(i))))
-
+      model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2 + startOf(a2(i)) - endOfPrevious(s2, a2(i), LastProductionTime2)))
     }
 
     // minimize makespan
@@ -229,8 +230,6 @@ object LearningCurve {
   def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin): Boolean = {
 
     println(s"Solving model $model....")
-
-    model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
 
     //    model.exportModel("learningcurve.cpo")
 

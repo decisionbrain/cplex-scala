@@ -19,10 +19,11 @@ class LearningCurveTest extends FunSuite with Matchers {
     val model = LearningCurve.build()
 
     val status = LearningCurve.solve(failLimit=10000, logPeriod=10000)
+//    val status = LearningCurve.solve(timeLimit=600, logPeriod=10000)
 
     status should equal(true)
     // Note: a solution with objective 174 can be obtained by increasing the fail limit (see method solve)
-    model.getObjectiveValue() should be <= 269.0
+    model.getObjectiveValue() should be <= 300.0
 
     model.end()
   }
