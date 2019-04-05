@@ -18,11 +18,12 @@ class SchedSetupTest extends FunSuite with Matchers {
   test("SchedSetup") {
     val model = SchedSetup.build()
 
-    val status = SchedSetup.solve()
+//    val status = SchedSetup.solve(timeLimit=60)
+    val status = SchedSetup.solve(failLimit=100000, logPeriod=10000)
 
     status should equal(true)
     // Note: a solution with objective 174 can be obtained by increasing the fail limit (see method solve)
-    model.getObjectiveValue() should be <= 199.0
+    model.getObjectiveValue() should be <= 240.0
 
     model.end()
 }
