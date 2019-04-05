@@ -12,6 +12,7 @@ apply plugin: 'scala'
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
 //
 // Maven repository configuration
@@ -44,8 +45,8 @@ if (!hasProperty('cplexStudioHome')) {
 System.out.println("Using CPLEX : ${cplexStudioHome}")
 
 compileJava {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 }
 
 project.ext.set("copyright", new File("copyright.txt").text)
@@ -54,6 +55,13 @@ repositories {
     // HACK: if we ask Gradle to refresh the dependencies, don't look at local repo!
     if (!gradle.startParameter.refreshDependencies) {
         mavenLocal()
+    }
+    maven {
+        credentials {
+            username "$MAVEN_USER"
+            password "$MAVEN_PASSWORD"
+        }
+        url "$NEXUS_URL/repository/public"
     }
     mavenCentral()
 }
