@@ -7,6 +7,7 @@
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Addable
+import com.decisionbrain.cplex.cp.CpModel.Infinity
 import com.decisionbrain.cplex.mp.NumExpr.{LinearIntExpr, LinearNumExpr}
 import ilog.opl.IloCplex
 
@@ -385,7 +386,11 @@ class MpModel(name: String=null) {
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but IloCplex has not been able to prove its feasibility.
     */
-  def solve() = cplex.solve()
+  def solve(timeLimit: Double = Infinity, mipGap: Double = .0) = {
+    if (timeLimit < Infinity) cplex.setParam(IloCplex.DoubleParam.TiLim, timeLimit)
+    if (mipGap > .0) cplex.setParam(IloCplex.DoubleParam.EpGap, mipGap)
+    cplex.solve()
+  }
 
   /**
     * Returns the value of the objective in the solution.

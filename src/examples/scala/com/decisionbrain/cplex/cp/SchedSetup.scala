@@ -126,15 +126,14 @@ object SchedSetup {
     model
   }
 
-  def solve(): Boolean = {
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
 
     println(s"Solving model $model....")
 
 //    model.exportModel("SchedSetup.cpo")
 
-    model.cp.setParameter(IloCP.IntParam.FailLimit, 100000)
-    val status = model.solve(logPeriod=10000)
-//    val status = model.solve()
+    //    val status = model.solve()
+    val status = model.solve(timeLimit, failLimit, solutionLimit, logPeriod)
 
     if (status) {
       println(s"Solution status: $status")

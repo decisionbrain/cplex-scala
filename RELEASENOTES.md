@@ -1,5 +1,13 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.4.0
+
+  *  New examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 
+  dependent setup times, forbidden transitions and a learning curve when changing of type
+  * Fix bugs with parameters timeLimit and solutionLimit in method solve of CpModel
+  * Port to CPLEX 12.9
+  * Update copyright notice
+
 ## cplex-scala v1.3.0
 
   * Functional programming: add iterators for cumul function expression, state function, step function and piecewise 
@@ -28,7 +36,7 @@
       System.out.println(model.getDomain(x))
     }
   ```
-  * Add example SchedSetup: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
+  * Add example `SchedSetup.scala`: a scheduling problem on two alternative heterogeneous machines with sequence dependent setup
   times and forbidden transisions
   
   

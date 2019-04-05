@@ -202,11 +202,11 @@ class CpModel(name: String=null) {
     * @return an interval variable
     */
   def intervalVar(startMin: Int = 0,
-                  startMax: Int = IloCP.IntervalMax,
+                  startMax: Int = IntervalMax,
                   endMin: Int = 0,
-                  endMax: Int = IloCP.IntervalMax,
+                  endMax: Int = IntervalMax,
                   sizeMin: Int = 0,
-                  sizeMax: Int = IloCP.IntervalMax,
+                  sizeMax: Int = IntervalMax,
                   optional: Boolean=false, name: String="") = {
     val v = cp.intervalVar
     v.setStartMin(startMin)
@@ -262,11 +262,11 @@ class CpModel(name: String=null) {
     */
   def intervalVars[T](keys: Iterable[T],
                       startMin: Int = 0,
-                      startMax: Int = IloCP.IntervalMax,
+                      startMax: Int = IntervalMax,
                       endMin: Int = 0,
-                      endMax: Int = IloCP.IntervalMax,
+                      endMax: Int = IntervalMax,
                       sizeMin: Int = 0,
-                      sizeMax: Int = IloCP.IntervalMax,
+                      sizeMax: Int = IntervalMax,
                       optional: Boolean = false,
                       namer: (T) => String = (t: T) => "") : Map[T, IntervalVar] = {
     val dict: Map[T, IntervalVar] = keys.map(t => {
@@ -331,6 +331,16 @@ class CpModel(name: String=null) {
   }
 
   /**
+    * Returns the integer sum of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the sum of the integer expressions
+    */
+  def sumi(exprs: IntExprArray) : IntExpr = {
+    IntExpr(cp.sum(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
     * Return the sum of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
@@ -351,19 +361,19 @@ class CpModel(name: String=null) {
   }
 
   /**
-    * Returns the integer sum of integer expressions.
+    * Returns the sum of numeric expressions.
     *
-    * @param exprs is a sequence of integer variables
-    * @return an integer expression that represents the sum of the integer expressions
+    * @param exprs is a variable number of numeric expressions
+    * @return a numeric expression that represents the sum numeric expressions
     */
-  def sumi(exprs: IntExprArray) : IntExpr = {
-    IntExpr(cp.sum(exprs.toIloArray))(implicitly(this))
+  def sum(exprs: NumExpr*) : NumExpr = {
+    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
   }
 
   /**
-    * Returns the maximum of numeric expressions.
+    * Returns the maximum of a set of numeric expressions.
     *
-    * @param exprs is a sequence of numeric variables
+    * @param exprs is an array of numeric expressions
     * @return a numeric expression that represents the maximum of the numeric expressions
     */
   def max(exprs: NumExprArray) : NumExpr = {
@@ -371,9 +381,19 @@ class CpModel(name: String=null) {
   }
 
   /**
-    * Returns the maximum of a numeric expressions.
+    * Returns the maximum of set of integer expressions.
     *
-    * @param exprs is an array of numeric variables
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the maximum of the integer expressions
+    */
+  def maxi(exprs: IntExprArray) : IntExpr = {
+    IntExpr(cp.max(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
     * @return a numeric expression that represents the maximum of the numeric expressions
     */
   def max(exprs: Array[NumExpr]) : NumExpr = {
@@ -381,9 +401,19 @@ class CpModel(name: String=null) {
   }
 
   /**
-    * Returns the maximum of a numeric expressions.
+    * Returns the maximum of a set of integer expressions.
     *
-    * @param exprs is a variable number of numeric variables
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the maximum of the integer expressions
+    */
+  def max(exprs: Array[IntExpr]) : IntExpr = {
+    IntExpr(cp.max(exprs.map(e => e.getIloIntExpr())))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum numeric expressions.
+    *
+    * @param exprs is a variable number of numeric expressions
     * @return a numeric expression that represents the maximum of the numeric expressions
     */
   def max(exprs: NumExpr*) : NumExpr = {
@@ -393,7 +423,7 @@ class CpModel(name: String=null) {
   /**
     * Returns the minimum of numeric expressions.
     *
-    * @param exprs is a sequence of numeric variables
+    * @param exprs is an array of numeric expressions
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: NumExprArray) : NumExpr = {
@@ -401,13 +431,33 @@ class CpModel(name: String=null) {
   }
 
   /**
-    * Returns the minimum of a numeric expressions.
+    * Returns the minimum of a set of integer expressions.
     *
-    * @param exprs is an array of numeric variables
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the integer expressions
+    */
+  def mini(exprs: IntExprArray) : IntExpr = {
+    IntExpr(cp.min(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: Array[NumExpr]) : NumExpr = {
     NumExpr(cp.min(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[IntExpr]) : IntExpr = {
+    IntExpr(cp.min(exprs.map(e => e.getIloIntExpr())))(implicitly(this))
   }
 
   /**
@@ -1172,6 +1222,56 @@ class CpModel(name: String=null) {
       Constraint(cp.noOverlap(seq.getIloIntervalSequenceVar(), tdist, direct))(implicitly(this))
 
   /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size. The mapping between interval variables of the two sequences is given by
+    * the order of the interval variables in the arrays a1 and a2 used in the definition of the sequences. The
+    * constraint states that the two sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and
+    * a2[i]. You can specify a name of your own choice for the constraint.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar)(implicit model: CpModel): Constraint =
+    Constraint(cp.sameSequence(seq1.getIloIntervalSequenceVar(), seq2.getIloIntervalSequenceVar()))(implicitly(this))
+
+  /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size n. The mapping between interval variables of the two sequences is
+    * specified by arrays a1 and a2. Arrays a1 and a2 should be of same size n. The constraint states that the two
+    * sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and a2[i].
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @param a1 the first arrau of interval variables
+    * @param a2 the second array of interval variables
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar, a1: Array[IntervalVar], a2: Array[IntervalVar])(implicit model: CpModel): Constraint =
+    Constraint(cp.sameSequence(seq1.getIloIntervalSequenceVar(), seq2.getIloIntervalSequenceVar(), a1.map(v => v.getIloIntervalVar()), a2.map(v=> v.getIloIntervalVar()), name))(implicitly(this))
+
+  /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size n. The mapping between interval variables of the two sequences is
+    * specified by arrays a1 and a2. Arrays a1 and a2 should be of same size n. The constraint states that the two
+    * sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and a2[i].
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @param a1 the first arrau of interval variables
+    * @param a2 the second array of interval variables
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar, a1: IntervalVarArray, a2: IntervalVarArray)(implicit model: CpModel): Constraint =
+    Constraint(cp.sameSequence(seq1.getIloIntervalSequenceVar(), seq2.getIloIntervalSequenceVar(), a1.toIloArray, a2.toIloArray, name))(implicitly(this))
+
+  /**
     * This method creates a span constraint between interval variable a and the set of interval variables bs.
     * Note: This constraint cannot be used in a logical constraint.
     *
@@ -1202,7 +1302,7 @@ class CpModel(name: String=null) {
   def cumulFunctionExpr(v: Int=0, name: String=null): CumulFunctionExpr = {
     val expr = cp.cumulFunctionExpr(name)
     if (v != 0) {
-      val expr = cp.pulse(IloCP.IntervalMin, IloCP.IntervalMax, v)
+      val expr = cp.pulse(IntervalMin, IntervalMax, v)
       expr.setName(name)
       CumulFunctionExpr(expr)(implicitly(this))
     }
@@ -1923,7 +2023,7 @@ class CpModel(name: String=null) {
     * @param x is the initial step
     * @return a new step function cursor
     */
-  def numToNumStepFunctionCursor(f: NumToNumStepFunction, x: Double = -IloCP.Infinity): NumToNumStepFunctionCursor =
+  def numToNumStepFunctionCursor(f: NumToNumStepFunction, x: Double = -Infinity): NumToNumStepFunctionCursor =
     cp.numToNumStepFunctionCursor(f.getIloNumToNumStepFunction(), x)
 
   /**
@@ -1952,7 +2052,7 @@ class CpModel(name: String=null) {
     * @param x is the initial position of the cursor
     * @return a new segment function cursor
     */
-  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -IloCP.Infinity): NumToNumSegmentFunctionCursor =
+  def numToNumSegmentFunctionCursor(f: NumToNumSegmentFunction, x: Double = -Infinity): NumToNumSegmentFunctionCursor =
     cp.numToNumSegmentFunctionCursor(f.getIloNumToNumSegmentFunction(), x)
 
   /**
@@ -2121,9 +2221,10 @@ class CpModel(name: String=null) {
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but CP Optimizer has not been able to prove its feasibility.
     */
-  def solve(timeLimit: Double = IloCP.Infinity, solutionLimit: Int = IloCP.IntMax, logPeriod: Int = IloCP.IntMin) = {
-    cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
-    cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
+  def solve(timeLimit: Double = Infinity, failLimit : Int = 0, solutionLimit: Int = IntMax, logPeriod: Int = IntMin) = {
+    if (timeLimit < Infinity) cp.setParameter(IloCP.DoubleParam.TimeLimit, timeLimit)
+    if (failLimit > 0) cp.setParameter(IloCP.IntParam.FailLimit, failLimit)
+    if (solutionLimit < IntMax) cp.setParameter(IloCP.IntParam.SolutionLimit, solutionLimit)
     if (logPeriod >= 0) cp.setParameter(IloCP.IntParam.LogPeriod, logPeriod)
     cp.solve()
   }
@@ -2181,12 +2282,60 @@ class CpModel(name: String=null) {
   def getValue(expr: IntExpr) : Int = cp.getValue(expr.getIloIntExpr()).toInt
 
   /**
+    * Return the minimum value of a numeric variable in the solution.
+    *
+    * @param v is the numeric expression; the expression must be in the active model
+    * @return the minimum value of the expression in the solution
+    */
+  def getMin(v: IntVar) : Int = cp.getMin(v.getIloIntVar()).toInt
+
+  /**
+    * Return the maximum value of a numeric variable in the solution.
+    *
+    * @param v is the numeric expression; the expression must be in the active model
+    * @return the minimum value of the expression in the solution
+    */
+  def getMax(v: IntVar) : Int = cp.getMax(v.getIloIntVar()).toInt
+
+  /**
+    * Return true if the numeric variable is fixed in the solution.
+    *
+    * @param v is the numeric expression; the expression must be in the active model
+    * @return true if the variable is fixed in the solution
+    */
+  def isFixed(v: IntVar) : Boolean = cp.isFixed(v.getIloIntVar())
+
+  /**
     * Return the value of a numeric expression in the solution.
     *
     * @param expr is the numeric expression; the expression must be in the active model
     * @return the value of the expression in the solution
     */
-  def getValue(expr: NumExpr) : Int = cp.getValue(expr.getIloNumExpr()).toInt
+  def getValue(expr: NumExpr) : Double = cp.getValue(expr.getIloNumExpr())
+
+  /**
+    * Return the minimum value of a numeric variable in the solution.
+    *
+    * @param expr is the numeric expression; the expression must be in the active model
+    * @return the minimum value of the expression in the solution
+    */
+  def getMin(expr: NumVar) : Double = cp.getMin(expr.getIloNumVar())
+
+  /**
+    * Return the maximum value of a numeric variable in the solution.
+    *
+    * @param expr is the numeric expression; the expression must be in the active model
+    * @return the minimum value of the expression in the solution
+    */
+  def getMax(expr: NumVar) : Double = cp.getMax(expr.getIloNumVar())
+
+  /**
+    * Return true if the numeric variable is fixed in the solution.
+    *
+    * @param expr is the numeric expression; the expression must be in the active model
+    * @return true if the variable is fixed in the solution
+    */
+  def isFixed(expr: NumVar) : Boolean = cp.isFixed(expr.getIloNumVar())
 
   /**
     * Returns the start of the interval variable.
@@ -2500,6 +2649,13 @@ class CpModel(name: String=null) {
 
 object CpModel {
 
+  val Infinity: Double = IloCP.Infinity
+  val IntMin: Int = IloCP.IntMin
+  val IntMax: Int = IloCP.IntMax
+  val IntervalMin: Int = IloCP.IntervalMax
+  val IntervalMax: Int = IloCP.IntervalMax
+  val NoState: Int = IloCP.NoState
+
   //
   // Types definition in case we need to encapsulate CPO types later
   //
@@ -2527,6 +2683,14 @@ object CpModel {
   def sum(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.sum(exprs)
 
   /**
+    * Returns the integer sum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a integer expression that represents the sum of the integer expressions
+    */
+  def sumi(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.sumi(exprs)
+
+  /**
     * Return the sum of a set of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
@@ -2543,12 +2707,12 @@ object CpModel {
   def sum(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.sum(exprs)
 
   /**
-    * Returns the integer sum of a sequence of integer expressions.
+    * Return the sum of a set of numeric expressions.
     *
-    * @param exprs is a sequence of integer variables
-    * @return a integer expression that represents the sum of the integer expressions
+    * @param exprs is a sequence of numeric variables
+    * @return a numeric expression that represents the sum of the numeric expressions
     */
-  def sumi(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.sumi(exprs)
+  def sum(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.sum(exprs)
 
   /**
     * Returns the maximum of a set of numeric expressions.
@@ -2559,12 +2723,28 @@ object CpModel {
   def max(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.max(exprs)
 
   /**
-    * Returns the maximum of a numeric expressions.
+    * Returns the maximum of a set of numeric expressions.
     *
-    * @param exprs is an array of numeric variables
+    * @param exprs is a sequence of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def maxi(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.maxi(exprs)
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
     * @return a numeric expression that represents the maximum of the numeric expressions
     */
   def max(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.max(exprs)
+
+  /**
+    * Returns the maximum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.max(exprs)
 
   /**
     * Returns the maximum of a numeric expressions.
@@ -2583,12 +2763,28 @@ object CpModel {
   def min(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.min(exprs)
 
   /**
-    * Returns the minimum of a numeric expressions.
+    * Returns the minimum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the numeric expressions
+    */
+  def mini(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.mini(exprs)
+
+  /**
+    * Returns the minimum of a set of numeric expressions.
     *
     * @param exprs is an array of numeric variables
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the integer expressions
+    */
+  def min(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.min(exprs)
 
   /**
     * Returns the minimum of a numeric expressions.
@@ -3294,6 +3490,56 @@ object CpModel {
     */
   def noOverlap(seq: IntervalSequenceVar, tdist: TransitionDistance=null, direct: Boolean=false)(implicit model: CpModel): Constraint =
     model.noOverlap(seq, tdist, direct)
+
+  /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size. The mapping between interval variables of the two sequences is given by
+    * the order of the interval variables in the arrays a1 and a2 used in the definition of the sequences. The
+    * constraint states that the two sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and
+    * a2[i]. You can specify a name of your own choice for the constraint.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar)(implicit model: CpModel): Constraint =
+    model.sameSequence(seq1, seq2)
+
+  /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size n. The mapping between interval variables of the two sequences is
+    * specified by arrays a1 and a2. Arrays a1 and a2 should be of same size n. The constraint states that the two
+    * sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and a2[i].
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @param a1 the first arrau of interval variables
+    * @param a2 the second array of interval variables
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar, a1: Array[IntervalVar], a2: Array[IntervalVar])(implicit model: CpModel): Constraint =
+    model.sameSequence(seq1, seq2, a1, a2)
+
+  /**
+    * This function creates a same-sequence constraint between sequence variables seq1 and seq2. Sequence variables
+    * seq1 and seq2 should be of the same size n. The mapping between interval variables of the two sequences is
+    * specified by arrays a1 and a2. Arrays a1 and a2 should be of same size n. The constraint states that the two
+    * sequences seq1 and seq2 are identical modulo a mapping between intervals a1[i] and a2[i].
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param seq1 the first sequence variable
+    * @param seq2 the second sequence variable
+    * @param a1 the first arrau of interval variables
+    * @param a2 the second array of interval variables
+    * @return the same-sequence constraint
+    */
+  def sameSequence(seq1: IntervalSequenceVar, seq2: IntervalSequenceVar, a1: IntervalVarArray, a2: IntervalVarArray)(implicit model: CpModel): Constraint =
+    model.sameSequence(seq1, seq2, a1, a2)
 
   /**
     * This method creates a span constraint between interval variable a and the set of interval variables bs.

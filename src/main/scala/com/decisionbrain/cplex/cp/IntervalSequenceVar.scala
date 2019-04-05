@@ -17,13 +17,16 @@ import ilog.concert.{IloAddable, IloCumulFunctionExpr, IloIntervalSequenceVar}
   */
 class IntervalSequenceVarIterator(seq: IntervalSequenceVar)(implicit model: CpModel) extends Iterator[IntervalVar] {
 
-  var cursor = model.getFirst(seq)
+  var cursor: IntervalVar = _
 
   override def hasNext: Boolean =
-    !cursor.getIloIntervalVar().equals(model.getLast(seq).getIloIntervalVar())
+    cursor == null && model.getFirst(seq) != null || !cursor.getIloIntervalVar().equals(model.getLast(seq).getIloIntervalVar())
 
   override def next(): IntervalVar = {
-    cursor = model.getNext(seq, cursor)
+    if (cursor == null)
+      cursor = model.getFirst(seq)
+    else
+      cursor = model.getNext(seq, cursor)
     cursor
   }
 }

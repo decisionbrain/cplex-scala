@@ -208,8 +208,8 @@ class MpModelTest extends FunSuite with Matchers {
 //    model2.exportModel("model2.lp")
 
     // solve
-    model1.solve should equal(true)
-    model2.solve should equal(true)
+    model1.solve() should equal(true)
+    model2.solve() should equal(true)
 
     // getObjectiveValue
     model1.getObjectiveValue() should equal(5.0 +- epsilon)
