@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.4.0-SNAPSHOT'
+version '1.4.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
