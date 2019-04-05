@@ -1,12 +1,12 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
-## cplex-scala v1.4.0-SNAPSHOT
+## cplex-scala v1.4.0
 
-  *  Add examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 
-  dependent setup times, forbidden transisions and a learning curve when changing of type
+  *  New examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 
+  dependent setup times, forbidden transitions and a learning curve when changing of type
   * Fix bugs with parameters timeLimit and solutionLimit in method solve of CpModel
   * Port to CPLEX 12.9
-  * Update copyright to 2019
+  * Update copyright notice
 
 ## cplex-scala v1.3.0
 
