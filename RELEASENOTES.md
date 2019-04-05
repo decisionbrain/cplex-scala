@@ -1,5 +1,9 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.5.0-SNAPSHOT
+
+  * Add API for multi-objective in MpModel
+
 ## cplex-scala v1.4.0
 
   *  New examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 

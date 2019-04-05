@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.4.0'
+version '1.5.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -155,11 +155,13 @@ test {
     allJvmArgs = ["-ea", "-Djava.library.path=\"$cplexStudioHome/cplex/bin/x64_win64;$cplexStudioHome/opl/bin/x64_win64;\""]
 }
 
-task listJars << {
-    configurations.compile.each { File file -> println file.name }
+task listJars {
+    doLast {
+        configurations.compile.each { File file -> println file.name }
+    }
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.8.1'
     description = 'Install Gradle Wrapper'
 }
