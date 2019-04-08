@@ -75,10 +75,10 @@ configurations.all {
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java', 'src/examples/java']
+            srcDirs = ['src/main/java']
         }
         scala {
-            srcDirs = ['src/main/scala', 'src/examples/scala']
+            srcDirs = ['src/main/scala']
         }
         resources {
             srcDir 'src/main/resources'
@@ -86,10 +86,10 @@ sourceSets {
     }
     test {
         java {
-            srcDirs = ['src/test/java']
+            srcDirs = ['src/examples/java', 'src/test/java']
         }
         scala {
-            srcDirs = ['src/test/scala']
+            srcDirs = ['src/examples/scala', 'src/test/scala']
         }
         resources {
             srcDir 'src/test/resources'
@@ -139,6 +139,16 @@ javadoc {
     options.setBottom("$copyright")
 }
 
+scaladoc {
+    doLast {
+        copy {
+            from "src"
+            include "**/doc-files/*.png"
+            into "$buildDir/docs/scaladoc"
+        }
+    }
+}
+
 ext {
     scalaVersion = '2.12.8'
     scalaVersionShort = '2.12'
@@ -146,6 +156,8 @@ ext {
 
 dependencies {
     compile fileTree(dir: cplexStudioHome + "/opl/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
