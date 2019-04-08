@@ -7,7 +7,7 @@
 package com.decisionbrain.cplex.mp
 
 import ilog.concert.IloNumExpr
-import ilog.opl.IloCplex
+import ilog.cplex.IloCplex
 
 /**
   * Class for numeric expressions
@@ -36,7 +36,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: MpModel) {
     *
     * @return the numeric expression
     */
-  def getIloNumExpr: IloNumExpr = expr
+  def getIloNumExpr(): IloNumExpr = expr
 
   /**
     * Creates and returns an expression representing the sum of this numeric expression and another numeric

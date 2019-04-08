@@ -121,7 +121,7 @@ class MpModelTest extends FunSuite with Matchers {
     r1.getLB should equal (.0)
     r1.getUB should equal (10.0)
     r1.getNumExpr should not equal (null)
-    r1.getNumExpr().toString should equal ("x ")
+    r1.getNumExpr().toString should equal ("(1.0*x)")
 
     val r2 = model.range(0, model.numVar(0, 10, "x1") + model.numVar(0, 10, "x2"), 18, "r2")
     r2.getName should equal (Some("r2"))
@@ -216,8 +216,8 @@ class MpModelTest extends FunSuite with Matchers {
     model2.getObjectiveValue() should equal(5.0 +- epsilon)
 
     // getBestObjValue
-    model1.getBestObjValue() should equal (java.lang.Double.POSITIVE_INFINITY)
-    model2.getBestObjValue() should equal (java.lang.Double.NEGATIVE_INFINITY)
+    model1.getBestObjValue() should equal (1.0E75) // was java.lang.Double.POSITIVE_INFINITY
+    model2.getBestObjValue() should equal (-1.0E75) // was java.lang.Double.NEGATIVE_INFINITY
 
     // getValue
     model1.getValue(varModel1) should equal (5.0 +- epsilon)

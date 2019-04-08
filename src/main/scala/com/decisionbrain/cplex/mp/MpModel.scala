@@ -7,9 +7,10 @@
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Addable
-import com.decisionbrain.cplex.cp.CpModel.Infinity
+import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.mp.NumExpr.{LinearIntExpr, LinearNumExpr}
-import ilog.opl.IloCplex
+import ilog.concert._
+import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
 
 /**
@@ -23,6 +24,8 @@ import ilog.opl.IloCplex
   * @param name is the name of the model
   */
 class MpModel(name: String=null) {
+
+  type MultiCriterionExpr = IloCplexMultiCriterionExpr
 
   val cplex = new IloCplex()
 
@@ -266,7 +269,7 @@ class MpModel(name: String=null) {
     * @return a constraint
     */
   def eq(expr1: NumExpr, expr2: NumExpr, name: String): Constraint = {
-    Constraint(cplex.eq(expr1.getIloNumExpr, expr2.getIloNumExpr, name))
+    Constraint(cplex.eq(expr1.getIloNumExpr, expr2.getIloNumExpr, name))(implicitly(this))
   }
 
   /**
@@ -372,6 +375,14 @@ class MpModel(name: String=null) {
   def minimize(expr: NumExpr): Objective = Objective(cplex.minimize(expr.getIloNumExpr))(implicitly(this))
 
   /**
+    * Creates and return a minimization multi-criteria objective.
+    *
+    * @param expr is the multi-criteria expressions
+    * @return an objective
+    */
+  def minimize(expr: MultiCriterionExpr): Objective = Objective(cplex.minimize(expr))(implicitly(this))
+
+  /**
     * Creates and returns an objective object to maximize the expression <em>expr</em>.
     *
     * @param expr is the expression to maximize
@@ -380,14 +391,106 @@ class MpModel(name: String=null) {
   def maximize(expr: NumExpr): Objective = Objective(cplex.maximize(expr.getIloNumExpr))(implicitly(this))
 
   /**
+    * Creates and return a maximization multi-criteria objective.
+    *
+    * @param expr is the multi-criteria expressions
+    * @return an objective
+    */
+  def maximize(expr: MultiCriterionExpr): Objective = Objective(cplex.maximize(expr))(implicitly(this))
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    */
+  def staticLex(exprs: NumExpr*): MultiCriterionExpr = {
+    cplex.staticLex(exprs.map(e => e.getIloNumExpr()).toArray, name)
+  }
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param name is the name of the multi-criteria expression
+    * @return
+    */
+  def staticLex(exprs: NumExprArray, name: String): MultiCriterionExpr = {
+    cplex.staticLex(exprs.toIloArray, name)
+  }
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @return
+    *
+    */
+  def staticLex(exprs: NumExprArray): MultiCriterionExpr = {
+    cplex.staticLex(exprs.toIloArray)
+  }
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    */
+  def staticLex(exprs: Array[NumExpr], name: String =null): MultiCriterionExpr = {
+    cplex.staticLex(exprs.map(e => e.getIloNumExpr()), name)
+  }
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param weights the weight of each criterion
+    * @param priorities the priority of each criterion
+    * @param absTols the absolute tolerance of each criterion
+    * @param relTols the relative tolerance of each criterion
+    * @param name the name of the multi-criteria expression
+    * @return
+    */
+  def staticLex(exprs: Array[NumExpr],
+                weights: Array[Double],
+                priorities: Array[Int],
+                absTols: Array[Double],
+                relTols: Array[Double],
+                name: String): MultiCriterionExpr = {
+    cplex.staticLex(exprs.map(e => e.getIloNumExpr()), weights, priorities, absTols, relTols, name)
+  }
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param weights the weight of each criterion
+    * @param priorities the priority of each criterion
+    * @param absTols the absolute tolerance of each criterion
+    * @param relTols the relative tolerance of each criterion
+    * @return
+    */
+  def staticLex(exprs: Array[NumExpr],
+                weights: Array[Double],
+                priorities: Array[Int],
+                absTols: Array[Double],
+                relTols: Array[Double]): MultiCriterionExpr = {
+    cplex.staticLex(exprs.map(e => e.getIloNumExpr()), weights, priorities, absTols, relTols, null)
+  }
+
+  /**
     * Solves the active model.
     *
     * @return A Boolean value indicating whether a feasible solution has been found. This solution is not
     *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
     *         but IloCplex has not been able to prove its feasibility.
     */
-  def solve(timeLimit: Double = Infinity, mipGap: Double = .0) = {
-    if (timeLimit < Infinity) cplex.setParam(IloCplex.DoubleParam.TiLim, timeLimit)
+  def solve(timeLimit: Double = Double.PositiveInfinity, mipGap: Double = .0) = {
+    if (timeLimit < Double.PositiveInfinity) cplex.setParam(IloCplex.DoubleParam.TiLim, timeLimit)
     if (mipGap > .0) cplex.setParam(IloCplex.DoubleParam.EpGap, mipGap)
     cplex.solve()
   }
@@ -440,6 +543,12 @@ class MpModel(name: String=null) {
 
 object MpModel {
 
+  //
+  // Types definition in case we need to encapsulate CPO types later
+  //
+
+  type MultiCriterionExpr = IloCplexMultiCriterionExpr
+
   /**
     * Create and return a new mathematical programming model.
     *
@@ -463,4 +572,108 @@ object MpModel {
     * @return a numeric expression that represents the sum of the numeric expressions
     */
   def sum(exprs: Iterable[NumExpr])(implicit model: MpModel) : NumExpr = model.sum(exprs)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    */
+  def staticLex(exprs: NumExpr*)(implicit model: MpModel): MultiCriterionExpr = model.staticLex(exprs: _*)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param name is the name of the multi-criteria expression
+    * @return
+    */
+  def staticLex(exprs: NumExprArray, name: String)(implicit model: MpModel): MultiCriterionExpr =
+    model.staticLex (exprs, name)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @return
+    *
+    */
+  def staticLex(exprs: NumExprArray)(implicit model: MpModel): MultiCriterionExpr =  model.staticLex(exprs)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    */
+  def staticLex(exprs: Array[NumExpr], name: String =null)(implicit model: MpModel): MultiCriterionExpr =
+    model.staticLex(exprs, name)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param weights the weight of each criterion
+    * @param priorities the priority of each criterion
+    * @param absTols the absolute tolerance of each criterion
+    * @param relTols the relative tolerance of each criterion
+    * @param name the name of the multi-criteria expression
+    * @return
+    */
+  def staticLex(exprs: Array[NumExpr],
+                weights: Array[Double],
+                priorities: Array[Int],
+                absTols: Array[Double],
+                relTols: Array[Double],
+                name: String)(implicit model: MpModel): MultiCriterionExpr =
+    model.staticLex(exprs, weights, priorities, absTols, relTols, name)
+
+  /**
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
+    * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
+    *
+    * @param exprs a set of numeric expressions for the lexicographic ordering
+    * @param weights the weight of each criterion
+    * @param priorities the priority of each criterion
+    * @param absTols the absolute tolerance of each criterion
+    * @param relTols the relative tolerance of each criterion
+    * @return
+    */
+  def staticLex(exprs: Array[NumExpr],
+                weights: Array[Double],
+                priorities: Array[Int],
+                absTols: Array[Double],
+                relTols: Array[Double])(implicit model: MpModel): MultiCriterionExpr =
+    model.staticLex(exprs, weights, priorities, absTols, relTols)
+
+  /**
+    * Creates and return a minimization multi-criteria objective.
+    *
+    * @param expr is the multi-criteria expressions
+    * @return an objective
+    */
+  def minimize(expr: MultiCriterionExpr)(implicit model: MpModel): Objective = model.minimize(expr)
+
+  /**
+    *  Implicit conversion of set of numeric expressions: add behavior
+    *
+    * @param exprs are the integer expressions
+    * @param model is the constraint programming model
+    */
+  implicit class NumExprArray(val exprs: Iterable[NumExpr])(implicit model: MpModel) {
+
+    /**
+      * Converts to scala array
+      */
+    def toArray: Array[NumExpr] = exprs.toArray
+
+    /**
+      * Convert to CPLEX array
+      */
+    def toIloArray: Array[IloNumExpr] = exprs.map(e => e.getIloNumExpr()).toArray
+  }
+
 }

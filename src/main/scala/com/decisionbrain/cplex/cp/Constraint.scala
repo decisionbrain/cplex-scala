@@ -98,7 +98,7 @@ class Constraint(c: IloConstraint)(implicit model: CpModel) extends IntExpr(c) w
 object Constraint {
 
   /**
-    * Converts a CPLX constraint to a constraint
+    * Converts a CPLEX constraint to a constraint
     *
     * @param c is the CPLEX constraint
     * @return a constraint

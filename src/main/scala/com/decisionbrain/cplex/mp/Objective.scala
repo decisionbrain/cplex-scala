@@ -18,7 +18,7 @@ class Objective(o: IloObjective)(implicit model: MpModel) extends Addable {
     *
     * @return the name of the object
     */
-  override def getName: Option[String] = Option(o.getName())
+  override def getName(): Option[String] = Option(o.getName())
 
   /**
     * Set the name of the model addable object.
@@ -46,7 +46,14 @@ class Objective(o: IloObjective)(implicit model: MpModel) extends Addable {
     *
     * @return return the numeric expression of the objective
     */
-  def getNumExpr(): IloNumExpr = o.getExpr
+  def getNumExpr(): NumExpr = NumExpr(o.getExpr)
+
+  /**
+    * Returns the numeric expression of the objective.
+    *
+    * @return return the numeric expression of the objective
+    */
+  def getIloNumExpr(): IloNumExpr = o.getExpr
 
   @deprecated("Replaced by method getNumExpr", "decisionbrain-cplex-scala-1.0.0")
   def getExpr(): IloNumExpr = o.getExpr

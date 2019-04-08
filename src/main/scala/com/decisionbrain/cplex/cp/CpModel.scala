@@ -2128,7 +2128,7 @@ class CpModel(name: String=null) {
   def minimize(expr: NumExpr): Objective = Objective(cp.minimize(expr.getIloNumExpr))(implicitly(this))
 
   /**
-    * Creates a minimization multicriteria objective.
+    * Creates a minimization multi-criteria objective.
     *
     * @param expr is the multicriteria expressions
     * @return an objective
@@ -2152,7 +2152,7 @@ class CpModel(name: String=null) {
   def maximize(expr: MultiCriterionExpr): Objective = Objective(cp.maximize(expr))(implicitly(this))
 
   /**
-    * This function defines a multicriteria expression for lexicographic ordering. A lexicographic ordering means that
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
     * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
     *
     * @param exprs a set of integer expressions for the lexicographic ordering
@@ -4156,10 +4156,10 @@ object CpModel {
   def maximize(expr: MultiCriterionExpr)(implicit model: CpModel): Objective = model.maximize(expr)
 
   /**
-    * This function defines a multicriteria expression for lexicographic ordering. A lexicographic ordering means that
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
     * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
     *
-    * @param exprs a set of integer expressions for the lexicographic ordering
+    * @param exprs a set of numeric expressions for the lexicographic ordering
     */
   def staticLex(exprs: NumExpr*)(implicit model: CpModel): MultiCriterionExpr = model.staticLex(exprs: _*)
 

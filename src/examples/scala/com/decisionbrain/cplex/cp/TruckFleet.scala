@@ -138,7 +138,7 @@ object TruckFleet {
     // Search strategy: first assign order to truck
     model.setSearchPhases(searchPhase(where))
 
-    // Multicriteria lexicographic optimization
+    // Multi-criteria lexicographic optimization
     model.add(minimize(staticLex(obj1, obj2)))
 
     model
