@@ -9,6 +9,7 @@ package com.decisionbrain.cplex.mp
 /**
   * Created by dgodard on 11/02/2017.
   */
+
 /**
   * This class allows one to write things like List(expr1, expr2, ...).sum
   *

@@ -6,6 +6,8 @@
 
 package com.decisionbrain.cplex.mp
 
+import com.decisionbrain.cplex.mp.MpModel._
+
 object SportScheduling {
 
   //
@@ -49,7 +51,7 @@ object SportScheduling {
 
     println("* Building Sport Scheduling model instance")
 
-    val model = new MpModel("sportscheduling")
+    implicit val model = new MpModel("sportscheduling")
 
     val (nbTeamsInDivision, nbIntraDivisional, nbInterDivisional, nbTeams) = nbs
 
@@ -92,14 +94,14 @@ object SportScheduling {
 
     for (m <- matches) {
       val (team1, team2, _) = m
-      model.add(model.sum(for (w <- weeks) yield playVars(m, w)) == nbPlay(m),
+      model.add(sum(for (w <- weeks) yield playVars(m, w)) == nbPlay(m),
         name="correct_nb_games_%d_%d".format(team1, team2))
     }
 
     for (w <- weeks) {
       // Each team must play exactly once in a week
       for (t <- teamRange) {
-        model.add(model.sum(for (m <- matches; (team1, team2, _) = m; if team1 == t || team2 == t) yield playVars(m, w)) == 1,
+        model.add(sum(for (m <- matches; (team1, team2, _) = m; if team1 == t || team2 == t) yield playVars(m, w)) == 1,
           name="plays_exactly_once_%d_%s".format(w, t))
       }
       // Games between the same teams cannot be on successive weeks.
@@ -116,13 +118,13 @@ object SportScheduling {
     for (t <- teamRange) {
       val maxTeamInDicision : IndexedSeq[NumExpr] =
         for (w <- firstHalfWeeks; m <- matches if m._3 == 1 && (m._1 == t ||m._2 == t)) yield playVars(m, w)
-      model.add(model.sum(maxTeamInDicision) >= nbFirstHalfGames,
+      model.add(sum(maxTeamInDicision) >= nbFirstHalfGames,
         name="in_division_first_half_%s".format(t))
     }
 
     // postpone divisional matches as much as possible
     // we weight each play variable with the square of w.
-    val objective = model.maximize(model.sum(for (w <- weeks; m <- matches if m._3 == 1) yield playVars(m, w)*w*w))
+    val objective = maximize(sum(for (w <- weeks; m <- matches if m._3 == 1) yield playVars(m, w)*w*w))
     model.add(objective)
 
     model

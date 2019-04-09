@@ -6,6 +6,8 @@
 
 package com.decisionbrain.cplex.mp
 
+import com.decisionbrain.cplex.mp.MpModel._
+
 object Production {
 
   /**
@@ -59,7 +61,7 @@ object Production {
     */
   def buildProductionProblem() = {
 
-    val model = new MpModel("production")
+    implicit val model = new MpModel("production")
 
     //--- decision variables ---
     /*
@@ -81,7 +83,7 @@ object Production {
       // In python:
       //      mdl.add(mdl.sum([mdl.inside_vars[p] * consumptions[p[ 0], res[ 0]] for p in products] ) <= res[ 1] )
       // In scala, the generator comprehension start with a for loop and the expression is after the keyword yield
-      model.add(model.sum(for ((product, _, _, _) <- products)
+      model.add(sum(for ((product, _, _, _) <- products)
         yield insideVars(product) * consumptions((product, resource))) <= capacity)
     }
 
@@ -91,13 +93,11 @@ object Production {
     //    mdl.total_outside_cost = mdl.sum(mdl.outside_vars[p] * p[3] for p in products)
     //    mdl.minimize(mdl.total_inside_cost + mdl.total_outside_cost)
     // In Scala using a generator
-    totalInsideCost =
-      model.sum(for ((product, _, insideCost, _) <- products) yield insideVars(product) * insideCost)
+    totalInsideCost = sum(for ((product, _, insideCost, _) <- products) yield insideVars(product) * insideCost)
     println(totalInsideCost)
-    totalOutsideCost =
-      model.sum(for ((product, _, _, outsideCost) <- products) yield outsideVars(product) * outsideCost)
+    totalOutsideCost = sum(for ((product, _, _, outsideCost) <- products) yield outsideVars(product) * outsideCost)
     println(totalOutsideCost)
-    model.add(model.minimize(totalInsideCost + totalOutsideCost))
+    model.add(minimize(totalInsideCost + totalOutsideCost))
 
     // return the model
     model

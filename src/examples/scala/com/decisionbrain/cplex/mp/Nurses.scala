@@ -414,7 +414,7 @@ object Nurses {
     totalFairness = sum(for (n <- nurses) yield nurseOverAverageTimeVars(n)) +
       sum(for (n <- nurses) yield nurseUnderAverageTimeVars(n))
 
-    model.add(model.minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
+    model.add(minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
   }
 
   def buildModel() : MpModel = {

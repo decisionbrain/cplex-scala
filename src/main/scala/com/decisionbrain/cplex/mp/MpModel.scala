@@ -117,19 +117,12 @@ class MpModel(name: String=null) {
   def linearNumExpr(value: Double): LinearNumExpr = new LinearNumExpr(value)(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression initialized as zero.
-    *
-    * @return
-    */
-  def linearIntExpr(): LinearIntExpr = new LinearIntExpr(0)(implicitly(this))
-
-  /**
     * Creates and returns an integer linear expression initialized as a constant.
     *
     * @param value is the constant
     * @return
     */
-  def linearIntExpr(value: Int): LinearIntExpr = new LinearIntExpr(value)(implicitly(this))
+  def linearIntExpr(value: Int = 0): LinearIntExpr = new LinearIntExpr(value)(implicitly(this))
 
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
@@ -695,6 +688,14 @@ object MpModel {
   def apply(name: String=null) = new MpModel(name)
 
   /**
+    * Creates and returns an integer linear expression initialized as a constant.
+    *
+    * @param value is the constant
+    * @return
+    */
+  def linearIntExpr(value: Int = 0)(implicit model: MpModel): LinearIntExpr = model.linearIntExpr(value)
+
+  /**
     * Return the sum of a sequence of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
@@ -709,6 +710,22 @@ object MpModel {
     * @return a numeric expression that represents the sum of the numeric expressions
     */
   def sum(exprs: Iterable[NumExpr])(implicit model: MpModel) : NumExpr = model.sum(exprs)
+
+  /**
+    * Creates and returns an objective object to minimize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to minimize
+    * @return An objective object representing the objective to minimize
+    */
+  def minimize(expr: NumExpr)(implicit model: MpModel): Objective = model.minimize(expr)
+
+  /**
+    * Creates and returns an objective object to maximize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to minimize
+    * @return An objective object representing the objective to maximize
+    */
+  def maximize(expr: NumExpr)(implicit model: MpModel): Objective = model.maximize(expr)
 
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
