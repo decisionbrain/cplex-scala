@@ -10,6 +10,7 @@ import com.decisionbrain.cplex.Addable
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.mp.NumExpr.{LinearIntExpr, LinearNumExpr}
 import ilog.concert._
+import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
 
@@ -24,8 +25,6 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
   * @param name is the name of the model
   */
 class MpModel(name: String=null) {
-
-  type MultiCriterionExpr = IloCplexMultiCriterionExpr
 
   val cplex = new IloCplex()
 
@@ -490,10 +489,30 @@ class MpModel(name: String=null) {
     *         but IloCplex has not been able to prove its feasibility.
     */
   def solve(timeLimit: Double = Double.PositiveInfinity, mipGap: Double = .0) = {
-    if (timeLimit < Double.PositiveInfinity) cplex.setParam(IloCplex.DoubleParam.TiLim, timeLimit)
-    if (mipGap > .0) cplex.setParam(IloCplex.DoubleParam.EpGap, mipGap)
+    if (timeLimit < Double.PositiveInfinity) cplex.setParam(Param.TimeLimit, timeLimit) // name prior to V12.6.0: IloCplex.DoubleParam.TiLim
+    if (mipGap > .0) cplex.setParam(Param.MIP.Tolerances.MIPGap, mipGap) // name prior to V12.6.0: IloCplex.DoubleParam.EpGap
     cplex.solve()
   }
+
+  /**
+    * the Solves the active multi-objective model.
+    *
+    * @param parameters are the parameters used for solving the sub-problem
+    * @return A Boolean value indicating whether a feasible solution has been found. This solution is not
+    *         necessarily optimal. If <em>false</em> is returned, a feasible solution may still be present,
+    *         but IloCplex has not been able to prove its feasibility.
+    */
+  def solve(parameters: Array[ParameterSet]) =
+    cplex.solve(parameters)
+
+
+  /**
+    * Returns the solution status of the active model.
+    *
+    * @return the solution status
+    */
+  def getStatus() = cplex.getStatus()
+
 
   /**
     * Returns the value of the objective in the solution.
@@ -509,6 +528,123 @@ class MpModel(name: String=null) {
     * @return the objective value of the best remaining node
     */
   def getBestObjValue() = cplex.getBestObjValue
+
+  /**
+    * Returns the number of multi-criteria objective solves
+    *
+    * @return the number of multi-criteria objective solves
+    */
+  def getMultiObjNsolves() = cplex.getMultiObjNsolves
+
+  /**
+    * Returns the solution info of a sub-problem of a multi-objective optimization.
+    *
+    * @param info is the solution info requested
+    * @param step the index of the sub-problem
+    * @return the solution info of a multi-objective optimization
+    */
+  def getMultiObjInfo(info: IloCplex.MultiObjIntInfo, step: Int): Int =
+    return cplex.getMultiObjInfo(info, step)
+
+  /**
+    * Returns the solution info of a sub-problem of a multi-objective optimization.
+    *
+    * @param info is the solution info requested
+    * @param step the index of the sub-problem
+    * @return the solution info of a multi-objective optimization
+    */
+  def getMultiObjInfo(info: IloCplex.MultiObjLongInfo, step: Int): Long =
+    return cplex.getMultiObjInfo(info, step)
+
+  /**
+    * Returns the solution info of a sub-problem of a multi-objective optimization.
+    *
+    * @param info is the solution info requested
+    * @param step the index of the sub-problem
+    * @return the solution info of a multi-objective optimization
+    */
+  def getMultiObjInfo(info: IloCplex.MultiObjNumInfo, step: Int): Double =
+    return cplex.getMultiObjInfo(info, step)
+
+  /**
+    * Returns the value of a CPLEX parameter.
+    *
+    * @param param is the CPLEX parameter
+    * @return the integer value of the integer parameter
+    */
+  def getParam(param: IloCplex.BooleanParam): Boolean = cplex.getParam(param)
+
+  /**
+    * Returns the value of a CPLEX parameter.
+    *
+    * @param param is the CPLEX parameter
+    * @return the integer value of the integer parameter
+    */
+  def getParam(param: IloCplex.IntParam): Int = cplex.getParam(param)
+
+  /**
+    * Returns the value of a CPLEX parameter.
+    *
+    * @param param is the CPLEX parameter
+    * @return the integer value of the integer parameter
+    */
+  def getParam(param: IloCplex.LongParam): Long = cplex.getParam(param)
+
+  /**
+    * Returns the value of a CPLEX parameter.
+    *
+    * @param param is the CPLEX parameter
+    * @return the double value of the integer parameter
+    */
+  def getParam(param : IloCplex.DoubleParam): Double = cplex.getParam(param)
+
+  /**
+    * Returns the value of a CPLEX parameter.
+    *
+    * @param param is the CPLEX parameter
+    * @return the value of the string parameter
+    */
+  def getParam(param: IloCplex.StringParam): String = cplex.getParam(param)
+
+  /**
+    * Sets the value of a CPLEX parameter
+    *
+    * @param param is the boolean parameter
+    * @param value is the value of the parameter
+    */
+  def setParam(param: IloCplex.BooleanParam, value: Boolean) = cplex.setParam(param, value)
+
+  /**
+    * Sets the value of a CPLEX parameter
+    *
+    * @param param is the integer parameter
+    * @param value is the value of the parameter
+    */
+  def setParam(param: IloCplex.IntParam, value: Int) = cplex.setParam(param, value)
+
+  /**
+    * Sets the value of a CPLEX parameter
+    *
+    * @param param is the integer parameter
+    * @param value is the value of the parameter
+    */
+  def setParam(param: IloCplex.LongParam, value: Long) = cplex.setParam(param, value)
+
+  /**
+    * Sets the value of a CPLEX parameter
+    *
+    * @param param is the double parameter
+    * @param value is the value of the parameter
+    */
+  def setParam(param: IloCplex.DoubleParam, value: Double) = cplex.setParam(param, value)
+
+  /**
+    * Sets the value of a CPLEX parameter
+    *
+    * @param param is the string parameter
+    * @param value is the value of the parameter
+    */
+  def setParam(param: IloCplex.StringParam, value: String) = cplex.setParam(param, value)
 
   /**
     * Writes the active model to a file named name. The file format is determined by the extension of the filename.
@@ -548,6 +684,7 @@ object MpModel {
   //
 
   type MultiCriterionExpr = IloCplexMultiCriterionExpr
+  type ParameterSet = IloCplex.ParameterSet
 
   /**
     * Create and return a new mathematical programming model.

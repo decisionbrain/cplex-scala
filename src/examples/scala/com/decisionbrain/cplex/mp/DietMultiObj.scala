@@ -9,7 +9,7 @@ package com.decisionbrain.cplex.mp
 import com.decisionbrain.cplex.mp.MpModel._
 import ilog.concert.IloException
 import ilog.cplex.IloCplex
-import ilog.cplex.IloCplex.{MultiObjIntInfo, MultiObjLongInfo, MultiObjNumInfo}
+import ilog.cplex.IloCplex.{MultiObjIntInfo, MultiObjLongInfo, MultiObjNumInfo, Param}
 
 object DietMultiObj {
 
@@ -148,33 +148,33 @@ object DietMultiObj {
     // Solve model
 
     // Set multi-objective display level to "detailed".
-    model.cplex.setParam(IloCplex.Param.MultiObjective.Display, 2)
+    model.setParam(IloCplex.Param.MultiObjective.Display, 2)
 
     // Purely for demonstrative purposes, set global and local limits
     // using parameter sets.
 
     // First, set the global deterministic time limit.
-    model.cplex.setParam(IloCplex.Param.DetTimeLimit, 60000)
+    model.setParam(IloCplex.Param.DetTimeLimit, 60000)
 
     // Second, create a parameter set for each priority.
-    var params = Array(new IloCplex.ParameterSet(), new IloCplex.ParameterSet())
+    var params = Array(new ParameterSet(), new ParameterSet())
 
     // Set the local deterministic time limits. Optimization will stop
     // whenever either the global or local limit is exceeded.
-    params(0).setParam(IloCplex.Param.DetTimeLimit, 50000)
-    params(1).setParam(IloCplex.Param.DetTimeLimit, 25000)
+    params(0).setParam(Param.DetTimeLimit, 50000)
+    params(1).setParam(Param.DetTimeLimit, 25000)
 
     // Optimize the multi-objective problem and apply the parameter
     // sets that were created above. The parameter sets are used
     // one-by-one by each optimization.
-    val status = model.cplex.solve(params)
+    val status = model.solve(params)
     if (!status) {
       println("*** Problem has no solution!")
       return false
     }
 
     System.out.println()
-    System.out.println("Solution status = " + model.cplex.getStatus)
+    System.out.println("Solution status = " + model.getStatus())
 
     // Print the objective value(s).
 
@@ -203,7 +203,7 @@ object DietMultiObj {
 
   def printMultiObjInfo(what: IloCplex.MultiObjIntInfo, subprob: Int): Unit = {
     try {
-      val value = model.cplex.getMultiObjInfo(what, subprob)
+      val value = model.getMultiObjInfo(what, subprob)
       printSolutionStat(what.toString, value.toString)
     }
     catch {
@@ -213,7 +213,7 @@ object DietMultiObj {
 
   def printMultiObjInfo(what: IloCplex.MultiObjLongInfo, subprob: Int): Unit = {
     try {
-      val value: Long = model.cplex.getMultiObjInfo(what, subprob)
+      val value: Long = model.getMultiObjInfo(what, subprob)
       printSolutionStat(what.toString, value.toString)
     }
     catch {
@@ -223,7 +223,7 @@ object DietMultiObj {
 
   def printMultiObjInfo(what: IloCplex.MultiObjNumInfo, subprob: Int): Unit = {
     try {
-      val value: Double = model.cplex.getMultiObjInfo(what, subprob)
+      val value: Double = model.getMultiObjInfo(what, subprob)
       printSolutionStat(what.toString, value.toString)
     }
     catch {
@@ -232,10 +232,10 @@ object DietMultiObj {
   }
 
   def printSolutionStats(): Unit = {
-    val num = model.cplex.getMultiObjNsolves
+    val num = model.getMultiObjNsolves()
 
-    for (i <- 0 to num-1) {
-      val prio = model.cplex.getMultiObjInfo(MultiObjIntInfo.MultiObjPriority, i)
+    for (i <- 0 until num) {
+      val prio = model.getMultiObjInfo(MultiObjIntInfo.MultiObjPriority, i)
       println(s"subproblem $i [priority $prio]:")
       printMultiObjInfo(MultiObjIntInfo.MultiObjError, i)
       printMultiObjInfo(MultiObjIntInfo.MultiObjStatus, i)
