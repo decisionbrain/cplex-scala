@@ -4,25 +4,24 @@
  * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.{Addable, ObjectiveSense}
 import ilog.concert._
 
 /**
   * Constructor of class Objective.
   *
   * @param o is the CPLEX objective
-  * @param model is the constraint programming model
+  * @param modeler is the constraint programming model
   */
-class Objective(o: IloObjective)(implicit model: CpModel) extends Addable {
+class Objective(o: IloObjective)(implicit modeler: Modeler) extends Addable {
 
   /**
     * Returns the name of model addable object.
     *
     * @return the name of the object
     */
-  override def getName: Option[String] = Option(o.getName())
+  override def getName(): Option[String] = Option(o.getName())
 
   /**
     * Set the name of the model addable object.
@@ -50,7 +49,7 @@ class Objective(o: IloObjective)(implicit model: CpModel) extends Addable {
     *
     * @return return the numeric expression of the objective
     */
-  def getNumExpr(): IloNumExpr = o.getExpr
+  def getNumExpr(): NumExpr = NumExpr(o.getExpr)(implicitly(modeler))
 
   @deprecated("Replaced by method getNumExpr", "decisionbrain-cplex-scala-1.0.0")
   def getExpr(): IloNumExpr = o.getExpr
@@ -90,5 +89,5 @@ class Objective(o: IloObjective)(implicit model: CpModel) extends Addable {
 }
 
 object Objective {
-  def apply(o: IloObjective)(implicit model: CpModel) = new Objective(o)
+  def apply(o: IloObjective)(implicit model: Modeler) = new Objective(o)
 }

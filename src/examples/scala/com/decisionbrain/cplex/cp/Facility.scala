@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.{IntVar, NumExpr}
 import com.decisionbrain.cplex.cp.CpModel._
 
 /**

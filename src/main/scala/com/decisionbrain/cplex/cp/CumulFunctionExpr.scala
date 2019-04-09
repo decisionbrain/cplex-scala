@@ -6,7 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.Addable
+import com.decisionbrain.cplex.{Addable, Constraint, IntExpr}
 import ilog.concert.{IloAddable, IloCumulFunctionExpr}
 
 /**

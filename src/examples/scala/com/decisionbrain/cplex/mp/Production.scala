@@ -7,6 +7,7 @@
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.mp.MpModel._
+import com.decisionbrain.cplex._
 
 object Production {
 

@@ -7,7 +7,9 @@
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.mp.MpModel._
-import com.decisionbrain.cplex.mp.NumExprNumeric._
+import com.decisionbrain.cplex.NumExprNumeric._
+import com.decisionbrain.cplex.NumExpr
+import com.decisionbrain.cplex.NumVar
 
 object Nurses {
 
@@ -345,7 +347,7 @@ object Nurses {
     // define average
     // notice the syntax below where the integer "nurses.length" is converted to an numeric expression: this automatic
     // conversion is possible as the model is declared as implicit
-    model.add(nurses.length * averageNurseWorkTime == sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
+    model.add(averageNurseWorkTime * nurses.length == sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
 
     // compute nurse work time , average and under, over
     for (n <- nurses) {

@@ -4,18 +4,17 @@
  * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
-package com.decisionbrain.cplex.mp
+package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.Addable
 import ilog.concert.{IloAddable, IloNumVar, IloNumVarType}
 
 /**
   * Class for numeric variables.
   *
-  * @param v     is the CPLEX variable
-  * @param model is the mathematical programming model
+  * @param v     is the CPLEX numeric variable
+  * @param modeler is the constraint programming model
   */
-class NumVar(v: IloNumVar)(implicit model: MpModel) extends NumExpr(v) with Addable {
+class NumVar(v: IloNumVar)(implicit modeler: Modeler) extends NumExpr(v) with Addable {
 
   /**
     * Return the type of the numeric variable i.e. Float, Int or Bool
@@ -78,6 +77,27 @@ class NumVar(v: IloNumVar)(implicit model: MpModel) extends NumExpr(v) with Adda
     * @return the CPLEX numeric variable
     */
   override def getIloAddable(): IloAddable = v
+
+  /**
+    * Return a character string that represents the integer variable.
+    *
+    * @return a character string
+    */
+  override def toString() : String = {
+    val strBuilder = new StringBuilder()
+    if (getName().isDefined) strBuilder.append(getName().get)
+    strBuilder.append("[")
+    val vmin = getLB()
+    val vmax = getUB()
+    strBuilder.append(vmin)
+    if (vmin < vmax) {
+      strBuilder.append("..")
+      strBuilder.append(vmax)
+    }
+    strBuilder.append("]")
+    strBuilder.toString()
+  }
+
 }
 
 object NumVar {
@@ -86,8 +106,8 @@ object NumVar {
     * Converts a CPLEX numeric variable to a numeric variable.
     *
     * @param v is the CPLEX numeric variable
-    * @param model is the mathematical programming model
+    * @param model is the constraint programming model
     * @return a numeric variable
     */
-  def apply(v: IloNumVar)(implicit model: MpModel): NumVar = new NumVar(v)
+  def apply(v: IloNumVar)(implicit model: Modeler): NumVar = new NumVar(v)
 }

@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.NumExpr
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 

@@ -6,7 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.Addable
+import com.decisionbrain.cplex.{Addable, Constraint, IntExpr, IntVar, Modeler, NumExpr, NumVar, Objective}
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.concert._
 import ilog.concert.cppimpl.IloConcertUtils
@@ -15,48 +15,18 @@ import ilog.cp.IloCP
 import scala.reflect.ClassTag
 
 
-class CpModel(name: String=null) {
+class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
 
-  val cp = new IloCP()
+  def cp: IloCP = this.toIloCP
 
   private val trueConstraint = cp.trueConstraint()
   private val falseConstraint = cp.falseConstraint()
 
-  private val numExprNumeric = NumExprNumeric(this)
-  private val intExprNumeric = IntExprNumeric(this)
   private val cumulFunctionExprNumeric = CumulFunctionExprNumeric(this)
 
   //
   // Members
   //
-
-  /**
-    * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
-    * numeric expressions. For instance:
-    * <pre>
-    *   <code>
-    *     implicit val num = model.getNumExprNumeric()
-    *     val exprs = List(model.numVar(), model.numVar())
-    *     val sumExpr = exprs.sum
-    *   </code>
-    * </pre>
-    * @return the numeric for numeric expression
-    */
-  def getNumExprNumeric(): Numeric[NumExpr] = numExprNumeric
-
-  /**
-    * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
-    * numeric expressions. For instance:
-    * <pre>
-    *   <code>
-    *     implicit val num = model.getIntExprNumeric()
-    *     val exprs = List(model.intVar(), model.intVar())
-    *     val sumExpr = exprs.sum
-    *   </code>
-    * </pre>
-    * @return the numeric for integer expression
-    */
-  def getIntExprNumeric(): Numeric[IntExpr] = intExprNumeric
 
   /**
     * Returns the numeric for cumul function expressions. This allows to do things such as calling method sum on list of
@@ -360,15 +330,15 @@ class CpModel(name: String=null) {
     IntExpr(cp.sum(exprs.map(e => e.getIloIntExpr)))(implicitly(this))
   }
 
-  /**
-    * Returns the sum of numeric expressions.
-    *
-    * @param exprs is a variable number of numeric expressions
-    * @return a numeric expression that represents the sum numeric expressions
-    */
-  def sum(exprs: NumExpr*) : NumExpr = {
-    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
-  }
+//  /**
+//    * Returns the sum of numeric expressions.
+//    *
+//    * @param exprs is a variable number of numeric expressions
+//    * @return a numeric expression that represents the sum numeric expressions
+//    */
+//  def sum(exprs: NumExpr*) : NumExpr = {
+//    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
+//  }
 
   /**
     * Returns the maximum of a set of numeric expressions.

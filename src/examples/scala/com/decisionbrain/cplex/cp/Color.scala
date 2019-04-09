@@ -6,6 +6,8 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.IntVar
+
 /**
   * The problem involves choosing colors for the countries on a map in such a way that at most four colors (blue, white,
   * yellow, green) are used and no neighboring countries are the same color. In this exercise, six countries are

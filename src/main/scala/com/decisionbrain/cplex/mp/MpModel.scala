@@ -6,9 +6,8 @@
 
 package com.decisionbrain.cplex.mp
 
-import com.decisionbrain.cplex.Addable
+import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
-import com.decisionbrain.cplex.mp.NumExpr.{LinearIntExpr, LinearNumExpr}
 import ilog.concert._
 import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
@@ -24,25 +23,11 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
   * @param name is the name of the model
   */
-class MpModel(name: String=null) {
+class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
 
-  val cplex = new IloCplex()
+//  val cplex = (new IloCplex()).setName(name)
 
-  private val numExprNumeric: Numeric[NumExpr] = NumExprNumeric(this)
-
-  /**
-    * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
-    * numeric expressions e.g.
-    * <pre>
-    *   <code>
-    *     implicit val num = model.getNumExprNumeric()
-    *     val exprs = List(model.numVar(), model.numVar())
-    *     val sumExpr = exprs.sum
-    *   </code>
-    * </pre>
-    * @return the numeric for numeric expression
-    */
-  def getNumExprNumeric(): Numeric[NumExpr] = numExprNumeric
+  def cplex: IloCplex = this.toIloCplex
 
   /**
     * Returns the name of the mathematical programming model.
@@ -57,7 +42,7 @@ class MpModel(name: String=null) {
     * @param expr is the numeric expression; the expression must be in the active model
     * @return the value of the expression in the solution
     */
-  def getValue(expr: NumExpr) : Double = cplex.getValue(expr.expr)
+  def getValue(expr: NumExpr) : Double = cplex.getValue(expr.getIloNumExpr())
 
   /**
     * Print some information on the CPLEX model e.g. number of variables, number of constraints...
@@ -100,29 +85,6 @@ class MpModel(name: String=null) {
     */
   def boolVar(name: String=null): NumVar =
     NumVar(cplex.boolVar(name))(implicitly(this))
-
-  /**
-    * Creates and returns an linear expression initialized with zero.
-    *
-    * @return
-    */
-  def linearNumExpr(): LinearNumExpr = new LinearNumExpr(.0)(implicitly(this))
-
-  /**
-    * Creates and returns a linear expression initialized as a constant.
-    *
-    * @param value is the constant
-    * @return
-    */
-  def linearNumExpr(value: Double): LinearNumExpr = new LinearNumExpr(value)(implicitly(this))
-
-  /**
-    * Creates and returns an integer linear expression initialized as a constant.
-    *
-    * @param value is the constant
-    * @return
-    */
-  def linearIntExpr(value: Int = 0): LinearIntExpr = new LinearIntExpr(value)(implicitly(this))
 
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
@@ -187,15 +149,15 @@ class MpModel(name: String=null) {
     })(collection.breakOut)
   }
 
-  /**
-    * Return the sum of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric expressions
-    * @return a numeric expression that represents the sum of numeric expressions
-    */
-  def sum(exprs: NumExpr*): NumExpr = {
-    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
-  }
+//  /**
+//    * Return the sum of numeric expressions.
+//    *
+//    * @param exprs is a sequence of numeric expressions
+//    * @return a numeric expression that represents the sum of numeric expressions
+//    */
+//  def sum(exprs: NumExpr*): NumExpr = {
+//    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+//  }
 
   /**
     * Return the sum of numeric expressions.
@@ -214,55 +176,55 @@ class MpModel(name: String=null) {
     * @param rhs is the upper bound of the new greater-than-or-equal-to constraint
     * @return a new range constraint <em>expr >= rhs</em>
     */
-  def ge(expr: NumExpr, rhs: Double, name: String=null): RangeConstraint = {
-    RangeConstraint(cplex.ge(expr.getIloNumExpr, rhs, name))(implicitly(this))
+  def ge(expr: NumExpr, rhs: Double, name: String=null): Range = {
+    Range(cplex.ge(expr.getIloNumExpr, rhs, name))(implicitly(this))
   }
 
-  /**
-    * Return a range constraint <em>expr == value<em>.
-    *
-    * @param expr is the numeric expression
-    * @param value is the value
-    * @return a range constraint
-    */
-  def eq(expr: NumExpr, value: Double): RangeConstraint = {
-    eq(expr, value, null)
-  }
+//  /**
+//    * Return a range constraint <em>expr == value<em>.
+//    *
+//    * @param expr is the numeric expression
+//    * @param value is the value
+//    * @return a range constraint
+//    */
+//  override def eq(expr: NumExpr, value: Double): Range = {
+//    eq(expr, value, null)
+//  }
+//
+//  /**
+//    * Return a range constraint <em>expr == value<em>.
+//    *
+//    * @param expr is the numeric expression
+//    * @param value is the value
+//    * @param name is the name for the range constraint
+//    * @return a range constraint
+//    */
+//  def eq(expr: NumExpr, value: Double, name: String): Range = {
+//    Range(cplex.eq(expr.getIloNumExpr, value, name))(implicitly(this))
+//  }
 
-  /**
-    * Return a range constraint <em>expr == value<em>.
-    *
-    * @param expr is the numeric expression
-    * @param value is the value
-    * @param name is the name for the range constraint
-    * @return a range constraint
-    */
-  def eq(expr: NumExpr, value: Double, name: String): RangeConstraint = {
-    RangeConstraint(cplex.eq(expr.getIloNumExpr, value, name))(implicitly(this))
-  }
-
-  /**
-    * Return a range constraint <em>expr1 == expr2<em>.
-    *
-    * @param expr1 is the first numeric expression
-    * @param expr2 is the second numeric expression
-    * @return a constraint
-    */
-  def eq(expr1: NumExpr, expr2: NumExpr): Constraint = {
-    eq(expr1, expr2, null)
-  }
-
-  /**
-    * Return a range constraint <em>expr1 == expr2<em>.
-    *
-    * @param expr1 is the first numeric expression
-    * @param expr2 is the second numeric expression
-    * @param name is the name of the range constraint
-    * @return a constraint
-    */
-  def eq(expr1: NumExpr, expr2: NumExpr, name: String): Constraint = {
-    Constraint(cplex.eq(expr1.getIloNumExpr, expr2.getIloNumExpr, name))(implicitly(this))
-  }
+//  /**
+//    * Return a range constraint <em>expr1 == expr2<em>.
+//    *
+//    * @param expr1 is the first numeric expression
+//    * @param expr2 is the second numeric expression
+//    * @return a constraint
+//    */
+//  def eq(expr1: NumExpr, expr2: NumExpr): Constraint = {
+//    eq(expr1, expr2, null)
+//  }
+//
+//  /**
+//    * Return a range constraint <em>expr1 == expr2<em>.
+//    *
+//    * @param expr1 is the first numeric expression
+//    * @param expr2 is the second numeric expression
+//    * @param name is the name of the range constraint
+//    * @return a constraint
+//    */
+//  def eq(expr1: NumExpr, expr2: NumExpr, name: String): Constraint = {
+//    Constraint(cplex.eq(expr1.getIloNumExpr, expr2.getIloNumExpr, name))(implicitly(this))
+//  }
 
   /**
     * Return a range that represent the constraint <em>expr >= rhs<em>.
@@ -271,8 +233,8 @@ class MpModel(name: String=null) {
     * @param rhs is the upper bound of the new greater-than-or-equal-to constraint
     * @return a range constraint <em>expr >= rhs</em>
     */
-  def le(expr: NumExpr, rhs: Double, name: String=null): RangeConstraint = {
-    RangeConstraint(cplex.le(expr.getIloNumExpr, rhs, name))(implicitly(this))
+  def le(expr: NumExpr, rhs: Double, name: String=null): Range = {
+    Range(cplex.le(expr.getIloNumExpr, rhs, name))(implicitly(this))
   }
 
   /**
@@ -330,8 +292,8 @@ class MpModel(name: String=null) {
     * @param ub is the upper bound
     * @return an new range constraint
     */
-  def range(lb: Double, expr: NumExpr, ub: Double, name: String=null): RangeConstraint = {
-    RangeConstraint(cplex.range(lb, expr.getIloNumExpr, ub, name))(implicitly(this))
+  def range(lb: Double, expr: NumExpr, ub: Double, name: String=null): Range = {
+    Range(cplex.range(lb, expr.getIloNumExpr, ub, name))(implicitly(this))
   }
 
   /**
@@ -693,7 +655,7 @@ object MpModel {
     * @param value is the constant
     * @return
     */
-  def linearIntExpr(value: Int = 0)(implicit model: MpModel): LinearIntExpr = model.linearIntExpr(value)
+  def linearIntExpr(value: Int = 0)(implicit model: MpModel): IntExpr = model.linearIntExpr(value)
 
   /**
     * Return the sum of a sequence of numeric expressions.

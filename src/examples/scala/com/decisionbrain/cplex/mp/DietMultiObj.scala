@@ -7,6 +7,9 @@
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.mp.MpModel._
+import com.decisionbrain.cplex.NumExpr
+import com.decisionbrain.cplex.NumVar
+import com.decisionbrain.cplex.Objective
 import ilog.concert.IloException
 import ilog.cplex.IloCplex
 import ilog.cplex.IloCplex.{MultiObjIntInfo, MultiObjLongInfo, MultiObjNumInfo, Param}

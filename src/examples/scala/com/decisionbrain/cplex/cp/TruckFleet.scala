@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.{Constraint, IntExpr, IntVar}
 import com.decisionbrain.cplex.cp.CpModel._
 
 /**
@@ -118,7 +119,7 @@ object TruckFleet {
 
     // Dominance: regroup deliveries with same configuration
     for (i <- nbTrucks - 2 until 0 by -1) {
-      var ct: Constraint = Constraint.TRUE // equivalent to 'model.constraint(true)'
+      var ct: Constraint = model.constraint(true) // equivalent to 'model.constraint(true)'
       for (p <- i + 1 until nbTrucks) {
         ct = (truckConfigs(p) != truckConfigs(i - 1)) && ct
         model.add((truckConfigs(i) == truckConfigs(i - 1)) || ct)

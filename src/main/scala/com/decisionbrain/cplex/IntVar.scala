@@ -4,18 +4,17 @@
  * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.Addable
 import ilog.concert.{IloAddable, IloIntVar, IloNumVar, IloNumVarType}
 
 /**
   * Class for numeric variables.
   *
   * @param v     is the CPLEX variable
-  * @param model is the constraint programming model
+  * @param modeler is the optimization model
   */
-class IntVar(v: IloIntVar)(implicit model: CpModel) extends IntExpr(v) with Addable {
+class IntVar(v: IloIntVar)(implicit modeler: Modeler) extends IntExpr(v) with Addable {
 
   /**
     * Returns the CPLEX integer variable.
@@ -143,8 +142,8 @@ object IntVar {
     * Converts a CPLEX numeric variable to a numeric variable.
     *
     * @param v is the CPLEX numeric variable
-    * @param model is the constraint programming model
+    * @param modeler is the optimization model
     * @return a numeric variable
     */
-  def apply(v: IloIntVar)(implicit model: CpModel): IntVar = new IntVar(v)
+  def apply(v: IloIntVar)(implicit modeler: Modeler): IntVar = new IntVar(v)
 }
