@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.NumSegment
 import ilog.concert.IloNumToNumSegmentFunction
 import ilog.cp.IloCP
 

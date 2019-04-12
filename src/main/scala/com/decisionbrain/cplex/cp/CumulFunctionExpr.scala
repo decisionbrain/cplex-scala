@@ -6,14 +6,14 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.{Addable, Constraint, IntExpr}
+import com.decisionbrain.cplex._
 import ilog.concert.{IloAddable, IloCumulFunctionExpr}
 
 /**
   * Iterator on cumul function expression.
   *
   * @param f is the cumul function expression
-  * @param model is the constraint programming model
+  * @param model is the optimization model
   */
 class CumulFunctionExprIterator(f: CumulFunctionExpr)(implicit model: CpModel) extends Iterator[IntStep] {
 

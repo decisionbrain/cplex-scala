@@ -4,17 +4,18 @@
  * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
+import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.IloIntSet
 
 /**
   * Iterator on cumul function expression.
   *
   * @param f is the cumul function expression
-  * @param model is the constraint programming model
+  * @param modeler is the constraint programming model
   */
-class IntSetIterator(f: IntSet)(implicit model: CpModel) extends Iterator[Int] {
+class IntSetIterator(f: IntSet)(implicit modeler: Modeler) extends Iterator[Int] {
 
   var iter = f.getIloIntSet().iterator()
 
@@ -24,14 +25,14 @@ class IntSetIterator(f: IntSet)(implicit model: CpModel) extends Iterator[Int] {
 }
 
 
-class IntSet(val set: IloIntSet)(implicit model: CpModel) extends Iterable[Int] {
+class IntSet(val set: IloIntSet)(implicit model: Modeler) extends Iterable[Int] {
 
-  /**
-    * Returns the constraint programming model
-    *
-    * @return the constraint programming model
-    */
-  def getCpModel(): CpModel = model
+//  /**
+//    * Returns the constraint programming model
+//    *
+//    * @return the constraint programming model
+//    */
+//  def getModeler(): Modeler = model
 
   /**
     * Return the CPLEX set of integer values.

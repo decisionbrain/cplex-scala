@@ -6,7 +6,8 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.{Constraint, IntExpr, IntVar}
+import com.decisionbrain.cplex.{Constraint, NumExpr, IntExpr, IntVar}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 
 /**
@@ -58,7 +59,7 @@ object TruckFleet {
   // Number of trucks used
   var numUsed: IntVar = _
 
-  var obj1: IntExpr = _
+  var obj1: NumExpr = _
   var obj2: IntExpr = _
 
   def build(): CpModel = {
@@ -128,11 +129,11 @@ object TruckFleet {
 
     // Objective: first criterion for minimizing the cost for configuring and loading trucks
     //            second criterion for minimizing the number of trucks
-    obj1 = IntExpr(0)
+    obj1 = .0
     for (i <- 0 until nbTrucks) {
       obj1 = obj1 + element(truckCost, truckConfigs(i)) * (load(i) != 0)
     }
-    obj1 = obj1 + sum(transitionCost.toArray[IntExpr])
+    obj1 = obj1 + model.sum(transitionCost.toArray)
 
     obj2 = numUsed
 

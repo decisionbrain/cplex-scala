@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.IntStep
 import ilog.concert.IloStateFunction
 
 /**

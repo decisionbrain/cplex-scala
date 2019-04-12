@@ -148,7 +148,8 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param f is the cumul function expression
     * @return a constraint on the minimum value of the cumul function
     */
-  def <=(f: CumulFunctionExpr): Constraint = modeler.le(this, f)
+  def <=(f: CumulFunctionExpr): Constraint =
+    Constraint(modeler.toIloCP.le(this.getIloIntExpr(), f.getIloCumulFunctionExpr()))
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should never be
@@ -157,7 +158,8 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param f is the cumul function expression
     * @return a constraint on the maximum value of the cumul function
     */
-  def >=(f: CumulFunctionExpr): Constraint = modeler.ge(this, f)
+  def >=(f: CumulFunctionExpr): Constraint =
+    Constraint(modeler.toIloCP.ge(this.getIloIntExpr(), f.getIloCumulFunctionExpr()))
 }
 
 object IntExpr {

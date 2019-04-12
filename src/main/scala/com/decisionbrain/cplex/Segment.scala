@@ -4,7 +4,7 @@
  * (c) Copyright DecisionBrain SAS 2016,2018
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
 /**
   * This class represents a numeric segment of a piecewise linear function.

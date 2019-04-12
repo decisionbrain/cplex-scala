@@ -8,7 +8,7 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
-import ilog.concert._
+import com.decisionbrain.cplex.Modeler._
 import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
@@ -25,16 +25,7 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
   */
 class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
 
-//  val cplex = (new IloCplex()).setName(name)
-
   def cplex: IloCplex = this.toIloCplex
-
-  /**
-    * Returns the name of the mathematical programming model.
-    *
-    * @return the name of the model
-    */
-  def getName(): Option[String] = Option(name)
 
   /**
     * Return the value of a numeric expression in the solution.
@@ -159,15 +150,15 @@ class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
 //    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
 //  }
 
-  /**
-    * Return the sum of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
-    */
-  def sum(exprs: Iterable[NumExpr]) : NumExpr = {
-    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
-  }
+//  /**
+//    * Return the sum of numeric expressions.
+//    *
+//    * @param exprs is a sequence of numeric variables
+//    * @return a numeric expression that represents the sum of the numeric expressions
+//    */
+//  def sum(exprs: Iterable[NumExpr]) : NumExpr = {
+//    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+//  }
 
   /**
     * Return a range that represent the constraint <em>expr >= rhs<em>.
@@ -657,22 +648,22 @@ object MpModel {
     */
   def linearIntExpr(value: Int = 0)(implicit model: MpModel): IntExpr = model.linearIntExpr(value)
 
-  /**
-    * Return the sum of a sequence of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
-    */
-  def sum(exprs: NumExpr*)(implicit model: MpModel) : NumExpr = model.sum(exprs)
-
-  /**
-    * Return the sum of a sequence of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
-    */
-  def sum(exprs: Iterable[NumExpr])(implicit model: MpModel) : NumExpr = model.sum(exprs)
-
+//  /**
+//    * Return the sum of a sequence of numeric expressions.
+//    *
+//    * @param exprs is a sequence of numeric variables
+//    * @return a numeric expression that represents the sum of the numeric expressions
+//    */
+//  def sum(exprs: NumExpr*)(implicit model: MpModel) : NumExpr = model.sum(exprs)
+//
+//  /**
+//    * Return the sum of a sequence of numeric expressions.
+//    *
+//    * @param exprs is a sequence of numeric variables
+//    * @return a numeric expression that represents the sum of the numeric expressions
+//    */
+//  def sum(exprs: Iterable[NumExpr])(implicit model: MpModel) : NumExpr = model.sum(exprs)
+//
   /**
     * Creates and returns an objective object to minimize the expression <em>expr</em>.
     *
@@ -773,23 +764,23 @@ object MpModel {
     */
   def minimize(expr: MultiCriterionExpr)(implicit model: MpModel): Objective = model.minimize(expr)
 
-  /**
-    *  Implicit conversion of set of numeric expressions: add behavior
-    *
-    * @param exprs are the integer expressions
-    * @param model is the constraint programming model
-    */
-  implicit class NumExprArray(val exprs: Iterable[NumExpr])(implicit model: MpModel) {
-
-    /**
-      * Converts to scala array
-      */
-    def toArray: Array[NumExpr] = exprs.toArray
-
-    /**
-      * Convert to CPLEX array
-      */
-    def toIloArray: Array[IloNumExpr] = exprs.map(e => e.getIloNumExpr()).toArray
-  }
+//  /**
+//    *  Implicit conversion of set of numeric expressions: add behavior
+//    *
+//    * @param exprs are the integer expressions
+//    * @param model is the constraint programming model
+//    */
+//  implicit class NumExprArray(val exprs: Iterable[NumExpr])(implicit model: MpModel) {
+//
+//    /**
+//      * Converts to scala array
+//      */
+//    def toArray: Array[NumExpr] = exprs.toArray
+//
+//    /**
+//      * Convert to CPLEX array
+//      */
+//    def toIloArray: Array[IloNumExpr] = exprs.map(e => e.getIloNumExpr()).toArray
+//  }
 
 }

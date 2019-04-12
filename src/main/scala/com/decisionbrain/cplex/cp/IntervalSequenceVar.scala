@@ -7,7 +7,7 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.Addable
-import ilog.concert.{IloAddable, IloCumulFunctionExpr, IloIntervalSequenceVar}
+import ilog.concert.{IloAddable, IloIntervalSequenceVar}
 
 /**
   * Iterator on sequence variable .

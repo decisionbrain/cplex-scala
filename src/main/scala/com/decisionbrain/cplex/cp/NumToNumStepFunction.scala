@@ -6,7 +6,8 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.cp.CpModel.NumArray
+import com.decisionbrain.cplex.Modeler.NumArray
+import com.decisionbrain.cplex.NumStep
 import ilog.concert.IloNumToNumStepFunction
 import ilog.concert.cppimpl.IloConcertUtils
 import ilog.cp.IloCP

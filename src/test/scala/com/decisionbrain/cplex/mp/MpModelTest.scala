@@ -8,6 +8,7 @@ package com.decisionbrain.cplex.mp
 
 import java.io.{File, FileReader}
 
+import com.decisionbrain.cplex.Modeler
 import ilog.concert.IloNumVarType
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -177,10 +178,10 @@ class MpModelTest extends FunSuite with Matchers {
 //    sum4.getIloNumExpr should not equal(null)
 
     // sum on companion object
-    val cosum1 = MpModel.sum(List(model.numVar(0, 10), model.numVar(0, 20)))(implicitly(model))
+    val cosum1 = Modeler.sum(List(model.numVar(0, 10), model.numVar(0, 20)))(implicitly(model))
     cosum1.getIloNumExpr should not equal null
 
-    val cosum2 = MpModel.sum(model.numVar(0, 10), model.numVar(0, 20))(implicitly(model))
+    val cosum2 = Modeler.sum(model.numVar(0, 10), model.numVar(0, 20))(implicitly(model))
     cosum2.getIloNumExpr should not equal null
 
     // add

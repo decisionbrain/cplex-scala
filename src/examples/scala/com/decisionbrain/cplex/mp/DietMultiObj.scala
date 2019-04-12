@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.mp
 
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.NumExpr
 import com.decisionbrain.cplex.NumVar
