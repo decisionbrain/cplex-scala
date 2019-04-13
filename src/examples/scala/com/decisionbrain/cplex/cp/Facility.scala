@@ -6,7 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.{IntVar, NumExpr}
+import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 
@@ -43,16 +43,15 @@ object Facility {
       yield model.intVar(0, 1, "open")).toList
 
     for (supplier <- suppliers) {
-//      model.add(element(open.toArray[IntExpr], supplier) == 1)
-      model.add(open.element(supplier) == 1) // equivalent to previous line
+      model.add(open(supplier) == 1)
     }
 
     for (j <- 0 until nbLocations)
       model.add(count(suppliers, j) <= capacity(j))
 
-    val fixedCostExpr: NumExpr = scalarProduct(fixedCost, open)
+    val fixedCostExpr: NumExpr = fixedCost * open
     val variableCostExpr = model.sum(for (s <- 0 until nbStores)
-      yield cost(s).element(suppliers(s))) // element expression 'element(costs(s), suppliers(s))'
+      yield cost(s)(suppliers(s))) // element expression 'element(costs(s), suppliers(s))'
 
     model.add(minimize(fixedCostExpr + variableCostExpr))
 

@@ -88,7 +88,7 @@ object TruckFleet {
     // Constrain the volume of the orders in each truck
     model.add(pack(load, where, volumes, numUsed))
     for (t <- 0 until nbTrucks) {
-      model.add(load(t) <= element(maxTruckConfigLoad, truckConfigs(t)))
+      model.add(load(t) <= maxTruckConfigLoad(truckConfigs(t)))
     }
 
     // Compatibility between the colors of an order and the configuration of its truck
@@ -100,12 +100,12 @@ object TruckFleet {
     for (o <- 0 until nbOrders) {
       val values = allowedContainerConfigs(colors(o))
       val configOfContainer = model.intVar(values)
-      model.add(configOfContainer == truckConfigs.element(where(o)))
+      model.add(configOfContainer == truckConfigs(where(o)))
     }
 
     // Only one customer per truck
     for (o <- 0 until nbOrders)
-      model.add(customerOfTruck.element(where(o)) == customerOfOrder(o))
+      model.add(customerOfTruck(where(o)) == customerOfOrder(o))
 
     // Non-used trucks are at the end
     for (j <- 1 until nbTrucks) {
@@ -131,9 +131,9 @@ object TruckFleet {
     //            second criterion for minimizing the number of trucks
     obj1 = .0
     for (i <- 0 until nbTrucks) {
-      obj1 = obj1 + element(truckCost, truckConfigs(i)) * (load(i) != 0)
+      obj1 = obj1 + truckCost(truckConfigs(i)) * (load(i) != 0)
     }
-    obj1 = obj1 + model.sum(transitionCost.toArray)
+    obj1 = obj1 + model.sum(transitionCost)
 
     obj2 = numUsed
 

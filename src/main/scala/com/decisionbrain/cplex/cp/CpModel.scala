@@ -6,16 +6,18 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.{Addable, Constraint, IntExpr, IntSet, IntVar, Modeler, NumExpr, NumVar, Objective}
-import com.decisionbrain.cplex.Modeler.{IntArray, IntExprArray, NumArray, NumExprArray}
+import com.decisionbrain.cplex.{Addable, Constraint, IntExpr, IntSet, IntVar, Modeler, NumExpr, NumVar, Objective, SearchPhase}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.concert._
 import ilog.concert.cppimpl.IloConcertUtils
 import ilog.cp.IloCP
 
-import scala.reflect.ClassTag
-
-
+/**
+  * TODO
+  *
+  * @param name
+  */
 class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
 
   def cp: IloCP = this.toIloCP
@@ -306,56 +308,6 @@ class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
                   granularity: Int): IntervalVar =
     IntervalVar(cp.intervalVar(sizeMin, sizeMax, optional, intensity.getIloNumToNumStepFunction(), granularity))(implicitly(this))
 
-//  /**
-//    * Return the sum of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric variables
-//    * @return a numeric expression that represents the sum of the numeric expressions
-//    */
-//  def sum(exprs: NumExprArray) : NumExpr = {
-//    NumExpr(cp.sum(exprs.toIloArray))(implicitly(this))
-//  }
-//
-//  /**
-//    * Returns the integer sum of integer expressions.
-//    *
-//    * @param exprs is an array of integer expressions
-//    * @return an integer expression that represents the sum of the integer expressions
-//    */
-//  def sumi(exprs: IntExprArray) : IntExpr = {
-//    IntExpr(cp.sum(exprs.toIloArray))(implicitly(this))
-//  }
-//
-//  /**
-//    * Return the sum of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric variables
-//    * @return a numeric expression that represents the sum of the numeric expressions
-//    */
-//  def sum(exprs: Array[NumExpr]) : NumExpr = {
-//    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
-//  }
-//
-//  /**
-//    * Return the sum of integer expressions.
-//    *
-//    * @param exprs is a sequence of integer variables
-//    * @return a numeric expression that represents the sum of the integer expressions
-//    */
-//  def sum(exprs: Array[IntExpr]) : IntExpr = {
-//    IntExpr(cp.sum(exprs.map(e => e.getIloIntExpr)))(implicitly(this))
-//  }
-//
-//  /**
-//    * Returns the sum of numeric expressions.
-//    *
-//    * @param exprs is a variable number of numeric expressions
-//    * @return a numeric expression that represents the sum numeric expressions
-//    */
-//  def sum(exprs: NumExpr*) : NumExpr = {
-//    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
-//  }
-
   /**
     * Returns the maximum of a set of numeric expressions.
     *
@@ -480,28 +432,28 @@ class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
     IntExpr(cp.count(exprs.map(e => e.getIloIntExpr()), v))(implicitly(this))
   }
 
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
-    IntExpr(cp.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: Array[Int], vars: Array[IntVar]): IntExpr =
-    IntExpr(cp.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
-
+//  /**
+//    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+//    * with the given integer variables.
+//    *
+//    * @param values is the sequence of values
+//    * @param vars is the sequence of variables
+//    * @return the scalar product of integer values with integer variables
+//    */
+//  def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
+//    IntExpr(cp.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
+//
+//  /**
+//    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+//    * with the given integer variables.
+//    *
+//    * @param values is the sequence of values
+//    * @param vars is the sequence of variables
+//    * @return the scalar product of integer values with integer variables
+//    */
+//  def scalarProduct(values: Array[Int], vars: Array[IntVar]): IntExpr =
+//    IntExpr(cp.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
+//
   /**
     * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
     * values[1]*exps[1] + ...
@@ -2800,27 +2752,28 @@ object CpModel {
     */
   def count(vars: Array[IntExpr], v: Int)(implicit model: CpModel): IntExpr = model.count(vars, v)
 
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is an arrayr of integer values
-    * @param vars is an array of integer variables
-    * @return an integer expression equals to the scalar product of the integer values with the integer variables
-    */
-  def scalarProduct(values: IntArray, vars: IntVarArray)(implicit model: CpModel): IntExpr =
-    model.scalarProduct(values, vars)
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: Array[Int], vars: Array[IntVar])(implicit model: CpModel): IntExpr =
-    model.scalarProduct(values, vars)
+//  /**
+//    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+//    * with the given integer variables.
+//    *
+//    * @param values is an arrayr of integer values
+//    * @param vars is an array of integer variables
+//    * @return an integer expression equals to the scalar product of the integer values with the integer variables
+//    */
+//  def scalarProduct(values: IntArray, vars: IntVarArray)(implicit model: CpModel): IntExpr =
+//    model.scalarProduct(values, vars)
+//
+//  /**
+//    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+//    * with the given integer variables.
+//    *
+//    * @param values is the sequence of values
+//    * @param vars is the sequence of variables
+//    * @return the scalar product of integer values with integer variables
+//    */
+//  def scalarProduct(values: Array[Int], vars: Array[IntVar])(implicit model: CpModel): IntExpr =
+//    model.scalarProduct(values, vars)
+//
 
   /**
     * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
@@ -4334,38 +4287,38 @@ object CpModel {
 
   }
 
-  /**
-    *  Class IntVarArray gives additional behavior such as implicit conversion to search phase
-    *
-    * @param vars are the integer variables
-    * @param model is the constraint programming model
-    */
-  implicit class IntVarArray(val vars: Iterable[IntVar])(implicit model: CpModel) extends Iterable[IntVar] {
-
-    /**
-      * Converts to search phase.
-      *
-      * @return a search phase
-      */
-    def toSearchPhase: SearchPhase = SearchPhase(model.cp.searchPhase(vars.map(v => v.getIloIntVar()).toArray))
-
-    /**
-      * Converts to scala array
-      */
-    override def toArray[B >: IntVar: ClassTag]: Array[B] = vars.toArray[B]
-
-    /**
-      * Converts to CPLEX array
-      */
-    def toIloArray[B >: IloIntVar: ClassTag]: Array[B] = vars.map(v => v.getIloIntVar()).toArray
-
-    /**
-      * Returns an iterator.
-      *
-      * @return an iterator
-      */
-    override def iterator: Iterator[IntVar] = vars.iterator
-  }
+//  /**
+//    *  Class IntVarArray gives additional behavior such as implicit conversion to search phase
+//    *
+//    * @param vars are the integer variables
+//    * @param model is the constraint programming model
+//    */
+//  implicit class IntVarArray(val vars: Iterable[IntVar])(implicit model: CpModel) extends Iterable[IntVar] {
+//
+//    /**
+//      * Converts to search phase.
+//      *
+//      * @return a search phase
+//      */
+//    def toSearchPhase: SearchPhase = SearchPhase(model.cp.searchPhase(vars.map(v => v.getIloIntVar()).toArray))
+//
+//    /**
+//      * Converts to scala array
+//      */
+//    override def toArray[B >: IntVar: ClassTag]: Array[B] = vars.toArray[B]
+//
+//    /**
+//      * Converts to CPLEX array
+//      */
+//    def toIloArray[B >: IloIntVar: ClassTag]: Array[B] = vars.map(v => v.getIloIntVar()).toArray
+//
+//    /**
+//      * Returns an iterator.
+//      *
+//      * @return an iterator
+//      */
+//    override def iterator: Iterator[IntVar] = vars.iterator
+//  }
 
   /**
     * Implicit conversion of a set of cumul function expressions to an array of cumul function expressions.

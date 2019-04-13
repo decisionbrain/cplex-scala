@@ -6,9 +6,9 @@
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.{IntExpr, IntVar}
+import com.decisionbrain.cplex._
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
-import ilog.cp.IloCP
 
 /**
   * This example solves a scheduling problem on two alternative heterogeneous machines. A set of tasks {a_1,...,a_n}
@@ -113,7 +113,7 @@ object LearningCurve {
   var si1 : IntervalSequenceVar = _
   var si2 : IntervalSequenceVar = _
 
-  var o : Array[IntVar] = _
+  var o : List[IntVar] = _
 
   var IndexOfTask : Map[IntervalVar, Int] = _
 
@@ -213,9 +213,9 @@ object LearningCurve {
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a1(i))))
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
 
-      val expr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
+      val expr1 =  o(typeOfPrevious(si1, a1(i), i, i))
       model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr1 + startOf(a1(i)) - endOfPrevious(s1, a1(i), LastProductionTime1)))
-      val expr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
+      val expr2 =  o(typeOfPrevious(si2, a2(i), i))
       model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == expr2 + startOf(a2(i)) - endOfPrevious(s2, a2(i), LastProductionTime2)))
     }
 
