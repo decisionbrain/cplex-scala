@@ -365,115 +365,115 @@ class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
     IntExpr(cp.count(exprs.map(e => e.getIloIntExpr()), v))(implicitly(this))
   }
 
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: IntArray, exprs: IntExprArray): IntExpr =
-    IntExpr(cp.prod(exprs.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: Array[Int], exprs: Array[IntExpr]): IntExpr =
-    IntExpr(cp.prod(exprs.map(e => e.getIloIntExpr()), values))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is the array of integer expressions
-    * @param exps2 is the array of integer expressions
-    * @return the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: IntExprArray, exps2: IntExprArray): IntExpr =
-    IntExpr(cp.prod(exps1.toIloArray, exps2.toIloArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is the array of integer expressions
-    * @param exps2 is the array of integer expressions
-    * @return the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr]): IntExpr =
-    IntExpr(cp.prod(exps1.map(e => e.getIloIntExpr()), exps2.map(e => e.getIloIntExpr())))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is the array of integer expressions
-    * @param values is the array of integer values
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(exps: IntExprArray, values: IntArray): IntExpr =
-    IntExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is the array of integer expressions
-    * @param values is the array of integer values
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(exps: Array[IntExpr], values: Array[Int]): IntExpr =
-    IntExpr(cp.prod(exps.map(e => e.getIloIntExpr()), values))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of integer values
-    * @param exps is the array of integer expressions
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(values: NumArray, exps: NumExprArray): NumExpr =
-    NumExpr(cp.prod(values.toArray, exps.toIloArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of integer values
-    * @param exps is the array of integer expressions
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(values: Array[Double], exps: Array[NumExpr]): NumExpr =
-    NumExpr(cp.prod(values, exps.map(e => e.getIloNumExpr)))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of numeric values
-    * @param exps is the array of numeric expressions
-    * @return the scalar product of numeric expressions with numeric values
-    */
-  def prod(exps: NumExprArray, values: NumArray): NumExpr =
-    NumExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of numeric values
-    * @param exps is the array of numeric expressions
-    * @return the scalar product of numeric expressions with numeric values
-    */
-  def prod(exps: Array[NumExpr], values: Array[Double]): NumExpr =
-    NumExpr(cp.prod(exps.map(e => e.getIloNumExpr), values))(implicitly(this))
+//  /**
+//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param exprs is the sequence of integer expressions
+//    * @param values is the sequence of integer values
+//    * @return the scalar product of integer values with integer expressions
+//    */
+//  def prod(values: IntArray, exprs: IntExprArray): IntExpr =
+//    IntExpr(cp.prod(exprs.toIloArray, values.toArray))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param exprs is the sequence of integer expressions
+//    * @param values is the sequence of integer values
+//    * @return the scalar product of integer values with integer expressions
+//    */
+//  def prod(values: Array[Int], exprs: Array[IntExpr]): IntExpr =
+//    IntExpr(cp.prod(exprs.map(e => e.getIloIntExpr()), values))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps1 is the array of integer expressions
+//    * @param exps2 is the array of integer expressions
+//    * @return the scalar product of two arrays of integer expressions
+//    */
+//  def prod(exps1: IntExprArray, exps2: IntExprArray): IntExpr =
+//    IntExpr(cp.prod(exps1.toIloArray, exps2.toIloArray))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps1 is the array of integer expressions
+//    * @param exps2 is the array of integer expressions
+//    * @return the scalar product of two arrays of integer expressions
+//    */
+//  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr]): IntExpr =
+//    IntExpr(cp.prod(exps1.map(e => e.getIloIntExpr()), exps2.map(e => e.getIloIntExpr())))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps is the array of integer expressions
+//    * @param values is the array of integer values
+//    * @return the scalar product of integer expressions with integer values
+//    */
+//  def prod(exps: IntExprArray, values: IntArray): IntExpr =
+//    IntExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps is the array of integer expressions
+//    * @param values is the array of integer values
+//    * @return the scalar product of integer expressions with integer values
+//    */
+//  def prod(exps: Array[IntExpr], values: Array[Int]): IntExpr =
+//    IntExpr(cp.prod(exps.map(e => e.getIloIntExpr()), values))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is the array of integer values
+//    * @param exps is the array of integer expressions
+//    * @return the scalar product of integer expressions with integer values
+//    */
+//  def prod(values: NumArray, exps: NumExprArray): NumExpr =
+//    NumExpr(cp.prod(values.toArray, exps.toIloArray))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is the array of integer values
+//    * @param exps is the array of integer expressions
+//    * @return the scalar product of integer expressions with integer values
+//    */
+//  def prod(values: Array[Double], exps: Array[NumExpr]): NumExpr =
+//    NumExpr(cp.prod(values, exps.map(e => e.getIloNumExpr)))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is the array of numeric values
+//    * @param exps is the array of numeric expressions
+//    * @return the scalar product of numeric expressions with numeric values
+//    */
+//  def prod(exps: NumExprArray, values: NumArray): NumExpr =
+//    NumExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is the array of numeric values
+//    * @param exps is the array of numeric expressions
+//    * @return the scalar product of numeric expressions with numeric values
+//    */
+//  def prod(exps: Array[NumExpr], values: Array[Double]): NumExpr =
+//    NumExpr(cp.prod(exps.map(e => e.getIloNumExpr), values))(implicitly(this))
 
   /**
     *  Creates and returns a new integer expression equal to values[index] where index is an integer expression.
@@ -2623,107 +2623,107 @@ object CpModel {
     */
   def count(vars: Array[IntExpr], v: Int)(implicit model: CpModel): IntExpr = model.count(vars, v)
 
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: IntArray, exprs: IntExprArray)(implicit model: CpModel): IntExpr =
-    model.prod(values, exprs)
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer values with the integer expressions
-    */
-  def prod(values: Array[Int], exprs: Array[IntExpr])(implicit model: CpModel): IntExpr =
-    model.prod(values, exprs)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is an array of integer expressions
-    * @param exps2 is an array of integer expressions
-    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: IntExprArray, exps2: IntExprArray)(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is an array of integer expressions
-    * @param exps2 is an array of integer expressions
-    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr])(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-    */
-  def prod(exps: IntExprArray, values: IntArray)(implicit model: CpModel): IntExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-    */
-  def prod(exps: Array[IntExpr], values: Array[Int])(implicit model: CpModel): IntExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an  array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(values: NumArray, exps: NumExprArray)(implicit model: CpModel): NumExpr = model.prod(values, exps)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an  array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(values: Array[Double], exps: Array[NumExpr])(implicit model: CpModel): NumExpr = model.prod(values, exps)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(exps: NumExprArray, values: NumArray)(implicit model: CpModel): NumExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(exps: Array[NumExpr], values: Array[Double])(implicit model: CpModel): NumExpr = model.prod(exps, values)
+//  /**
+//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param exprs is the sequence of integer expressions
+//    * @param values is the sequence of integer values
+//    * @return the scalar product of integer values with integer expressions
+//    */
+//  def prod(values: IntArray, exprs: IntExprArray)(implicit model: CpModel): IntExpr =
+//    model.prod(values, exprs)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param exprs is an array of integer expressions
+//    * @param values is an array of integer values
+//    * @return an integer expression equals to the scalar product of the integer values with the integer expressions
+//    */
+//  def prod(values: Array[Int], exprs: Array[IntExpr])(implicit model: CpModel): IntExpr =
+//    model.prod(values, exprs)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps1 is an array of integer expressions
+//    * @param exps2 is an array of integer expressions
+//    * @return an integer expression equals to the scalar product of two arrays of integer expressions
+//    */
+//  def prod(exps1: IntExprArray, exps2: IntExprArray)(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps1 is an array of integer expressions
+//    * @param exps2 is an array of integer expressions
+//    * @return an integer expression equals to the scalar product of two arrays of integer expressions
+//    */
+//  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr])(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps is an array of integer expressions
+//    * @param values is an array of integer values
+//    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
+//    */
+//  def prod(exps: IntExprArray, values: IntArray)(implicit model: CpModel): IntExpr = model.prod(exps, values)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
+//    * exps1[1]*exps2[1] + ...
+//    *
+//    * @param exps is an array of integer expressions
+//    * @param values is an array of integer values
+//    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
+//    */
+//  def prod(exps: Array[IntExpr], values: Array[Int])(implicit model: CpModel): IntExpr = model.prod(exps, values)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is an  array of numeric values
+//    * @param exps is an array of numeric expressions
+//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
+//    */
+//  def prod(values: NumArray, exps: NumExprArray)(implicit model: CpModel): NumExpr = model.prod(values, exps)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is an  array of numeric values
+//    * @param exps is an array of numeric expressions
+//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
+//    */
+//  def prod(values: Array[Double], exps: Array[NumExpr])(implicit model: CpModel): NumExpr = model.prod(values, exps)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is an array of numeric values
+//    * @param exps is an array of numeric expressions
+//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
+//    */
+//  def prod(exps: NumExprArray, values: NumArray)(implicit model: CpModel): NumExpr = model.prod(exps, values)
+//
+//  /**
+//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
+//    * values[1]*exps[1] + ...
+//    *
+//    * @param values is an array of numeric values
+//    * @param exps is an array of numeric expressions
+//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
+//    */
+//  def prod(exps: Array[NumExpr], values: Array[Double])(implicit model: CpModel): NumExpr = model.prod(exps, values)
 
   /**
     * Creates and returns a new integer expression equals to exprs[index] where index is an integer expression.

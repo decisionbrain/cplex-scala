@@ -1,7 +1,6 @@
 package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
-import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
 import ilog.cp.IloCP
 import ilog.cplex.IloCplex
@@ -234,6 +233,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: IntArray, vars: IntVarArray): IntExpr =
+    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
     IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
@@ -245,6 +248,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: IntVarArray, values: IntArray): IntExpr =
+    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: IntVarArray, values: IntArray): IntExpr =
     IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
 
@@ -256,6 +263,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Array[Int], vars: Array[IntVar]): IntExpr =
+    IntExpr(modeler.scalProd(values, vars.map(v => v.getIloIntVar())))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Array[Int], vars: Array[IntVar]): IntExpr =
     IntExpr(modeler.scalProd(values, vars.map(v => v.getIloIntVar())))(implicitly(this))
 
@@ -267,6 +278,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: Array[IntVar], values: Array[Int]): IntExpr =
+    IntExpr(modeler.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: Array[IntVar], values: Array[Int]): IntExpr =
     IntExpr(modeler.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
 
@@ -278,9 +293,12 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of numeric values with numerci variables
     */
-  def scalarProduct(values: NumArray, vars: NumVarArray): NumExpr =
+  def scalProd(values: NumArray, vars: NumVarArray): NumExpr =
     NumExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
 
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
+  def scalarProduct(values: NumArray, vars: NumVarArray): NumExpr =
+    NumExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
   /**
     * Creates and returns an linear expression representing the scalar product of the numeric values
     * with the given numeric variables.
@@ -289,6 +307,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of numeric values with numerci variables
     */
+  def scalProd(vars: NumVarArray, values: NumArray): NumExpr =
+    NumExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: NumVarArray, values: NumArray): NumExpr =
     NumExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
@@ -300,6 +322,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Array[Double], vars: Array[NumVar]): NumExpr =
+    NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Array[Double], vars: Array[NumVar]): NumExpr =
     NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
 
@@ -311,6 +337,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: Array[NumVar], values: Array[Double]): NumExpr =
+    NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: Array[NumVar], values: Array[Double]): NumExpr =
     NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
 
@@ -322,6 +352,10 @@ abstract class Modeler(modeler: IloModeler) {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Iterable[Double], vars: Iterable[NumVar]): NumExpr =
+    NumExpr(modeler.scalProd(values.toArray, vars.map(v => v.getIloNumVar()).toArray))(implicitly(this))
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Iterable[Double], vars: Iterable[NumVar]): NumExpr =
     NumExpr(modeler.scalProd(values.toArray, vars.map(v => v.getIloNumVar()).toArray))(implicitly(this))
 
@@ -626,7 +660,7 @@ object Modeler {
       * @param values are the numeric values
       * @return the scalar product of theses numeric variables with the given numeric values
       */
-    def *(values: NumArray): NumExpr = modeler.scalarProduct(this, values)
+    def *(values: NumArray): NumExpr = modeler.scalProd(this, values)
 
     /**
       * Returns an iterator.
@@ -658,7 +692,7 @@ object Modeler {
       * @param values are the integer values
       * @return the scalar product of theses integer variables with the given integer values
       */
-    def *(values: IntArray): IntExpr = modeler.scalarProduct(this, values)
+    def *(values: IntArray): IntExpr = modeler.scalProd(this, values)
 
     /**
       * Converts to scala array
@@ -712,7 +746,7 @@ object Modeler {
       * @param vars are the numeric variables
       * @return the scalar product of these numeric values with the numeric variables
       */
-    def *(vars: NumVarArray): NumExpr = modeler.scalarProduct(this, vars)
+    def *(vars: NumVarArray): NumExpr = modeler.scalProd(this, vars)
 
     /**
       * Converts to scala array
@@ -762,7 +796,7 @@ object Modeler {
       * @param vars are the integer variables
       * @return the scalar product of these integer values with the integer variables
       */
-    def *(vars: IntVarArray): IntExpr = modeler.scalarProduct(this, vars)
+    def *(vars: IntVarArray): IntExpr = modeler.scalProd(this, vars)
 
     /**
       * Converts to scala array
@@ -786,8 +820,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: IntArray, vars: IntVarArray)(implicit modeler: Modeler): IntExpr =
+    modeler.scalProd(values, vars)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: IntArray, vars: IntVarArray)(implicit modeler: Modeler): IntExpr =
-    modeler.scalarProduct(values, vars)
+    modeler.scalProd(values, vars)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -797,8 +835,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: IntVarArray, values: IntArray)(implicit modeler: Modeler): IntExpr =
+    modeler.scalProd(values, vars)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: IntVarArray, values: IntArray)(implicit modeler: Modeler): IntExpr =
-    modeler.scalarProduct(values, vars)
+    modeler.scalProd(values, vars)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -808,8 +850,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Array[Int], vars: Array[IntVar])(implicit modeler: Modeler): IntExpr =
+    modeler.scalProd(values, vars)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Array[Int], vars: Array[IntVar])(implicit modeler: Modeler): IntExpr =
-    modeler.scalarProduct(values, vars)
+    modeler.scalProd(values, vars)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -819,8 +865,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: Array[IntVar], values: Array[Int])(implicit modeler: Modeler): IntExpr =
+    modeler.scalProd(vars, values)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: Array[IntVar], values: Array[Int])(implicit modeler: Modeler): IntExpr =
-    modeler.scalarProduct(vars, values)
+    modeler.scalProd(vars, values)
 
   /**
     * Creates and returns an linear expression representing the scalar product of the numeric values
@@ -830,8 +880,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of numeric values with numerci variables
     */
+  def scalProd(values: NumArray, vars: NumVarArray)(implicit modeler: Modeler): NumExpr =
+    modeler.scalProd(values, vars)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: NumArray, vars: NumVarArray)(implicit modeler: Modeler): NumExpr =
-    modeler.scalarProduct(values, vars)
+    modeler.scalProd(values, vars)
 
   /**
     * Creates and returns an linear expression representing the scalar product of the numeric values
@@ -841,8 +895,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of numeric values with numerci variables
     */
+  def scalProd(vars: NumVarArray, values: NumArray)(implicit modeler: Modeler): NumExpr =
+    modeler.scalProd(vars, values)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: NumVarArray, values: NumArray)(implicit modeler: Modeler): NumExpr =
-    modeler.scalarProduct(vars, values)
+    modeler.scalProd(vars, values)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -852,8 +910,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Array[Double], vars: Array[NumVar])(implicit modeler: Modeler): NumExpr =
+    modeler.scalProd(vars, values)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Array[Double], vars: Array[NumVar])(implicit modeler: Modeler): NumExpr =
-    modeler.scalarProduct(vars, values)
+    modeler.scalProd(vars, values)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -863,8 +925,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(vars: Array[NumVar], values: Array[Double])(implicit modeler: Modeler): NumExpr =
+    modeler.scalProd(vars, values)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: Array[NumVar], values: Array[Double])(implicit modeler: Modeler): NumExpr =
-    modeler.scalarProduct(vars, values)
+    modeler.scalProd(vars, values)
 
   /**
     * Creates and returns an integer linear expression representing the scalar product of the given integer values
@@ -874,8 +940,12 @@ object Modeler {
     * @param vars is the sequence of variables
     * @return the scalar product of integer values with integer variables
     */
+  def scalProd(values: Iterable[Double], vars: Iterable[NumVar])(implicit modeler: Modeler): NumExpr =
+    modeler.scalProd(values, vars)
+
+  @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: Iterable[Double], vars: Iterable[NumVar])(implicit modeler: Modeler): NumExpr =
-    modeler.scalarProduct(values, vars)
+    modeler.scalProd(values, vars)
 
   /**
     * Return the sum of a set of numeric expressions.

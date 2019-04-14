@@ -6,7 +6,7 @@
 
 package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.cp.{CpModel, CumulFunctionExpr}
+import com.decisionbrain.cplex.cp.CumulFunctionExpr
 import ilog.concert.IloIntExpr
 
 /**
