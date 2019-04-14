@@ -14,7 +14,7 @@ import scala.reflect.ClassTag
   *
   * @param modeler is the CPLEX modeler.
   */
-class Modeler(modeler: IloModeler) {
+abstract class Modeler(modeler: IloModeler) {
 
   /**
     * Constructor for the Modeler
@@ -44,6 +44,8 @@ class Modeler(modeler: IloModeler) {
   /**
     * Returns the CPLEX object to solve the mathematical programming model
     *
+    * TODO: move to MpModel
+    *
     * @return
     */
   def toIloCplex: IloCplex = getIloModeler().asInstanceOf[IloCplex]
@@ -51,9 +53,161 @@ class Modeler(modeler: IloModeler) {
   /**
     * Returns the CPLEX CP Optimizer
     *
+    * TODO: move to CpModel
+    *
     * @return
     */
   def toIloCP: IloCP = getIloModeler().asInstanceOf[IloCP]
+
+  /**
+    * Create a numeric variable.
+    *
+    * @param lb is the lower bound
+    * @param ub is the upper bound
+    * @param name is the name of the variable
+    * @return a numeric variable
+    */
+  def numVar(lb: Double=0.0, ub: Double=Double.MaxValue, name: String=null): NumVar =
+    NumVar(modeler.numVar(lb, ub, name))(implicitly(this))
+
+  /**
+    * Create a numeric variable for each element in the set and add it in a dictionary
+    * where the key is element of the set and the value is the numeric variable.
+    *
+    * @param set is the set
+    * @param lb is the lowver bound
+    * @param ub is the upper bound
+    * @param namer is a function that is used to set the name of a numeric variable
+    * @tparam T it the type of the elements in the set
+    * @return a dictionary of numeric variables indexed by the element of the set
+    */
+  def numVars[T](set: Iterable[T],
+                 lb: Double = 0.0,
+                 ub: Double = Double.MaxValue,
+                 namer: (T) => String = (t: T) => "") : Map[T, NumVar] = {
+    val dict: Map[T, NumVar] = set.map(t => {
+      val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
+      (t, v)
+    })(collection.breakOut)
+    dict
+  }
+
+  /**
+    * Create an integer variable.
+    *
+    * @param min is the lower bound
+    * @param max is the upper bound
+    * @param name is the name of the variable
+    * @return a numeric variable
+    */
+  def intVar(min: Int=0, max: Int=Int.MaxValue, name: String=null): IntVar =
+    IntVar(modeler.intVar(min, max, name))(implicitly(this))
+
+  /**
+    * Create a numeric variable for each element in the set and add it in a dictionary
+    * where the key is element of the set and the value is the numeric variable.
+    *
+    * @param set is the set
+    * @param min is the minimum value
+    * @param max is the maximum value
+    * @param namer is a function that is used to set the name of a numeric variable
+    * @tparam T it the type of the elements in the set
+    * @return a dictionary of numeric variables indexed by the element of the set
+    */
+  def intVars[T](set: Iterable[T],
+                 min: Int = 0,
+                 max: Int= Int.MaxValue,
+                 namer: (T) => String = (t: T) => "") : Map[T, IntVar] = {
+    val dict: Map[T, IntVar] = set.map(t => {
+      val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
+      (t, v)
+    })(collection.breakOut)
+    dict
+  }
+
+  /**
+    * Creates and returns a list of integer variables.
+    *
+    * @param count is the number of integer variables to be created
+    * @param min is the minimum value of the integer variables
+    * @param max is the maximum value of the integer variables
+    * @param namer is a function to set the name of the integer variables
+    * @return a list of integer variables
+    */
+  def intVars(count: Int,
+              min: Int,
+              max: Int,
+              namer: (Int) => String) : List[IntVar] = {
+    val vars = for (i <- 0 until count)
+      yield IntVar(modeler.intVar(min, max, namer(i)))(implicitly(this))
+    vars.toList
+  }
+
+  /**
+    * Creates and returns a list of integer variables.
+    *
+    * @param count is the number of integer variables to be created
+    * @param min is the minimum value of the integer variables
+    * @param max is the maximum value of the integer variables
+    * @return a list of integer variables
+    */
+  def intVars(count: Int,
+              min: Int,
+              max: Int) : List[IntVar] = {
+    val vars = for (i <- 0 until count)
+      yield IntVar(modeler.intVar(min, max))(implicitly(this))
+    vars.toList
+  }
+
+  /**
+    * Create a boolean variable.
+    *
+    * @param name is the name of the variable
+    * @return a numeric variable
+    */
+  def boolVar(name: String=null): NumVar =
+    NumVar(modeler.boolVar(name))(implicitly(this))
+
+  /**
+    * Creates and returns a map of binary variables.
+    *
+    * @param keys is an iterable representing the keys
+    * @param namer is a function that is used to give a name to the variables
+    * @return a map of binary variables
+    */
+  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
+    (for (t <- keys) yield {
+      val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
+      v.setName(namer(t))
+      t -> v
+    })(collection.breakOut)
+  }
+
+  /**
+    * Creates and returns a map of binary variables.
+    *
+    * @param keys is an iterable representing the keys
+    * @return a map of binary variables
+    */
+  def boolVars[T](keys: Iterable[T]) : Map[T, NumVar] = {
+    boolVars(keys, (t: T) => "")
+  }
+
+  /**
+    * Creates and returns a matrix of binary variables.
+    *
+    * @param keys1 is an iterable representing the rows
+    * @param keys2 is an iterable representing the columns
+    * @param namer is a function that is used to give a name to the variables
+    * @return a map of binary variables where the key is a tuple (key1, key2)
+    */
+  def boolVars[T, U](keys1: Iterable[T], keys2: Iterable[U], namer: (T, U) => String) : Map[(T,U), NumVar] = {
+    (for (t <- keys1; u <- keys2) yield {
+      val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
+      v.setName(namer(t, u))
+      (t,u) -> v
+    })(collection.breakOut)
+  }
 
   /**
     * Creates and return a linear expression initialized with the value of the integer given as argument

@@ -47,120 +47,6 @@ class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
   }
 
   /**
-    * Create a numeric variable.
-    *
-    * @param lb is the lower bound
-    * @param ub is the upper bound
-    * @param name is the name of the variable
-    * @return a numeric variable
-    */
-  def numVar(lb: Double=0.0, ub: Double=Double.MaxValue, name: String=null): NumVar =
-    NumVar(cplex.numVar(lb, ub, name))(implicitly(this))
-
-  /**
-    * Create an integer variable.
-    *
-    * @param lb is the lower bound
-    * @param ub is the upper bound
-    * @param name is the name of the variable
-    * @return a numeric variable
-    */
-  def intVar(lb: Int=0, ub: Int=Int.MaxValue, name: String=null): NumVar =
-    NumVar(cplex.intVar(lb, ub, name))(implicitly(this))
-
-  /**
-    * Create a boolean variable.
-    *
-    * @param name is the name of the variable
-    * @return a numeric variable
-    */
-  def boolVar(name: String=null): NumVar =
-    NumVar(cplex.boolVar(name))(implicitly(this))
-
-  /**
-    * Create a numeric variable for each element in the set and add it in a dictionary
-    * where the key is element of the set and the value is the numeric variable.
-    *
-    * @param set is the set
-    * @param lb is the lowver bound
-    * @param ub is the upper bound
-    * @param namer is a function that is used to set the name of a numeric variable
-    * @tparam T it the type of the elements in the set
-    * @return a dictionary of numeric variables indexed by the element of the set
-    */
-  def numVars[T](set: Iterable[T],
-                 lb: Double = 0.0,
-                 ub: Double = Double.MaxValue,
-                 namer: (T) => String = (t: T) => "") : Map[T, NumVar] = {
-    val dict: Map[T, NumVar] = set.map(t => {
-      val v: NumVar = NumVar(cplex.numVar(lb, ub, namer(t)))(implicitly(this))
-      (t, v)
-    })(collection.breakOut)
-    dict
-  }
-
-  /**
-    * Creates and returns a map of binary variables.
-    *
-    * @param keys is an iterable representing the keys
-    * @param namer is a function that is used to give a name to the variables
-    * @return a map of binary variables
-    */
-  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
-    (for (t <- keys) yield {
-      val v: NumVar = NumVar(cplex.boolVar())(implicitly(this))
-      v.setName(namer(t))
-      t -> v
-    })(collection.breakOut)
-  }
-
-  /**
-    * Creates and returns a map of binary variables.
-    *
-    * @param keys is an iterable representing the keys
-    * @return a map of binary variables
-    */
-  def boolVars[T](keys: Iterable[T]) : Map[T, NumVar] = {
-    boolVars(keys, (t: T) => "")
-  }
-
-  /**
-    * Creates and returns a matrix of binary variables.
-    *
-    * @param keys1 is an iterable representing the rows
-    * @param keys2 is an iterable representing the columns
-    * @param namer is a function that is used to give a name to the variables
-    * @return a map of binary variables where the key is a tuple (key1, key2)
-    */
-  def boolVars[T, U](keys1: Iterable[T], keys2: Iterable[U], namer: (T, U) => String) : Map[(T,U), NumVar] = {
-    (for (t <- keys1; u <- keys2) yield {
-      val v: NumVar = NumVar(cplex.boolVar())(implicitly(this))
-      v.setName(namer(t, u))
-      (t,u) -> v
-    })(collection.breakOut)
-  }
-
-//  /**
-//    * Return the sum of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric expressions
-//    * @return a numeric expression that represents the sum of numeric expressions
-//    */
-//  def sum(exprs: NumExpr*): NumExpr = {
-//    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
-//  }
-
-//  /**
-//    * Return the sum of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric variables
-//    * @return a numeric expression that represents the sum of the numeric expressions
-//    */
-//  def sum(exprs: Iterable[NumExpr]) : NumExpr = {
-//    NumExpr(cplex.sum(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
-//  }
-
-  /**
     * Return a range that represent the constraint <em>expr >= rhs<em>.
     *
     * @param expr is the numeric expression of the new greater-than-or-equal-to constraint
@@ -170,52 +56,6 @@ class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
   def ge(expr: NumExpr, rhs: Double, name: String=null): Range = {
     Range(cplex.ge(expr.getIloNumExpr, rhs, name))(implicitly(this))
   }
-
-//  /**
-//    * Return a range constraint <em>expr == value<em>.
-//    *
-//    * @param expr is the numeric expression
-//    * @param value is the value
-//    * @return a range constraint
-//    */
-//  override def eq(expr: NumExpr, value: Double): Range = {
-//    eq(expr, value, null)
-//  }
-//
-//  /**
-//    * Return a range constraint <em>expr == value<em>.
-//    *
-//    * @param expr is the numeric expression
-//    * @param value is the value
-//    * @param name is the name for the range constraint
-//    * @return a range constraint
-//    */
-//  def eq(expr: NumExpr, value: Double, name: String): Range = {
-//    Range(cplex.eq(expr.getIloNumExpr, value, name))(implicitly(this))
-//  }
-
-//  /**
-//    * Return a range constraint <em>expr1 == expr2<em>.
-//    *
-//    * @param expr1 is the first numeric expression
-//    * @param expr2 is the second numeric expression
-//    * @return a constraint
-//    */
-//  def eq(expr1: NumExpr, expr2: NumExpr): Constraint = {
-//    eq(expr1, expr2, null)
-//  }
-//
-//  /**
-//    * Return a range constraint <em>expr1 == expr2<em>.
-//    *
-//    * @param expr1 is the first numeric expression
-//    * @param expr2 is the second numeric expression
-//    * @param name is the name of the range constraint
-//    * @return a constraint
-//    */
-//  def eq(expr1: NumExpr, expr2: NumExpr, name: String): Constraint = {
-//    Constraint(cplex.eq(expr1.getIloNumExpr, expr2.getIloNumExpr, name))(implicitly(this))
-//  }
 
   /**
     * Return a range that represent the constraint <em>expr >= rhs<em>.
@@ -648,22 +488,6 @@ object MpModel {
     */
   def linearIntExpr(value: Int = 0)(implicit model: MpModel): IntExpr = model.linearIntExpr(value)
 
-//  /**
-//    * Return the sum of a sequence of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric variables
-//    * @return a numeric expression that represents the sum of the numeric expressions
-//    */
-//  def sum(exprs: NumExpr*)(implicit model: MpModel) : NumExpr = model.sum(exprs)
-//
-//  /**
-//    * Return the sum of a sequence of numeric expressions.
-//    *
-//    * @param exprs is a sequence of numeric variables
-//    * @return a numeric expression that represents the sum of the numeric expressions
-//    */
-//  def sum(exprs: Iterable[NumExpr])(implicit model: MpModel) : NumExpr = model.sum(exprs)
-//
   /**
     * Creates and returns an objective object to minimize the expression <em>expr</em>.
     *
@@ -763,24 +587,5 @@ object MpModel {
     * @return an objective
     */
   def minimize(expr: MultiCriterionExpr)(implicit model: MpModel): Objective = model.minimize(expr)
-
-//  /**
-//    *  Implicit conversion of set of numeric expressions: add behavior
-//    *
-//    * @param exprs are the integer expressions
-//    * @param model is the constraint programming model
-//    */
-//  implicit class NumExprArray(val exprs: Iterable[NumExpr])(implicit model: MpModel) {
-//
-//    /**
-//      * Converts to scala array
-//      */
-//    def toArray: Array[NumExpr] = exprs.toArray
-//
-//    /**
-//      * Convert to CPLEX array
-//      */
-//    def toIloArray: Array[IloNumExpr] = exprs.map(e => e.getIloNumExpr()).toArray
-//  }
 
 }

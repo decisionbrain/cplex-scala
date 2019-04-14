@@ -49,7 +49,7 @@ object Facility {
     for (j <- 0 until nbLocations)
       model.add(count(suppliers, j) <= capacity(j))
 
-    val fixedCostExpr: NumExpr = fixedCost * open
+    val fixedCostExpr: NumExpr = fixedCost * open // scalar product of integer values with integer variables
     val variableCostExpr = model.sum(for (s <- 0 until nbStores)
       yield cost(s)(suppliers(s))) // element expression 'element(costs(s), suppliers(s))'
 
