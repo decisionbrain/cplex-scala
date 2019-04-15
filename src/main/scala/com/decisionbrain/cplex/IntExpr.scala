@@ -83,7 +83,11 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param expr is the divisor
     * @return an integer expression equals to the integer division e1 / e2.
     */
-  def /(expr: IntExpr): IntExpr = modeler.div(this, expr)
+  def /(expr: IntExpr): IntExpr = modeler match {
+    case model: CpModel => model.div(this, expr)
+    case _ => throw new UnsupportedOperationException("Operator \'/\' only supported on CpModel")
+  }
+
 
   /**
     * Creates and returns the integer division e1 / e2.
@@ -91,7 +95,10 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param v is the divisor
     * @return an integer expression equals to the integer division e1 / e2.
     */
-  def /(v: Int): IntExpr = modeler.div(this, v)
+  def /(v: Int): IntExpr = modeler match {
+    case model: CpModel => model.div(this, v)
+    case _ => throw new UnsupportedOperationException("Operator \'/\' only supported on CpModel")
+  }
 
   /**
     * Creates and returns the constraint <em>expr1 != expr2</em>.
@@ -164,11 +171,9 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param expr is the right-handside expression of the new less-than-or-equal-to constraint.
     * @return a new <em>IloConstraint</em>
     */
-  def <(expr: IntExpr): Constraint = {
-    modeler match {
-      case model : CpModel =>   model.lt(this, expr)
+  def <(expr: IntExpr): Constraint = modeler match {
+      case model : CpModel => model.lt(this, expr)
       case _ => throw new UnsupportedOperationException("Operator \'<\' only supported on CpModel")
-    }
   }
 
   /**
@@ -178,8 +183,10 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param f is the cumul function expression
     * @return a constraint on the minimum value of the cumul function
     */
-  def <=(f: CumulFunctionExpr): Constraint =
-    Constraint(modeler.toIloCP.le(this.getIloIntExpr(), f.getIloCumulFunctionExpr()))
+  def <=(f: CumulFunctionExpr): Constraint = modeler match {
+    case model : CpModel => model.le(this, f)
+    case _ => throw new UnsupportedOperationException("Operator \'<=\' with a cumul function expression is only supported on CpModel")
+  }
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should never be
@@ -188,8 +195,11 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param f is the cumul function expression
     * @return a constraint on the maximum value of the cumul function
     */
-  def >=(f: CumulFunctionExpr): Constraint =
-    Constraint(modeler.toIloCP.ge(this.getIloIntExpr(), f.getIloCumulFunctionExpr()))
+  def >=(f: CumulFunctionExpr): Constraint =  modeler match {
+    case model : CpModel =>  model.ge(this, f)
+    case _ => throw new UnsupportedOperationException("Operator \'>=\' with a cumul function expression is only supported on CpModel")
+  }
+
 }
 
 object IntExpr {

@@ -9,6 +9,8 @@ package com.decisionbrain.cplex.mp
 import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.Modeler._
+import ilog.concert.IloModeler
+import ilog.cp.IloCP
 import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
@@ -23,9 +25,35 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
   * @param name is the name of the model
   */
-class MpModel(name: String=null) extends Modeler(name, new IloCplex()) {
+case class MpModel(name: String=null) extends Modeler {
 
-  def cplex: IloCplex = this.toIloCplex
+  val cplex: IloCplex = {
+    val iloCplex = new IloCplex()
+    iloCplex.setName(name)
+    iloCplex
+  }
+
+  /**
+    * Returns the CPLEX modeler i.e the interface for building optimization models.
+    *
+    * @return the CPLEX modeler
+    */
+  def getIloModeler(): IloModeler = this.cplex
+
+
+  /**
+    * Returns the name of the optimization model
+    *
+    * @return the name of the optimization model
+    */
+  def getName(): Option[String] = Option(cplex.getName())
+
+  /**
+    * Return the CPLEX mathematical programming optimizer
+    *
+    * @return the CPELX mathematical programming Optimizer
+    */
+  def getIloCplex(): IloCplex = cplex
 
   /**
     * Return the value of a numeric expression in the solution.

@@ -18,9 +18,13 @@ import ilog.cp.IloCP
   *
   * @param name
   */
-case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
+case class CpModel(name: String=null) extends Modeler {
 
-  def cp: IloCP = this.toIloCP
+  val cp: IloCP = {
+    val iloCP = new IloCP();
+    iloCP.setName(name)
+    iloCP
+  }
 
   private val trueConstraint = cp.trueConstraint()
   private val falseConstraint = cp.falseConstraint()
@@ -30,6 +34,28 @@ case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
   //
   // Members
   //
+
+  /**
+    * Returns the CPLEX modeler i.e the interface for building optimization models.
+    *
+    * @return the CPLEX modeler
+    */
+  def getIloModeler(): IloModeler = this.cp
+
+
+  /**
+    * Returns the name of the optimization model
+    *
+    * @return the name of the optimization model
+    */
+  def getName(): Option[String] = Option(cp.getName())
+
+  /**
+    * Return the CPLEX CP Optimizer
+    *
+    * @return the CPELX CP Optimizer
+    */
+  def getIloCP(): IloCP = cp
 
   /**
     * Returns the numeric for cumul function expressions. This allows to do things such as calling method sum on list of
@@ -185,6 +211,35 @@ case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
   def intervalSequenceVar(vars: Array[IntervalVar], types: Array[Int]): IntervalSequenceVar =
     IntervalSequenceVar(cp.intervalSequenceVar(vars.map(v => v.getIloIntervalVar()), types))(implicitly(this))
 
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
+    */
+  def div(expr1: IntExpr, expr2: IntExpr): IntExpr =
+    IntExpr(cp.div(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
+    */
+  def div(expr: IntExpr, v: Int): IntExpr =
+    IntExpr(cp.div(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
+    */
+  def div(v: Int, expr: IntExpr): IntExpr =
+    IntExpr(cp.div(v, expr.getIloIntExpr()))(implicitly(this))
 
   /**
     * Returns a new constraint <i>greater-than</i> between two integer expressions.
@@ -297,7 +352,7 @@ case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
     * @return a constraint on the minimum value of the cumul function
     */
   def le(expr: IntExpr, f: CumulFunctionExpr): Constraint =
-    Constraint(toIloCP.le(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
+    Constraint(cp.le(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should never be
@@ -308,7 +363,7 @@ case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
     * @return a constraint on the maximum value of the cumul function
     */
   def ge(expr: IntExpr, f: CumulFunctionExpr): Constraint =
-    Constraint(toIloCP.ge(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
+    Constraint(cp.ge(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
 
   /**
     * Returns a constraint that is always true or false.
@@ -2624,6 +2679,33 @@ object CpModel {
     * @return a mathematical programming model
     */
   def apply(name: String=null) = new CpModel(name)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
+    */
+  def div(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): IntExpr = model.div(expr1, expr2)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
+    */
+  def div(expr: IntExpr, v: Int)(implicit model: CpModel): IntExpr = model.div(expr, v)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
+    */
+  def div(v: Int, expr: IntExpr)(implicit model: CpModel): IntExpr = model.div(v, expr)
 
   /**
     * Returns a new constraint <i>greater-than</i> between two integer expressions.

@@ -1,6 +1,7 @@
 package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
+import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
 import ilog.cp.IloCP
 import ilog.cplex.IloCplex
@@ -11,52 +12,24 @@ import scala.reflect.ClassTag
   * This class is for building optimization models and provides methods for constructing variables, expressions,
   * constraints and objectives.
   *
-  * @param modeler is the CPLEX modeler.
   */
-abstract class Modeler(modeler: IloModeler) {
+abstract class Modeler {
 
-  /**
-    * Constructor for the Modeler
-    *
-    * @param name is the name of the optimization model
-    * @param modeler is the CPLEX modeler
-    */
-  def this(name: String, modeler: IloModeler) {
-    this(modeler)
-    modeler.setName(name)
-  }
-
-  /**
-    * Returns the name of the optimization model
-    *
-    * @return the name of the optimization model
-    */
-  def getName(): Option[String] = Option(modeler.getName())
+  private def modeler = getIloModeler()
 
   /**
     * Returns the CPLEX modeler i.e the interface for building optimization models.
     *
     * @return the CPLEX modeler
     */
-  def getIloModeler(): IloModeler = modeler
+  def getIloModeler(): IloModeler
 
   /**
-    * Returns the CPLEX object to solve the mathematical programming model
+    * Returns the name of the optimization model
     *
-    * TODO: move to MpModel
-    *
-    * @return
+    * @return the name of the optimization model
     */
-  def toIloCplex: IloCplex = getIloModeler().asInstanceOf[IloCplex]
-
-  /**
-    * Returns the CPLEX CP Optimizer
-    *
-    * TODO: move to CpModel
-    *
-    * @return
-    */
-  def toIloCP: IloCP = getIloModeler().asInstanceOf[IloCP]
+  def getName(): Option[String]
 
   /**
     * Create a numeric variable.
@@ -578,36 +551,6 @@ abstract class Modeler(modeler: IloModeler) {
     IntExpr(modeler.prod(v, expr.getIloIntExpr()))(implicitly(this))
 
   /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param expr1 is the dividend integer expression
-    * @param expr2 is the divisor integer expression
-    * @return the quotient of integer division
-    */
-  def div(expr1: IntExpr, expr2: IntExpr): IntExpr =
-    IntExpr(toIloCP.div(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
-
-  /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param expr is the integer expression
-    * @param v is the integer value
-    * @return the quotient of the integer division
-    */
-  def div(expr: IntExpr, v: Int): IntExpr =
-    IntExpr(toIloCP.div(expr.getIloIntExpr(), v))(implicitly(this))
-
-  /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param v is the dividend integer value
-    * @param expr is the divisor integer expression
-    * @return the quotient of the integer division
-    */
-  def div(v: Int, expr: IntExpr): IntExpr =
-    IntExpr(toIloCP.div(v, expr.getIloIntExpr()))(implicitly(this))
-
-  /**
     * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
     *
     * @param expr1 is the lefthand side numeric expression
@@ -822,8 +765,11 @@ object Modeler {
       * @param expr is the integer expression for the index
       * @return an new integer expression
       */
-    def element(expr: IntExpr): IntExpr =
-      IntExpr(modeler.toIloCP.element(this.toIloArray, expr.getIloIntExpr()))(implicitly(modeler))
+    def element(expr: IntExpr): IntExpr = modeler match {
+      case model: CpModel => model.element(this, expr)
+      case _ => throw new UnsupportedOperationException("Method \'element\' only supported on CpModel")
+    }
+
 
     /**
       * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
@@ -832,8 +778,7 @@ object Modeler {
       * @param expr is the integer expression for the index
       * @return an new integer expression
       */
-    def apply(expr: IntExpr): IntExpr =
-      IntExpr(modeler.toIloCP.element(this.toIloArray, expr.getIloIntExpr()))(implicitly(modeler))
+    def apply(expr: IntExpr): IntExpr = element(expr)
 
     /**
       * Converts to scala array
@@ -901,7 +846,10 @@ object Modeler {
       *
       * @return a search phase
       */
-    def toSearchPhase: SearchPhase = SearchPhase(modeler.toIloCP.searchPhase(vars.map(v => v.getIloIntVar()).toArray))(implicitly(modeler))
+    def toSearchPhase: SearchPhase = modeler match {
+      case model: CpModel => model.searchPhase(this)
+      case _ => throw new UnsupportedOperationException("Method \'toSearchPhase\' only supported on CpModel")
+    }
 
     /**
       * Returns an integer expression that is the scalar product of theses integer variables with the given integer
@@ -946,8 +894,11 @@ object Modeler {
       * @param expr is the integer expression for the index
       * @return an new integer expression
       */
-    def element(expr: IntExpr): NumExpr =
-      NumExpr(modeler.toIloCP.element(this.toArray, expr.getIloIntExpr()))(implicitly(modeler))
+    def element(expr: IntExpr): NumExpr = modeler match {
+      case model: CpModel => model.element(this, expr)
+      case _ => throw new UnsupportedOperationException("Method \'element\' only supported on CpModel")
+    }
+
 
     /**
       * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
@@ -995,8 +946,10 @@ object Modeler {
       * @param expr is the integer expression for the index
       * @return an new integer expression
       */
-    def element(expr: IntExpr): IntExpr =
-      IntExpr(modeler.toIloCP.element(values.toArray, expr.getIloIntExpr()))(implicitly(modeler))
+    def element(expr: IntExpr): IntExpr = modeler match {
+      case model: CpModel => model.element(values, expr)
+      case _ => throw new UnsupportedOperationException("Method \'element\' only supported on CpModel")
+    }
 
     /**
       * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
@@ -1005,8 +958,7 @@ object Modeler {
       * @param expr is the integer expression for the index
       * @return an new integer expression
       */
-    def apply(expr: IntExpr): IntExpr =
-      IntExpr(modeler.toIloCP.element(values.toArray, expr.getIloIntExpr()))(implicitly(modeler))
+    def apply(expr: IntExpr): IntExpr = element(expr)
 
     /**
       * Returns an integer expression that is the scalar product of these values with the given integer variables.
@@ -1354,33 +1306,6 @@ object Modeler {
     * @return the product of the integer value and the integer expression
     */
   def prod(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.prod(v, expr)
-
-  /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param expr1 is the dividend integer expression
-    * @param expr2 is the divisor integer expression
-    * @return the quotient of integer division
-    */
-  def div(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.div(expr1, expr2)
-
-  /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param expr is the integer expression
-    * @param v is the integer value
-    * @return the quotient of the integer division
-    */
-  def div(expr: IntExpr, v: Int)(implicit modeler: Modeler): IntExpr = modeler.div(expr, v)
-
-  /**
-    * Returns a new expression that is the integer division of two integer expressions.
-    *
-    * @param v is the dividend integer value
-    * @param expr is the divisor integer expression
-    * @return the quotient of the integer division
-    */
-  def div(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.div(v, expr)
 
   /**
     * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
