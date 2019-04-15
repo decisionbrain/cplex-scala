@@ -551,6 +551,146 @@ abstract class Modeler {
     IntExpr(modeler.prod(v, expr.getIloIntExpr()))(implicitly(this))
 
   /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExprArray) : NumExpr = {
+    NumExpr(modeler.max(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the maximum of the integer expressions
+    */
+  def max(exprs: IntExprArray) : IntExpr = {
+    IntExpr(modeler.max(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Iterable[NumExpr]) : NumExpr = {
+    NumExpr(modeler.max(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Iterable[IntExpr]) : IntExpr = {
+    IntExpr(modeler.max(exprs.map(e => e.getIloIntExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[NumExpr]) : NumExpr = {
+    NumExpr(modeler.max(exprs.map(e => e.getIloNumExpr)))(implicitly(this))
+  }
+
+  /**
+    * Returns the maximum numeric expressions.
+    *
+    * @param exprs is a variable number of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExpr*) : NumExpr = {
+    NumExpr(modeler.max(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExprArray) : NumExpr = {
+    NumExpr(modeler.min(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the integer expressions
+    */
+  def min(exprs: IntExprArray) : IntExpr = {
+    IntExpr(modeler.min(exprs.toIloArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[NumExpr]) : NumExpr = {
+    NumExpr(modeler.min(exprs.map(e => e.getIloNumExpr)))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[IntExpr]) : IntExpr = {
+    IntExpr(modeler.min(exprs.map(e => e.getIloIntExpr)))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Iterable[NumExpr]) : NumExpr = {
+    NumExpr(modeler.min(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Iterable[IntExpr]) : IntExpr = {
+    IntExpr(modeler.min(exprs.map(e => e.getIloIntExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExpr*) : NumExpr = {
+    NumExpr(modeler.min(exprs.map(e => e.getIloNumExpr).toArray))(implicitly(this))
+  }
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: IntExpr*) : IntExpr = {
+    IntExpr(modeler.min(exprs.map(e => e.getIloIntExpr).toArray))(implicitly(this))
+  }
+
+  /**
     * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
     *
     * @param expr1 is the lefthand side numeric expression
@@ -1434,4 +1574,132 @@ object Modeler {
     */
   def ifThen(ct1: Constraint, ct2: Constraint)(implicit modeler: Modeler): Constraint =
     modeler.ifThen(ct1, ct2)
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is a sequence of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExprArray)(implicit modeler: Modeler): NumExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is a sequence of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: IntExprArray)(implicit modeler: Modeler): IntExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Iterable[NumExpr])(implicit modeler: Modeler): NumExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Iterable[IntExpr])(implicit modeler: Modeler): IntExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[NumExpr])(implicit modeler: Modeler): NumExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: Array[IntExpr])(implicit modeler: Modeler): IntExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: NumExpr*)(implicit modeler: Modeler): NumExpr = modeler.max(exprs)
+
+  /**
+    * Returns the maximum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the maximum of the numeric expressions
+    */
+  def max(exprs: IntExpr*)(implicit modeler: Modeler): IntExpr = modeler.max(exprs)
+
+  /**
+    * Returns the minimum of a set of numeric expressions.
+    *
+    * @param exprs is a sequence of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExprArray)(implicit modeler: Modeler): NumExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a set of integer expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: IntExprArray)(implicit modeler: Modeler): IntExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Iterable[NumExpr])(implicit modeler: Modeler): NumExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the integer expressions
+    */
+  def min(exprs: Iterable[IntExpr])(implicit modeler: Modeler): IntExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a set of numeric expressions.
+    *
+    * @param exprs is an array of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: Array[NumExpr])(implicit modeler: Modeler): NumExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is an array of integer expressions
+    * @return an integer expression that represents the minimum of the integer expressions
+    */
+  def min(exprs: Array[IntExpr])(implicit modeler: Modeler): IntExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: NumExpr*)(implicit modeler: Modeler): NumExpr = modeler.min(exprs)
+
+  /**
+    * Returns the minimum of a numeric expressions.
+    *
+    * @param exprs is a variable number of numeric variables
+    * @return a numeric expression that represents the minimum of the numeric expressions
+    */
+  def min(exprs: IntExpr*)(implicit modeler: Modeler): IntExpr = modeler.min(exprs)
 }

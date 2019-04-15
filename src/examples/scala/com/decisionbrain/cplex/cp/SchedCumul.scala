@@ -7,6 +7,7 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.IntExpr
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 
@@ -51,9 +52,9 @@ object SchedCumul {
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
           yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
 
-    workersUsage += sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
+    workersUsage += model.sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
 
-    cash -= sum(for (e <- taskVars; (name, v) = e) yield stepAtStart(v, 200 * v.getSizeMin))
+    cash -= model.sum(for (e <- taskVars; (name, v) = e) yield stepAtStart(v, 200 * v.getSizeMin))
 
     taskVars("masonry").setStartMin(releaseDate)
 

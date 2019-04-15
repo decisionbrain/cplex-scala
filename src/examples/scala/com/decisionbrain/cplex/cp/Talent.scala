@@ -9,6 +9,7 @@ package com.decisionbrain.cplex.cp
 import java.io.{BufferedReader, FileInputStream, InputStreamReader, StreamTokenizer}
 
 import com.decisionbrain.cplex.{IntExpr, IntSet, IntVar}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 
