@@ -7,6 +7,7 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.{IntExpr, IntVar}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 
 /**

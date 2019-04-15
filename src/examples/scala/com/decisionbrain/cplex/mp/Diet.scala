@@ -8,6 +8,7 @@ package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.NumExpr
 import com.decisionbrain.cplex.NumVar
+import com.decisionbrain.cplex.Modeler._
 
 object Diet {
 
@@ -76,7 +77,7 @@ object Diet {
         yield (t._1, nutrients(n)._1) -> t.productElement(1 + n).asInstanceOf[Double])(collection.breakOut).toMap
 
 
-    val model = new MpModel("diet")
+    implicit val model = new MpModel("diet")
 
     // create the numeric variables for the foods
     qtyFoods = model.numVars(theFoods)
@@ -87,13 +88,13 @@ object Diet {
     // limit range of nutrients, and mark them as KPIs
     qtyNutrients = Map()
     for (n <- theNutrients) {
-      val amount = model.sum(for (f <- theFoods) yield qtyFoods(f)* theFoodNutrients(f.name, n.name))
+      val amount = sum(for (f <- theFoods) yield qtyFoods(f)* theFoodNutrients(f.name, n.name))
       qtyNutrients += (n -> amount)
       model.addRange(n.qmin, amount, n.qmax)
 //      model.addKpi(amount, publish_name=s"Total $n.name") // TODO: to have same API as in DOCplex
     }
 
-    val objective = model.minimize(model.sum(for (f <- theFoods) yield qtyFoods(f) * f.unitCost))
+    val objective = minimize(sum(for (f <- theFoods) yield qtyFoods(f) * f.unitCost))
 
     model.add(objective)
 

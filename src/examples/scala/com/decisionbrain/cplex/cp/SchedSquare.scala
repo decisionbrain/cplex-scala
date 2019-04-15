@@ -7,6 +7,7 @@
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.cp.CpModel._
+import com.decisionbrain.cplex.cp.CumulFunctionExprNumeric._
 
 /**
   * The aim of the square example is to place a set of small squares of different sizes into a large square.
@@ -34,12 +35,10 @@ object SchedSquare {
     }
 
     // the lines below are all equivalent expressions
-//    var rx: CumulFunctionExpr = sum((for (i <- 0 until nbSquares) yield model.pulse(x(i), size(i))).toArray)
-//    var ry: CumulFunctionExpr = sum((for (i <- 0 until nbSquares) yield model.pulse(y(i), size(i))).toArray)
-//    var rx: CumulFunctionExpr = (for (i <- 0 until nbSquares) yield model.pulse(x(i), size(i))).sum
+//    var rx: CumulFunctionExpr = (for (i <- 0 until nbSquares) yield model.pulse(x(i), size(i))).sum // add line: import com.decisionbrain.cplex.cp.CumulFunctionExprNumeric._
 //    var ry: CumulFunctionExpr = (for (i <- 0 until nbSquares) yield model.pulse(y(i), size(i))).sum
-    var rx: CumulFunctionExpr = sum(for (i <- 0 until nbSquares) yield model.pulse(x(i), size(i)))
-    var ry: CumulFunctionExpr = sum(for (i <- 0 until nbSquares) yield model.pulse(y(i), size(i)))
+    var rx: CumulFunctionExpr = model.sum(for (i <- 0 until nbSquares) yield model.pulse(x(i), size(i)))
+    var ry: CumulFunctionExpr = model.sum(for (i <- 0 until nbSquares) yield model.pulse(y(i), size(i)))
 
     for (i <- 0 until nbSquares; j <- 0 until i) {
       model.add((endOf(x(i)) <= startOf(x(j)))

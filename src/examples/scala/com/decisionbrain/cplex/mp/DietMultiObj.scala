@@ -99,14 +99,14 @@ object DietMultiObj {
     // limit range of nutrients, and mark them as KPIs
     qtyNutrients = Map()
     for (n <- theNutrients) {
-      val amount = model.sum(for (f <- theFoods) yield qtyFoods(f)* theFoodNutrients(f.name, n.name))
+      val amount = sum(for (f <- theFoods) yield qtyFoods(f)* theFoodNutrients(f.name, n.name))
       qtyNutrients += (n -> amount)
       model.addRange(n.qmin, amount, n.qmax)
 //      model.addKpi(amount, publish_name=s"Total $n.name") // TODO: to have same API as in DOCplex
     }
 
     // first objective is to minimize total cost
-    cost = model.minimize(sum(for (f <- theFoods) yield qtyFoods(f) * f.unitCost))
+    cost = minimize(sum(for (f <- theFoods) yield qtyFoods(f) * f.unitCost))
     cost.setName("cost")
 
 
@@ -118,7 +118,7 @@ object DietMultiObj {
       model.add((qtyFoods(f) == 0) <= (used(f) == 0))
     }
 
-    variety = model.maximize(sum(for (f <- theFoods) yield used(f)))
+    variety = maximize(sum(for (f <- theFoods) yield used(f)))
     variety.setName("number of foods")
 
     val objectives = Array(cost.getNumExpr(), variety.getNumExpr())
@@ -133,9 +133,9 @@ object DietMultiObj {
     val absTols = Array(0.5, 0.0)
     val relTols = Array(0.0, 0.0)
 
-    val objectiveExpr = model.staticLex(objectives, weights, priorities, absTols, relTols, "staticLex")
+    val objectiveExpr = staticLex(objectives, weights, priorities, absTols, relTols, "staticLex")
 
-    val objective = minimize(objectiveExpr)
+    val objective = model.minimize(objectiveExpr)
 
     model.add(objective)
 

@@ -10,10 +10,8 @@ import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.Modeler._
 import ilog.concert.IloModeler
-import ilog.cp.IloCP
 import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
-
 
 /**
   *
@@ -180,36 +178,20 @@ case class MpModel(name: String=null) extends Modeler {
   }
 
   /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr): Objective = Objective(cplex.minimize(expr.getIloNumExpr))(implicitly(this))
-
-  /**
     * Creates and return a minimization multi-criteria objective.
     *
     * @param expr is the multi-criteria expressions
     * @return an objective
     */
-  def minimize(expr: MultiCriterionExpr): Objective = Objective(cplex.minimize(expr))(implicitly(this))
+  def minimize(expr: CplexMultiCriterionExpr): Objective = Objective(cplex.minimize(expr))(implicitly(this))
 
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to maximize
-    * @return An objective object the objective to maximize
-    */
-  def maximize(expr: NumExpr): Objective = Objective(cplex.maximize(expr.getIloNumExpr))(implicitly(this))
-
-  /**
+    /**
     * Creates and return a maximization multi-criteria objective.
     *
     * @param expr is the multi-criteria expressions
     * @return an objective
     */
-  def maximize(expr: MultiCriterionExpr): Objective = Objective(cplex.maximize(expr))(implicitly(this))
+  def maximize(expr: CplexMultiCriterionExpr): Objective = Objective(cplex.maximize(expr))(implicitly(this))
 
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
@@ -217,7 +199,7 @@ case class MpModel(name: String=null) extends Modeler {
     *
     * @param exprs a set of numeric expressions for the lexicographic ordering
     */
-  def staticLex(exprs: NumExpr*): MultiCriterionExpr = {
+  def staticLex(exprs: NumExpr*): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.map(e => e.getIloNumExpr()).toArray, name)
   }
 
@@ -229,7 +211,7 @@ case class MpModel(name: String=null) extends Modeler {
     * @param name is the name of the multi-criteria expression
     * @return
     */
-  def staticLex(exprs: NumExprArray, name: String): MultiCriterionExpr = {
+  def staticLex(exprs: NumExprArray, name: String): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.toIloArray, name)
   }
 
@@ -241,7 +223,7 @@ case class MpModel(name: String=null) extends Modeler {
     * @return
     *
     */
-  def staticLex(exprs: NumExprArray): MultiCriterionExpr = {
+  def staticLex(exprs: NumExprArray): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.toIloArray)
   }
 
@@ -251,7 +233,7 @@ case class MpModel(name: String=null) extends Modeler {
     *
     * @param exprs a set of numeric expressions for the lexicographic ordering
     */
-  def staticLex(exprs: Array[NumExpr], name: String =null): MultiCriterionExpr = {
+  def staticLex(exprs: Array[NumExpr], name: String =null): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.map(e => e.getIloNumExpr()), name)
   }
 
@@ -272,7 +254,7 @@ case class MpModel(name: String=null) extends Modeler {
                 priorities: Array[Int],
                 absTols: Array[Double],
                 relTols: Array[Double],
-                name: String): MultiCriterionExpr = {
+                name: String): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.map(e => e.getIloNumExpr()), weights, priorities, absTols, relTols, name)
   }
 
@@ -291,7 +273,7 @@ case class MpModel(name: String=null) extends Modeler {
                 weights: Array[Double],
                 priorities: Array[Int],
                 absTols: Array[Double],
-                relTols: Array[Double]): MultiCriterionExpr = {
+                relTols: Array[Double]): CplexMultiCriterionExpr = {
     cplex.staticLex(exprs.map(e => e.getIloNumExpr()), weights, priorities, absTols, relTols, null)
   }
 
@@ -497,7 +479,7 @@ object MpModel {
   // Types definition in case we need to encapsulate CPO types later
   //
 
-  type MultiCriterionExpr = IloCplexMultiCriterionExpr
+  type CplexMultiCriterionExpr = IloCplexMultiCriterionExpr
   type ParameterSet = IloCplex.ParameterSet
 
   /**
@@ -516,29 +498,29 @@ object MpModel {
     */
   def linearIntExpr(value: Int = 0)(implicit model: MpModel): IntExpr = model.linearIntExpr(value)
 
-  /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr)(implicit model: MpModel): Objective = model.minimize(expr)
-
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to maximize
-    */
-  def maximize(expr: NumExpr)(implicit model: MpModel): Objective = model.maximize(expr)
-
+//  /**
+//    * Creates and returns an objective object to minimize the expression <em>expr</em>.
+//    *
+//    * @param expr is the expression to minimize
+//    * @return An objective object representing the objective to minimize
+//    */
+//  def minimize(expr: NumExpr)(implicit model: MpModel): Objective = model.minimize(expr)
+//
+//  /**
+//    * Creates and returns an objective object to maximize the expression <em>expr</em>.
+//    *
+//    * @param expr is the expression to minimize
+//    * @return An objective object representing the objective to maximize
+//    */
+//  def maximize(expr: NumExpr)(implicit model: MpModel): Objective = model.maximize(expr)
+//
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
     * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
     *
     * @param exprs a set of numeric expressions for the lexicographic ordering
     */
-  def staticLex(exprs: NumExpr*)(implicit model: MpModel): MultiCriterionExpr = model.staticLex(exprs: _*)
+  def staticLex(exprs: NumExpr*)(implicit model: MpModel): CplexMultiCriterionExpr = model.staticLex(exprs: _*)
 
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
@@ -548,7 +530,7 @@ object MpModel {
     * @param name is the name of the multi-criteria expression
     * @return
     */
-  def staticLex(exprs: NumExprArray, name: String)(implicit model: MpModel): MultiCriterionExpr =
+  def staticLex(exprs: NumExprArray, name: String)(implicit model: MpModel): CplexMultiCriterionExpr =
     model.staticLex (exprs, name)
 
   /**
@@ -559,7 +541,7 @@ object MpModel {
     * @return
     *
     */
-  def staticLex(exprs: NumExprArray)(implicit model: MpModel): MultiCriterionExpr =  model.staticLex(exprs)
+  def staticLex(exprs: NumExprArray)(implicit model: MpModel): CplexMultiCriterionExpr =  model.staticLex(exprs)
 
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
@@ -567,7 +549,7 @@ object MpModel {
     *
     * @param exprs a set of numeric expressions for the lexicographic ordering
     */
-  def staticLex(exprs: Array[NumExpr], name: String =null)(implicit model: MpModel): MultiCriterionExpr =
+  def staticLex(exprs: Array[NumExpr], name: String =null)(implicit model: MpModel): CplexMultiCriterionExpr =
     model.staticLex(exprs, name)
 
   /**
@@ -587,7 +569,7 @@ object MpModel {
                 priorities: Array[Int],
                 absTols: Array[Double],
                 relTols: Array[Double],
-                name: String)(implicit model: MpModel): MultiCriterionExpr =
+                name: String)(implicit model: MpModel): CplexMultiCriterionExpr =
     model.staticLex(exprs, weights, priorities, absTols, relTols, name)
 
   /**
@@ -605,15 +587,7 @@ object MpModel {
                 weights: Array[Double],
                 priorities: Array[Int],
                 absTols: Array[Double],
-                relTols: Array[Double])(implicit model: MpModel): MultiCriterionExpr =
+                relTols: Array[Double])(implicit model: MpModel): CplexMultiCriterionExpr =
     model.staticLex(exprs, weights, priorities, absTols, relTols)
-
-  /**
-    * Creates and return a minimization multi-criteria objective.
-    *
-    * @param expr is the multi-criteria expressions
-    * @return an objective
-    */
-  def minimize(expr: MultiCriterionExpr)(implicit model: MpModel): Objective = model.minimize(expr)
 
 }

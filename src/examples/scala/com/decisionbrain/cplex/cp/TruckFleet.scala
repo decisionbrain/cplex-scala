@@ -133,7 +133,7 @@ object TruckFleet {
     for (i <- 0 until nbTrucks) {
       obj1 = obj1 + truckCost(truckConfigs(i)) * (load(i) != 0)
     }
-    obj1 = obj1 + model.sum(transitionCost)
+    obj1 = obj1 + sum(transitionCost)
 
     obj2 = numUsed
 
@@ -141,7 +141,7 @@ object TruckFleet {
     model.setSearchPhases(searchPhase(where))
 
     // Multi-criteria lexicographic optimization
-    model.add(minimize(staticLex(obj1, obj2)))
+    model.add(model.minimize(staticLex(obj1, obj2)))
 
     model
   }

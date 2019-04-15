@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 
 
@@ -158,7 +159,7 @@ object HouseBuilding {
 
     // objective
 
-    val objective = model.sum(for (e <- theSkills; h <- HOUSES; skill = e._2)
+    val objective = sum(for (e <- theSkills; h <- HOUSES; skill = e._2)
       yield skill.level * presenceOf(wtaskVars(h, skill)))
 
     model.add(maximize(objective))

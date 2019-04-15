@@ -1916,28 +1916,12 @@ case class CpModel(name: String=null) extends Modeler {
   }
 
   /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr): Objective = Objective(cp.minimize(expr.getIloNumExpr))(implicitly(this))
-
-  /**
     * Creates a minimization multi-criteria objective.
     *
     * @param expr is the multicriteria expressions
     * @return an objective
     */
   def minimize(expr: MultiCriterionExpr): Objective = Objective(cp.minimize(expr))(implicitly(this))
-
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to maximize
-    * @return An objective object the objective to maximize
-    */
-  def maximize(expr: NumExpr): Objective = Objective(cp.maximize(expr.getIloNumExpr))(implicitly(this))
 
   /**
     * Creates a maximization multicriteria objective.
@@ -3620,22 +3604,6 @@ object CpModel {
     model.step(t, v)
 
   /**
-    * Creates and returns a new cumul function expressions that is the sum of a set of cumul function expressions.
-    *
-    * @param exprs is an array of cumul function expressions
-    * @return a new cumul function expressions
-    */
-  def sum(exprs: CumulFunctionExprArray)(implicit model: CpModel): CumulFunctionExpr = model.sum(exprs)
-
-  /**
-    * Returns a cumul function expressions that is the sum of a set of cumul function expressions.
-    *
-    * @param exprs the set of cumul function expressions
-    * @return the sum of the cumul function expressions
-    */
-  def sum(exprs: Array[CumulFunctionExpr])(implicit model: CpModel): CumulFunctionExpr = model.sum(exprs)
-
-  /**
     * This function returns a constraint that states that the value of cumul function expression f should be always
     * within the range [vmin,vmax] between start and end.
     *
@@ -3794,38 +3762,6 @@ object CpModel {
     */
   def alwaysEqual(f: StateFunction, a: IntervalVar, v: Int, startAlign:Boolean, endAlign:Boolean)(implicit model: CpModel): Constraint =
     model.alwaysEqual(f, a, v, startAlign, endAlign)
-
-  /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr)(implicit model: CpModel): Objective = model.minimize(expr)
-
-  /**
-    * Creates a minimization multicriteria objective.
-    *
-    * @param expr is the multicriteria expressions
-    * @return an objective
-    */
-  def minimize(expr: MultiCriterionExpr)(implicit model: CpModel): Objective = model.minimize(expr)
-
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to maximize
-    * @return An objective object the objective to maximize
-    */
-  def maximize(expr: NumExpr)(implicit model: CpModel): Objective = model.maximize(expr)
-
-  /**
-    * Creates a maximization multicriteria objective.
-    *
-    * @param expr is the multicriteria expressions
-    * @return an objective
-    */
-  def maximize(expr: MultiCriterionExpr)(implicit model: CpModel): Objective = model.maximize(expr)
 
   /**
     * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that

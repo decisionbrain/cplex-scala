@@ -3,8 +3,6 @@ package com.decisionbrain.cplex
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
-import ilog.cp.IloCP
-import ilog.cplex.IloCplex
 
 import scala.reflect.ClassTag
 
@@ -829,6 +827,26 @@ abstract class Modeler {
     */
   def ifThen(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.ifThen(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
+
+  /**
+    * Creates and returns an objective object to minimize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to minimize
+    * @return An objective object representing the objective to minimize
+    */
+  def minimize(expr: NumExpr): Objective = Objective(modeler.minimize(expr.getIloNumExpr))(implicitly(this))
+
+  /**
+    * Creates and returns an objective object to maximize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to maximize
+    * @return An objective object the objective to maximize
+    */
+  def maximize(expr: NumExpr): Objective = Objective(modeler.maximize(expr.getIloNumExpr))(implicitly(this))
+
+  //
+  // Scala Numeric
+  //
 
 
   private val numExprNumeric = NumExprNumeric(this)
@@ -1702,4 +1720,22 @@ object Modeler {
     * @return a numeric expression that represents the minimum of the numeric expressions
     */
   def min(exprs: IntExpr*)(implicit modeler: Modeler): IntExpr = modeler.min(exprs)
+
+  /**
+    * Creates and returns an objective object to minimize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to minimize
+    * @return An objective object representing the objective to minimize
+    */
+  def minimize(expr: NumExpr)(implicit model: Modeler): Objective = model.minimize(expr)
+
+  /**
+    * Creates and returns an objective object to maximize the expression <em>expr</em>.
+    *
+    * @param expr is the expression to minimize
+    * @return An objective object representing the objective to maximize
+    */
+  def maximize(expr: NumExpr)(implicit model: Modeler): Objective = model.maximize(expr)
+
+
 }
