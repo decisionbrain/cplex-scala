@@ -18,7 +18,7 @@ import ilog.cp.IloCP
   *
   * @param name
   */
-class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
+case class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
 
   def cp: IloCP = this.toIloCP
 
@@ -185,6 +185,108 @@ class CpModel(name: String=null) extends Modeler(name, new IloCP()) {
   def intervalSequenceVar(vars: Array[IntervalVar], types: Array[Int]): IntervalSequenceVar =
     IntervalSequenceVar(cp.intervalSequenceVar(vars.map(v => v.getIloIntervalVar()), types))(implicitly(this))
 
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
+    */
+  def gt(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.gt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
+    */
+  def gt(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.gt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
+    */
+  def gt(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.gt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
+    */
+  def lt(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.lt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.lt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.lt(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
+    *
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
+    */
+  def neq(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.neq(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
+    *
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
+    */
+  def neq(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.neq(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
+    *
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
+    */
+  def neq(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.neq(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
+    *
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
+    */
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint): Constraint =
+    Constraint(cp.ifThenElse(c1.getIloConstraint(), c2.getIloConstraint(), c3.getIloConstraint()))(implicitly(this))
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should never be
@@ -2524,6 +2626,99 @@ object CpModel {
   def apply(name: String=null) = new CpModel(name)
 
   /**
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
+    */
+  def gt(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.gt(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
+    */
+  def gt(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.gt(expr, v)
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
+    */
+  def gt(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.gt(expr, v)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
+    */
+  def lt(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.lt(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.lt(expr, v)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.lt(v, expr)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
+    *
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
+    */
+  def neq(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.neq(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
+    *
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
+    */
+  def neq(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.neq(expr, v)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
+    *
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
+    */
+  def neq(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.neq(v, expr)
+
+  /**
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
+    *
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
+    */
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint)(implicit model: CpModel): Constraint =
+    model.ifThenElse(c1, c2, c3)
+
+  /**
     * Returns the maximum of a set of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
@@ -2622,108 +2817,6 @@ object CpModel {
     * @return a integer expression that is the number of variables equal to the given value
     */
   def count(vars: Array[IntExpr], v: Int)(implicit model: CpModel): IntExpr = model.count(vars, v)
-
-//  /**
-//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param exprs is the sequence of integer expressions
-//    * @param values is the sequence of integer values
-//    * @return the scalar product of integer values with integer expressions
-//    */
-//  def prod(values: IntArray, exprs: IntExprArray)(implicit model: CpModel): IntExpr =
-//    model.prod(values, exprs)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param exprs is an array of integer expressions
-//    * @param values is an array of integer values
-//    * @return an integer expression equals to the scalar product of the integer values with the integer expressions
-//    */
-//  def prod(values: Array[Int], exprs: Array[IntExpr])(implicit model: CpModel): IntExpr =
-//    model.prod(values, exprs)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-//    * exps1[1]*exps2[1] + ...
-//    *
-//    * @param exps1 is an array of integer expressions
-//    * @param exps2 is an array of integer expressions
-//    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-//    */
-//  def prod(exps1: IntExprArray, exps2: IntExprArray)(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-//    * exps1[1]*exps2[1] + ...
-//    *
-//    * @param exps1 is an array of integer expressions
-//    * @param exps2 is an array of integer expressions
-//    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-//    */
-//  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr])(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-//    * exps1[1]*exps2[1] + ...
-//    *
-//    * @param exps is an array of integer expressions
-//    * @param values is an array of integer values
-//    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-//    */
-//  def prod(exps: IntExprArray, values: IntArray)(implicit model: CpModel): IntExpr = model.prod(exps, values)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-//    * exps1[1]*exps2[1] + ...
-//    *
-//    * @param exps is an array of integer expressions
-//    * @param values is an array of integer values
-//    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-//    */
-//  def prod(exps: Array[IntExpr], values: Array[Int])(implicit model: CpModel): IntExpr = model.prod(exps, values)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param values is an  array of numeric values
-//    * @param exps is an array of numeric expressions
-//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-//    */
-//  def prod(values: NumArray, exps: NumExprArray)(implicit model: CpModel): NumExpr = model.prod(values, exps)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param values is an  array of numeric values
-//    * @param exps is an array of numeric expressions
-//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-//    */
-//  def prod(values: Array[Double], exps: Array[NumExpr])(implicit model: CpModel): NumExpr = model.prod(values, exps)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param values is an array of numeric values
-//    * @param exps is an array of numeric expressions
-//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-//    */
-//  def prod(exps: NumExprArray, values: NumArray)(implicit model: CpModel): NumExpr = model.prod(exps, values)
-//
-//  /**
-//    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-//    * values[1]*exps[1] + ...
-//    *
-//    * @param values is an array of numeric values
-//    * @param exps is an array of numeric expressions
-//    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-//    */
-//  def prod(exps: Array[NumExpr], values: Array[Double])(implicit model: CpModel): NumExpr = model.prod(exps, values)
 
   /**
     * Creates and returns a new integer expression equals to exprs[index] where index is an integer expression.

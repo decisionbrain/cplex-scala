@@ -709,96 +709,6 @@ abstract class Modeler(modeler: IloModeler) {
     Range(modeler.eq(expr.getIloNumExpr(), v))(implicitly(this))
 
   /**
-    * Returns a new constraint <i>greater-than</i> between two integer expressions.
-    *
-    * @param expr1 is the righthand side integer expression
-    * @param expr2 is the lefthand side integer expression
-    * @return the constraint <code>expr1 > expr2</code>
-    */
-  def gt(expr1: IntExpr, expr2: IntExpr): Constraint =
-    Constraint(toIloCP.gt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
-    *
-    * @param expr is the righthand side integer expression
-    * @param v is the lefthand side integer value
-    * @return the constraint <code>expr > v</code>
-    */
-  def gt(expr: IntExpr, v: Int): Constraint =
-    Constraint(toIloCP.gt(expr.getIloIntExpr(), v))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
-    *
-    * @param v is the lefthand side integer value
-    * @param expr is the righthand side integer expression
-    * @return the constraint <code>v > expr</code>
-    */
-  def gt(v: Int, expr: IntExpr): Constraint =
-    Constraint(toIloCP.gt(expr.getIloIntExpr(), v))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>less-than</i> between two integer expressions.
-    *
-    * @param expr1 is the righthand side integer expression
-    * @param expr2 is the lefthand side integer expression
-    * @return the constraint <code>expr1 < expr2</code>
-    */
-  def lt(expr1: IntExpr, expr2: IntExpr): Constraint =
-    Constraint(toIloCP.lt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
-    *
-    * @param expr is the righthand side integer expression
-    * @param v is the lefthand side integer value
-    * @return the constraint <code>expr < v</code>
-    */
-  def lt(expr: IntExpr, v: Int): Constraint =
-    Constraint(toIloCP.lt(expr.getIloIntExpr(), v))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
-    *
-    * @param v is the lefthand side integer value
-    * @param expr is the righthand side integer expression
-    * @return the constraint <code>expr < v</code>
-    */
-  def lt(v: Int, expr: IntExpr): Constraint =
-    Constraint(toIloCP.lt(v, expr.getIloIntExpr()))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between two integer expression.
-    *
-    * @param expr1 is the lefthand side integer expression
-    * @param expr2 is the righthand side integer expression
-    * @return the constraint <code>expr1 == expr2</code>
-    */
-  def neq(expr1: IntExpr, expr2: IntExpr): Constraint =
-    Constraint(toIloCP.neq(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
-    *
-    * @param expr is the lefthand side integer expression
-    * @param v is the righthand side integer value
-    * @return the constraint <code>expr1 == v</code>
-    */
-  def neq(expr: IntExpr, v: Int): Constraint =
-    Constraint(toIloCP.neq(expr.getIloIntExpr(), v))(implicitly(this))
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
-    *
-    * @param v is the righthand side integer value
-    * @param expr is the lefthand side integer expression
-    * @return the constraint <code>v == expr</code>
-    */
-  def neq(v: Int, expr: IntExpr): Constraint =
-    Constraint(toIloCP.neq(v, expr.getIloIntExpr()))(implicitly(this))
-
-  /**
     * Returns a new constraint indicating that at least one of the two constraints is true.
     *
     * @param ct1 is the first constraint
@@ -836,18 +746,6 @@ abstract class Modeler(modeler: IloModeler) {
     */
   def ifThen(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.ifThen(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
-
-  /**
-    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
-    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
-    *
-    * @param c1 is the conditional constraint
-    * @param c2 is the constraint that must be true if the condition is true
-    * @param c3 is the constraint that must be true if the condition is false
-    * @return the conditional constraint
-    */
-  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint): Constraint =
-    Constraint(toIloCP.ifThenElse(c1.getIloConstraint(), c2.getIloConstraint(), c3.getIloConstraint()))(implicitly(this))
 
 
   private val numExprNumeric = NumExprNumeric(this)
@@ -1577,87 +1475,6 @@ object Modeler {
   def eq(v: Double, expr: NumExpr)(implicit modeler: Modeler): Range = modeler.eq(expr, v)
 
   /**
-    * Returns a new constraint <i>greater-than</i> between two integer expressions.
-    *
-    * @param expr1 is the righthand side integer expression
-    * @param expr2 is the lefthand side integer expression
-    * @return the constraint <code>expr1 > expr2</code>
-    */
-  def gt(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.gt(expr1, expr2)
-
-  /**
-    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
-    *
-    * @param expr is the righthand side integer expression
-    * @param v is the lefthand side integer value
-    * @return the constraint <code>expr > v</code>
-    */
-  def gt(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.gt(expr, v)
-
-  /**
-    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
-    *
-    * @param v is the lefthand side integer value
-    * @param expr is the righthand side integer expression
-    * @return the constraint <code>v > expr</code>
-    */
-  def gt(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.gt(expr, v)
-
-  /**
-    * Returns a new constraint <i>less-than</i> between two integer expressions.
-    *
-    * @param expr1 is the righthand side integer expression
-    * @param expr2 is the lefthand side integer expression
-    * @return the constraint <code>expr1 < expr2</code>
-    */
-  def lt(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.lt(expr1, expr2)
-
-  /**
-    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
-    *
-    * @param expr is the righthand side integer expression
-    * @param v is the lefthand side integer value
-    * @return the constraint <code>expr < v</code>
-    */
-  def lt(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.lt(expr, v)
-
-  /**
-    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
-    *
-    * @param v is the lefthand side integer value
-    * @param expr is the righthand side integer expression
-    * @return the constraint <code>expr < v</code>
-    */
-  def lt(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.lt(v, expr)
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between two integer expression.
-    *
-    * @param expr1 is the lefthand side integer expression
-    * @param expr2 is the righthand side integer expression
-    * @return the constraint <code>expr1 == expr2</code>
-    */
-  def neq(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.neq(expr1, expr2)
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
-    *
-    * @param expr is the lefthand side integer expression
-    * @param v is the righthand side integer value
-    * @return the constraint <code>expr1 == v</code>
-    */
-  def neq(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.neq(expr, v)
-
-  /**
-    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
-    *
-    * @param v is the righthand side integer value
-    * @param expr is the lefthand side integer expression
-    * @return the constraint <code>v == expr</code>
-    */
-  def neq(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.neq(v, expr)
-
-  /**
     * Returns a new constraint indicating that at least one of the two constraints is true.
     *
     * @param ct1 is the first constraint
@@ -1692,16 +1509,4 @@ object Modeler {
     */
   def ifThen(ct1: Constraint, ct2: Constraint)(implicit modeler: Modeler): Constraint =
     modeler.ifThen(ct1, ct2)
-
-  /**
-    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
-    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
-    *
-    * @param c1 is the conditional constraint
-    * @param c2 is the constraint that must be true if the condition is true
-    * @param c3 is the constraint that must be true if the condition is false
-    * @return the conditional constraint
-    */
-  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint)(implicit modeler: Modeler): Constraint =
-    modeler.ifThenElse(c1, c2, c3)
 }

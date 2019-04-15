@@ -82,7 +82,12 @@ class Constraint(c: IloConstraint)(implicit modeler: Modeler) extends IntExpr(c)
     * @param ct2 is the 'else' constraint
     * @return a new constraint
     */
-  def ?(ct1: Constraint, ct2: Constraint): Constraint = modeler.ifThenElse(this, ct1, ct2)
+  def ?(ct1: Constraint, ct2: Constraint): Constraint = {
+    modeler match {
+      case model: CpModel => model.ifThenElse(this, ct1, ct2)
+      case _ => throw new UnsupportedOperationException("Operator \'?\' only supported on CpModel")
+    }
+  }
 }
 
 object Constraint {

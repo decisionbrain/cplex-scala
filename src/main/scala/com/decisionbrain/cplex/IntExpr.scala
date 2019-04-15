@@ -6,7 +6,7 @@
 
 package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.cp.CumulFunctionExpr
+import com.decisionbrain.cplex.cp.{CpModel, CumulFunctionExpr}
 import ilog.concert.IloIntExpr
 
 /**
@@ -99,7 +99,12 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param expr is the numeric expression of the new not-equal-to constraint.
     * @return a new constraint <em>expr1 != expr2</em>.
     */
-  def !=(expr: IntExpr): Constraint = modeler.neq(this, expr)
+  def !=(expr: IntExpr): Constraint = {
+    modeler match {
+      case model: CpModel => model.neq(this, expr)
+      case _ => throw new UnsupportedOperationException("Operator \'!=\' only supported on CpModel")
+    }
+  }
 
   /**
     * Creates and returns the constraint <em>expr1 != value</em>.
@@ -107,7 +112,12 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param value is an integer value
     * @return a new constraint <em>expr1 != value</em>.
     */
-  def !=(value: Int): Constraint = modeler.neq(this, value)
+  def !=(value: Int): Constraint = {
+    modeler match {
+      case model: CpModel => model.neq(this, value)
+      case _ => throw new UnsupportedOperationException("Operator \'!=\' only supported on CpModel")
+    }
+  }
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr >= v</em>.
@@ -115,15 +125,25 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param value is the lower bound of the new greater-than-or-equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>x >= value</em>.
     */
-  def >(value: Int): Constraint = modeler.gt(this, value)
+  def >(value: Int): Constraint = {
+    modeler match {
+      case model: CpModel => model.gt(this, value)
+      case _ => throw new UnsupportedOperationException("Operator \'>\' only supported on CpModel")
+    }
+  }
 
   /**
     * Creates and returns an instance of IloConstraint that represents the constraint <em>expr1 >= expr2</em>.
     *
-    * @param e is the right-hand side expression of the greater than or equal constraint
+    * @param expr is the right-hand side expression of the greater than or equal constraint
     * @return a new constraint
     */
-  def >(expr: IntExpr): Constraint = modeler.gt(this, expr)
+  def >(expr: IntExpr): Constraint = {
+    modeler match {
+      case model : CpModel => model.gt(this, expr)
+      case _ => throw new UnsupportedOperationException("Operator \'>\' only supported on CpModel")
+    }
+  }
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr <= v</em>.
@@ -131,7 +151,12 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param value is the upper bound of the new less-than-or-equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>x <= value</em>.
     */
-  def <(value: Int): Constraint = modeler.lt(this, value)
+  def <(value: Int): Constraint =  {
+    modeler match {
+      case model : CpModel => model.lt(this, value)
+      case _ => throw new UnsupportedOperationException("Operator \'<\' only supported on CpModel")
+    }
+  }
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr1 <= expr2</em>.
@@ -139,7 +164,12 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     * @param expr is the right-handside expression of the new less-than-or-equal-to constraint.
     * @return a new <em>IloConstraint</em>
     */
-  def <(expr: IntExpr): Constraint = modeler.lt(this, expr)
+  def <(expr: IntExpr): Constraint = {
+    modeler match {
+      case model : CpModel =>   model.lt(this, expr)
+      case _ => throw new UnsupportedOperationException("Operator \'<\' only supported on CpModel")
+    }
+  }
 
   /**
     * This function returns a constraint that states that the value of cumul function expression f should never be
