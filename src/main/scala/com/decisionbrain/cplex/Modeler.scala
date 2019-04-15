@@ -226,7 +226,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.linearNumExpr(value))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -241,7 +241,7 @@ abstract class Modeler(modeler: IloModeler) {
     IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -256,7 +256,7 @@ abstract class Modeler(modeler: IloModeler) {
     IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -271,7 +271,7 @@ abstract class Modeler(modeler: IloModeler) {
     IntExpr(modeler.scalProd(values, vars.map(v => v.getIloIntVar())))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -286,7 +286,7 @@ abstract class Modeler(modeler: IloModeler) {
     IntExpr(modeler.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
 
   /**
-    * Creates and returns an linear expression representing the scalar product of the numeric values
+    * Returns a new numeric expression representing the scalar product of the numeric values
     * with the given numeric variables.
     *
     * @param values is the sequence of values
@@ -300,7 +300,7 @@ abstract class Modeler(modeler: IloModeler) {
   def scalarProduct(values: NumArray, vars: NumVarArray): NumExpr =
     NumExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
   /**
-    * Creates and returns an linear expression representing the scalar product of the numeric values
+    * Returns a new numeric expression representing the scalar product of the numeric values
     * with the given numeric variables.
     *
     * @param values is the sequence of values
@@ -315,7 +315,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -330,7 +330,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -345,7 +345,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.scalProd(vars.map(v => v.getIloNumVar()), values))(implicitly(this))
 
   /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
+    * Returns a new integer linear expression representing the scalar product of the given integer values
     * with the given integer variables.
     *
     * @param values is the sequence of values
@@ -360,7 +360,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.scalProd(values.toArray, vars.map(v => v.getIloNumVar()).toArray))(implicitly(this))
 
   /**
-    * Return the sum of numeric expressions.
+    * Return a new numeric expression that is the sum of numeric expressions.
     *
     * @param exprs is a sequence of numeric expressions
     * @return a numeric expression that represents the sum of numeric expressions
@@ -370,7 +370,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Return the sum of integer expressions.
+    * Returns a new integer expression that is the sum of integer expressions.
     *
     * @param exprs is a sequence of integer expressions
     * @return a numeric expression that represents the sum of numeric expressions
@@ -380,7 +380,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Return the sum of numeric expressions.
+    * Return a new numeric expression that is the sum of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
     * @return a numeric expression that represents the sum of the numeric expressions
@@ -390,7 +390,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Return the sum of numeric expressions.
+    * Returns a new integer expression that is the sum of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
     * @return a numeric expression that represents the sum of the numeric expressions
@@ -400,7 +400,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Return the sum of numeric expressions.
+    * Return a new numeric expression that is the sum of numeric expressions.
     *
     * @param exprs is a sequence of numeric variables
     * @return a numeric expression that represents the sum of the numeric expressions
@@ -410,7 +410,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Returns the integer sum of integer expressions.
+    * Returns a new integer expression that is the sum of integer expressions.
     *
     * @param exprs is an array of integer expressions
     * @return an integer expression that represents the sum of the integer expressions
@@ -420,7 +420,7 @@ abstract class Modeler(modeler: IloModeler) {
   }
 
   /**
-    * Returns the sum of a numeric expression and a double value.
+    * Returns a new numeric expression that is the sum of a numeric expression and a double value.
     *
     * @param expr is the numeric expression
     * @param v is the value
@@ -430,7 +430,7 @@ abstract class Modeler(modeler: IloModeler) {
     NumExpr(modeler.sum(expr.getIloNumExpr(), v))(implicitly(this))
 
   /**
-    * Returns the sum of an integer expression and an integer value.
+    * Returns a new integer expression that is the sum of an integer expression and an integer value.
     *
     * @param expr is the integer expression
     * @param v is the integer value
@@ -439,95 +439,415 @@ abstract class Modeler(modeler: IloModeler) {
   def sum(expr: IntExpr, v: Int): IntExpr =
     IntExpr(modeler.sum(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression that is the difference between two numeric expressions.
+    *
+    * @param expr1 is the first numeric expression
+    * @param expr2 is the second numeric expression
+    * @return the difference between two numeric expressions
+    */
   def diff(expr1: NumExpr, expr2: NumExpr): NumExpr =
     NumExpr(modeler.diff(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
 
-  def diff(expr1: NumExpr, v: Double): NumExpr =
-    NumExpr(modeler.diff(expr1.getIloNumExpr(), v))(implicitly(this))
+  /**
+    * Returns a new numeric expression that is the difference between a numeric expressions and a numeric value.
+    *
+    * @param expr is the numeric expression
+    * @param v is the numeric value
+    * @return the difference between the numeric expression and the numeric value
+    */
+  def diff(expr: NumExpr, v: Double): NumExpr =
+    NumExpr(modeler.diff(expr.getIloNumExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression that is the difference between a numeric value and a numeric expression.
+    *
+    * @param v is the numeric value
+    * @param expr is the numeric expression
+    * @return the difference between the numeric value and the numeric expression
+    */
+  def diff(v: Double, expr: NumExpr): NumExpr =
+    NumExpr(modeler.diff(expr.getIloNumExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new integer expression that is the difference between two integer expressions.
+    *
+    * @param expr1 is the first integer expression
+    * @param expr2 is the second integer expression
+    * @return the difference between two integer expressions
+    */
   def diff(expr1: IntExpr, expr2: IntExpr): IntExpr =
     IntExpr(modeler.diff(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
-  def diff(expr1: IntExpr, v: Int): IntExpr =
-    IntExpr(modeler.diff(expr1.getIloIntExpr(), v))(implicitly(this))
+  /**
+    * Returns a new integer experssion that is the difference between an integer expression and a integer value.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the difference between an integer expression and an integer value
+    */
+  def diff(expr: IntExpr, v: Int): IntExpr =
+    IntExpr(modeler.diff(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new integer expression that is the difference between an integer value and a integer expressions.
+    *
+    * @param v is the integer value
+    * @param expr is the integer expression
+    * @return the difference between an integer value and an integer expression
+    */
+  def diff(v: Int, expr: IntExpr): IntExpr =
+    IntExpr(modeler.diff(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new numeric expression that is the negation of a numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the negation of the numeric expression
+    */
   def negative(expr: NumExpr): NumExpr =
     NumExpr(modeler.negative(expr.getIloNumExpr()))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression that is the negation of an integer expression.
+    *
+    * @param expr is the integer expression
+    * @return the negation of the integer expression
+    */
   def negative(expr: IntExpr): IntExpr =
     IntExpr(modeler.negative(expr.getIloIntExpr()))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression representing the product of two numeric expressions.
+    *
+    * @param expr1 is the first numeric expression
+    * @param expr2 is the second numeric expression
+    * @return the product of two numeric expressions
+    */
   def prod(expr1: NumExpr, expr2: NumExpr): NumExpr =
     NumExpr(modeler.prod(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression representing the product of a numeric expression and a numeric value.
+    *
+    * @param expr is the numeric expression
+    * @param v is the numeric value
+    * @return the product of two numeric expressions
+    */
   def prod(expr: NumExpr, v: Double): NumExpr =
     NumExpr(modeler.prod(expr.getIloNumExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new numeric expression representing the product of a numeric value and a numeric expression.
+    *
+    * @param v is the numeric value
+    * @param expr is the numeric expression
+    * @return the product of two numeric expressions
+    */
+  def prod(v: Double, expr: NumExpr): NumExpr =
+    NumExpr(modeler.prod(v, expr.getIloNumExpr()))(implicitly(this))
+
+  /**
+    * Returns a new integer expression representing the product of two integer expressions.
+    *
+    * @param expr1 is the first integer expression
+    * @param expr2 is the second integer expression
+    * @return the product of two integer expressions
+    */
   def prod(expr1: IntExpr, expr2: IntExpr): IntExpr =
     IntExpr(modeler.prod(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
+  /**
+    * Returns a new integer expression representing the product of an integer expression and an integer value.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the product of the integer expression and the integer value
+    */
   def prod(expr: IntExpr, v: Int): IntExpr =
     IntExpr(modeler.prod(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new integer expression representing the product of an integer value and an integer expression.
+    *
+    * @param v is the integer value
+    * @param expr is the integer expression
+    * @return the product of the integer value and the integer expression
+    */
+  def prod(v: Int, expr: IntExpr): IntExpr =
+    IntExpr(modeler.prod(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
+    */
   def div(expr1: IntExpr, expr2: IntExpr): IntExpr =
     IntExpr(toIloCP.div(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
+    */
   def div(expr: IntExpr, v: Int): IntExpr =
     IntExpr(toIloCP.div(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
+    */
+  def div(v: Int, expr: IntExpr): IntExpr =
+    IntExpr(toIloCP.div(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
+    *
+    * @param expr1 is the lefthand side numeric expression
+    * @param expr2 is the righthand side numeric expression
+    * @return a constraint <code>expr1 >= expr2</code>
+    */
   def ge(expr1: NumExpr, expr2: NumExpr): Constraint =
     Constraint(modeler.ge(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> constraint between a numeric expression and a numeric value.
+    *
+    * @param expr is the lefthand side numeric expression
+    * @param v is the righthand side numeric value
+    * @return a constraint <code>expr >= v</code>
+    */
   def ge(expr: NumExpr, v: Double): Range =
     Range(modeler.ge(expr.getIloNumExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the righthand side numeric value
+    * @param expr is the lefthand side numeric expression
+    * @return a constraint <code>v >= expr</code>
+    */
+  def ge(v: Double, expr: NumExpr): Range =
+    Range(modeler.ge(v, expr.getIloNumExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @return a constraint <code>expr1 <= expr2</code>
+    */
   def le(expr1: NumExpr, expr2: NumExpr): Constraint =
     Constraint(modeler.le(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between a numeric expression and a numeric value.
+    *
+    * @param expr is the righthand side numeric expression
+    * @param v is the lefthand side numeric value
+    * @return a constraint <code>expr <= v</code>
+    */
   def le(expr: NumExpr, v: Double): Range =
     Range(modeler.le(expr.getIloNumExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the righthand side numeric value
+    * @param expr is the lefthand side numeric expression
+    * @return a constraint <code>v <= expr</code>
+    */
+  def le(v: Double, expr: NumExpr): Range =
+    Range(modeler.le(expr.getIloNumExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @return a constraint <code>expr1 == expr2</code>
+    */
   def eq(expr1: NumExpr, expr2: NumExpr): Constraint =
     Constraint(modeler.eq(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @param name is the name of the constraint
+    * @return the constraint <code>expr1 == expr</code>
+    */
   def eq(expr1: NumExpr, expr2: NumExpr, name: String): Constraint =
     Constraint(modeler.eq(expr1.getIloNumExpr(), expr2.getIloNumExpr(), name))(implicitly(this))
 
+  /**
+    * Returns a new constraint equal-to between a numeric expression and a numeric value.
+    *
+    * @param expr is the righthand side numeric expression
+    * @param v is the lefthand side numeric value
+    * @return the constraint <code>expr == v</code>
+    */
   def eq(expr: NumExpr, v: Double): Range =
     Range(modeler.eq(expr.getIloNumExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the lefthand side numeric value
+    * @param expr is the righthand side numeric expression
+    * @return the constraint <code>v == expr/code>
+    */
+  def eq(v: Double, expr: NumExpr): Range =
+    Range(modeler.eq(expr.getIloNumExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
+    */
   def gt(expr1: IntExpr, expr2: IntExpr): Constraint =
     Constraint(toIloCP.gt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
-  def gt(expr: IntExpr, value: Int): Constraint =
-    Constraint(toIloCP.gt(expr.getIloIntExpr(), value))(implicitly(this))
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
+    */
+  def gt(expr: IntExpr, v: Int): Constraint =
+    Constraint(toIloCP.gt(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
+    */
+  def gt(v: Int, expr: IntExpr): Constraint =
+    Constraint(toIloCP.gt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
+    */
   def lt(expr1: IntExpr, expr2: IntExpr): Constraint =
     Constraint(toIloCP.lt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
-  def lt(expr: IntExpr, value: Int): Constraint =
-    Constraint(toIloCP.lt(expr.getIloIntExpr(), value))(implicitly(this))
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(expr: IntExpr, v: Int): Constraint =
+    Constraint(toIloCP.lt(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(v: Int, expr: IntExpr): Constraint =
+    Constraint(toIloCP.lt(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
+    *
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
+    */
   def neq(expr1: IntExpr, expr2: IntExpr): Constraint =
     Constraint(toIloCP.neq(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
+    *
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
+    */
   def neq(expr: IntExpr, v: Int): Constraint =
     Constraint(toIloCP.neq(expr.getIloIntExpr(), v))(implicitly(this))
 
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
+    *
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
+    */
+  def neq(v: Int, expr: IntExpr): Constraint =
+    Constraint(toIloCP.neq(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint indicating that at least one of the two constraints is true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the logical-or of two constraints
+    */
   def or(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.or(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
 
+  /**
+    * Returns a new constraint indicating that both constraints are true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the logical-and of two constraints
+    */
   def and(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.and(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
 
+  /**
+    * Returns a new constraint that is the negation of the given constraint.
+    *
+    * @param ct is the constraint
+    * @return the logical negation of the constraint
+    */
   def not(ct: Constraint): Constraint =
     Constraint(modeler.not(ct.getIloConstraint()))(implicitly(this))
 
+  /**
+    * Returns a new constraint that if constraint <i>ct1</i> is true, then constraint <i>ct2</i> must also be true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the conditional constraint
+    */
   def ifThen(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.ifThen(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
 
-  def ifThenElse(ct: Constraint, ct1: Constraint, ct2: Constraint): Constraint =
-    Constraint(toIloCP.ifThenElse(ct.getIloConstraint(), ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
+  /**
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
+    *
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
+    */
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint): Constraint =
+    Constraint(toIloCP.ifThenElse(c1.getIloConstraint(), c2.getIloConstraint(), c3.getIloConstraint()))(implicitly(this))
 
 
   private val numExprNumeric = NumExprNumeric(this)
@@ -994,4 +1314,394 @@ object Modeler {
     * @return a numeric expression that represents the sum of the numeric expressions
     */
   def sum(exprs: Iterable[IntExpr])(implicit modeler: Modeler) : IntExpr = modeler.sum(exprs)
+
+  /**
+    * Returns a new numeric expression that is the sum of a numeric expression and a double value.
+    *
+    * @param expr is the numeric expression
+    * @param v is the value
+    * @return a numeric expression that is the sum of a numeric expression and a double value
+    */
+  def sum(expr: NumExpr, v: Double)(implicit modeler: Modeler): NumExpr = modeler.sum(expr, v)
+
+  /**
+    * Returns a new integer expression that is the sum of an integer expression and an integer value.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return a integer expression that is the sum of a numeric expression and a double value
+    */
+  def sum(expr: IntExpr, v: Int)(implicit modeler: Modeler): IntExpr = modeler.sum(expr, v)
+
+  /**
+    * Returns a new numeric expression that is the difference between two numeric expressions.
+    *
+    * @param expr1 is the first numeric expression
+    * @param expr2 is the second numeric expression
+    * @return the difference between two numeric expressions
+    */
+  def diff(expr1: NumExpr, expr2: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.diff(expr1, expr2)
+
+  /**
+    * Returns a new numeric expression that is the difference between a numeric expressions and a numeric value.
+    *
+    * @param expr is the numeric expression
+    * @param v is the numeric value
+    * @return the difference between the numeric expression and the numeric value
+    */
+  def diff(expr: NumExpr, v: Double)(implicit modeler: Modeler): NumExpr = modeler.diff(expr, v)
+
+  /**
+    * Returns a new numeric expression that is the difference between a numeric value and a numeric expression.
+    *
+    * @param v is the numeric value
+    * @param expr is the numeric expression
+    * @return the difference between the numeric value and the numeric expression
+    */
+  def diff(v: Double, expr: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.diff(expr, v)
+
+  /**
+    * Returns a new integer expression that is the difference between two integer expressions.
+    *
+    * @param expr1 is the first integer expression
+    * @param expr2 is the second integer expression
+    * @return the difference between two integer expressions
+    */
+  def diff(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.diff(expr1, expr2)
+
+  /**
+    * Returns a new integer experssion that is the difference between an integer expression and a integer value.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the difference between an integer expression and an integer value
+    */
+  def diff(expr: IntExpr, v: Int)(implicit modeler: Modeler): IntExpr = modeler.diff(expr, v)
+
+  /**
+    * Returns a new integer expression that is the difference between an integer value and a integer expressions.
+    *
+    * @param v is the integer value
+    * @param expr is the integer expression
+    * @return the difference between an integer value and an integer expression
+    */
+  def diff(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.diff(v, expr)
+
+  /**
+    * Returns a new numeric expression that is the negation of a numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the negation of the numeric expression
+    */
+  def negative(expr: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.negative(expr)
+
+  /**
+    * Returns a new numeric expression that is the negation of an integer expression.
+    *
+    * @param expr is the integer expression
+    * @return the negation of the integer expression
+    */
+  def negative(expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.negative(expr)
+
+  /**
+    * Returns a new numeric expression representing the product of two numeric expressions.
+    *
+    * @param expr1 is the first numeric expression
+    * @param expr2 is the second numeric expression
+    * @return the product of two numeric expressions
+    */
+  def prod(expr1: NumExpr, expr2: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.prod(expr1, expr2)
+
+  /**
+    * Returns a new numeric expression representing the product of a numeric expression and a numeric value.
+    *
+    * @param expr is the numeric expression
+    * @param v is the numeric value
+    * @return the product of two numeric expressions
+    */
+  def prod(expr: NumExpr, v: Double)(implicit modeler: Modeler): NumExpr = modeler.prod(expr, v)
+
+  /**
+    * Returns a new numeric expression representing the product of a numeric value and a numeric expression.
+    *
+    * @param v is the numeric value
+    * @param expr is the numeric expression
+    * @return the product of two numeric expressions
+    */
+  def prod(v: Double, expr: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.prod(v, expr)
+
+  /**
+    * Returns a new integer expression representing the product of two integer expressions.
+    *
+    * @param expr1 is the first integer expression
+    * @param expr2 is the second integer expression
+    * @return the product of two integer expressions
+    */
+  def prod(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.prod(expr1, expr2)
+
+  /**
+    * Returns a new integer expression representing the product of an integer expression and an integer value.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the product of the integer expression and the integer value
+    */
+  def prod(expr: IntExpr, v: Int)(implicit modeler: Modeler): IntExpr = modeler.prod(expr, v)
+
+  /**
+    * Returns a new integer expression representing the product of an integer value and an integer expression.
+    *
+    * @param v is the integer value
+    * @param expr is the integer expression
+    * @return the product of the integer value and the integer expression
+    */
+  def prod(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.prod(v, expr)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
+    */
+  def div(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.div(expr1, expr2)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
+    */
+  def div(expr: IntExpr, v: Int)(implicit modeler: Modeler): IntExpr = modeler.div(expr, v)
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
+    */
+  def div(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.div(v, expr)
+
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
+    *
+    * @param expr1 is the lefthand side numeric expression
+    * @param expr2 is the righthand side numeric expression
+    * @return a constraint <code>expr1 >= expr2</code>
+    */
+  def ge(expr1: NumExpr, expr2: NumExpr)(implicit modeler: Modeler): Constraint = modeler.ge(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> constraint between a numeric expression and a numeric value.
+    *
+    * @param expr is the lefthand side numeric expression
+    * @param v is the righthand side numeric value
+    * @return a constraint <code>expr >= v</code>
+    */
+  def ge(expr: NumExpr, v: Double)(implicit modeler: Modeler): Range = modeler.ge(expr, v)
+
+  /**
+    * Returns a new constraint <i>greater-than-or-equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the righthand side numeric value
+    * @param expr is the lefthand side numeric expression
+    * @return a constraint <code>v >= expr</code>
+    */
+  def ge(v: Double, expr: NumExpr)(implicit modeler: Modeler): Range = modeler.ge(v, expr)
+
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @return a constraint <code>expr1 <= expr2</code>
+    */
+  def le(expr1: NumExpr, expr2: NumExpr)(implicit modeler: Modeler): Constraint = modeler.le(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between a numeric expression and a numeric value.
+    *
+    * @param expr is the righthand side numeric expression
+    * @param v is the lefthand side numeric value
+    * @return a constraint <code>expr <= v</code>
+    */
+  def le(expr: NumExpr, v: Double)(implicit modeler: Modeler): Range = modeler.le(expr, v)
+
+  /**
+    * Returns a new constraint <i>less-than-or-equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the righthand side numeric value
+    * @param expr is the lefthand side numeric expression
+    * @return a constraint <code>v <= expr</code>
+    */
+  def le(v: Double, expr: NumExpr)(implicit modeler: Modeler): Range = modeler.le(v, expr)
+
+  /**
+    * Returns a new constraint <i>equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @return a constraint <code>expr1 == expr2</code>
+    */
+  def eq(expr1: NumExpr, expr2: NumExpr)(implicit modeler: Modeler): Constraint = modeler.eq(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>equal-to</i> between two numeric expressions.
+    *
+    * @param expr1 is the righthand side numeric expression
+    * @param expr2 is the lefthand side numeric expression
+    * @param name is the name of the constraint
+    * @return the constraint <code>expr1 == expr</code>
+    */
+  def eq(expr1: NumExpr, expr2: NumExpr, name: String)(implicit modeler: Modeler): Constraint =
+    modeler.eq(expr1, expr2, name)
+
+  /**
+    * Returns a new constraint equal-to between a numeric expression and a numeric value.
+    *
+    * @param expr is the righthand side numeric expression
+    * @param v is the lefthand side numeric value
+    * @return the constraint <code>expr == v</code>
+    */
+  def eq(expr: NumExpr, v: Double)(implicit modeler: Modeler): Range = modeler.eq(expr, v)
+
+  /**
+    * Returns a new constraint <i>equal-to</i> between a numeric value and a numeric expression.
+    *
+    * @param v is the lefthand side numeric value
+    * @param expr is the righthand side numeric expression
+    * @return the constraint <code>v == expr/code>
+    */
+  def eq(v: Double, expr: NumExpr)(implicit modeler: Modeler): Range = modeler.eq(expr, v)
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
+    */
+  def gt(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.gt(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
+    */
+  def gt(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.gt(expr, v)
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
+    */
+  def gt(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.gt(expr, v)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
+    */
+  def lt(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.lt(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.lt(expr, v)
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.lt(v, expr)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
+    *
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
+    */
+  def neq(expr1: IntExpr, expr2: IntExpr)(implicit modeler: Modeler): Constraint = modeler.neq(expr1, expr2)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
+    *
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
+    */
+  def neq(expr: IntExpr, v: Int)(implicit modeler: Modeler): Constraint = modeler.neq(expr, v)
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
+    *
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
+    */
+  def neq(v: Int, expr: IntExpr)(implicit modeler: Modeler): Constraint = modeler.neq(v, expr)
+
+  /**
+    * Returns a new constraint indicating that at least one of the two constraints is true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the logical-or of two constraints
+    */
+  def or(ct1: Constraint, ct2: Constraint)(implicit modeler: Modeler): Constraint = modeler.or(ct1, ct2)
+
+  /**
+    * Returns a new constraint indicating that both constraints are true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the logical-and of two constraints
+    */
+  def and(ct1: Constraint, ct2: Constraint)(implicit modeler: Modeler): Constraint = modeler.and(ct1, ct2)
+
+  /**
+    * Returns a new constraint that is the negation of the given constraint.
+    *
+    * @param ct is the constraint
+    * @return the logical negation of the constraint
+    */
+  def not(ct: Constraint)(implicit modeler: Modeler): Constraint = modeler.not(ct)
+
+  /**
+    * Returns a new constraint that if constraint <i>ct1</i> is true, then constraint <i>ct2</i> must also be true.
+    *
+    * @param ct1 is the first constraint
+    * @param ct2 is the second constraint
+    * @return the conditional constraint
+    */
+  def ifThen(ct1: Constraint, ct2: Constraint)(implicit modeler: Modeler): Constraint =
+    modeler.ifThen(ct1, ct2)
+
+  /**
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
+    *
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
+    */
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint)(implicit modeler: Modeler): Constraint =
+    modeler.ifThenElse(c1, c2, c3)
 }
