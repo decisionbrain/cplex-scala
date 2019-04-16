@@ -95,6 +95,8 @@ pipeline {
                 }
             }
             steps {
+                sh "chmod ugo+x ./gradlew"
+                sh "chmod -R ugo+rx ./gradle"
 //                sh "./gradlew clean build jacocoTestReport pitest jacocoMergeTest sonarqube publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
                 sh "./gradlew clean build publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
             }
