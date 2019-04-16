@@ -1,3 +1,9 @@
+/*
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
+ */
+
 package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
