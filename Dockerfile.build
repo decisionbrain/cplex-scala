@@ -16,4 +16,4 @@ RUN useradd jenkins --shell /bin/bash --uid 1001 --create-home
 
 RUN chmod -R 755 /home/jenkins
 
-USER jenkins
+USER decisionbrain
