@@ -65,7 +65,7 @@ pipeline {
                 }
             }
         }
-       stage('Feature or release build') {
+       stage('Simple build') {
             when { not { anyOf { branch 'master'; branch 'develop' } } }
             // This agent is run inside a container which is defined by default by the Dockerfile in the root directory
             // If the dockerfile you want to use is different, please specify the following property : filename 'yourDockerFilePath'
@@ -79,6 +79,8 @@ pipeline {
             }
 
             steps {
+                sh "chmod ugo+x ./gradlew"
+                sh "chmod -R ugo+rx ./gradle"
                 sh "./gradlew clean build -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
             }
         }
