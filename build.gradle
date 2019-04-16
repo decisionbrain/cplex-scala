@@ -18,20 +18,62 @@ apply plugin: 'maven-publish'
 // Maven repository configuration
 //
 
-def mavenFilename = 'maven.gradle'
-def gradleHome = System.getProperty("user.home") + '/.gradle/'
+//def mavenFilename = 'maven.gradle'
+//def gradleHome = System.getProperty("user.home") + '/.gradle/'
+//
+//if (file(gradleHome + mavenFilename).exists()) {
+//    def filename = gradleHome + mavenFilename
+//    println("Importing gradle file $filename")
+//    apply from: filename
+//}
+//else if (file(mavenFilename).exists()) {
+//    def filename = mavenFilename
+//    println("Importing gradle file $filename")
+//    apply from: filename
+//}
+//
 
-if (file(gradleHome + mavenFilename).exists()) {
-    def filename = gradleHome + mavenFilename
-    println("Importing gradle file $filename")
-    apply from: filename
-}
-else if (file(mavenFilename).exists()) {
-    def filename = mavenFilename
-    println("Importing gradle file $filename")
-    apply from: filename
+//
+// DecisionBrain Nexus Repository
+//
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
 }
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task scaladocJar(type: Jar) {
+    classifier = 'scaladoc'
+    from scaladoc.destinationDir
+}
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            artifact scaladocJar
+        }
+    }
+    repositories {
+        maven {
+            name = "Nexus"
+            url = "$NEXUS_URL/repository/" + (version.endsWith('SNAPSHOT') ? "snapshots" : "releases")
+            credentials {
+                username = "$MAVEN_USER"
+                password = "$MAVEN_PASSWORD"
+            }
+        }
+    }
+}
 
 //
 // CPLEX Home

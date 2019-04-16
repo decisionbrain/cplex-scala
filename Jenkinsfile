@@ -28,7 +28,7 @@ pipeline {
     }
 
     stages {
-        // For this step, you should have a json file in your job's "Config files" with the id variables-config
+        // If you do not defined your project in Jenkins DecisionBrain folder, you should have a json file in your job's "Config files" with the id variables-config
         // This should look like :
         // {
         //   nexusUrl:'https://nexus.decisionbrain.loc/',
@@ -65,57 +65,63 @@ pipeline {
                 }
             }
         }
-        stage('Build project') {
+       stage('Feature or release build') {
+            when { not { anyOf { branch 'master'; branch 'develop' } } }
             // This agent is run inside a container which is defined by default by the Dockerfile in the root directory
             // If the dockerfile you want to use is different, please specify the following property : filename 'yourDockerFilePath'
             agent {
                 dockerfile {
+                    filename 'Dockerfile.build'
                     reuseNode true
                     // Needed to work inside the docker environment and get access to the nexus.loc
                     args "--network=dockernet254"
-                    dir 'jenkins'
                 }
             }
+
             steps {
-                sh "./gradlew clean build sonarqube -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
+                sh "./gradlew clean build -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
             }
         }
-        // This stage builds and pushes the current project version images on master and develop branches
-        stage('Publish Docker images') {
-            // The docker build must NOT be run inside a container
-            agent none
-
-            steps {
-                script {
-                    echo "Building docker images"
-
-                    docker.withRegistry(env.DOCKER_REGISTRY_URL, 'NEXUS_USER') {
-                        /* Build images */
-                        def frontendImage = docker.build("microservices-blueprint-frontend:${env.PROJECT_VERSION}", "frontend")
-                        def openDataImage = docker.build("microservices-blueprint-opendata:${env.PROJECT_VERSION}", "--build-arg JAR_FILE=build/libs/microservices-blueprint-opendata-${env.PROJECT_VERSION}.jar opendata")
-
-                        /* Push images to registry */
-                        frontendImage.push()
-                        openDataImage.push()
-
-                        /* Clean local Docker cache */
-                        sh "docker images microservices-blueprint-frontend:${env.PROJECT_VERSION} -q | xargs docker rmi -f"
-                        sh "docker images microservices-blueprint-opendata:${env.PROJECT_VERSION} -q | xargs docker rmi -f"
-                    }
-
+        // This stage is only run on develop branch
+        stage('Develop build with sonar') {
+            when { anyOf { branch 'develop' } }
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.build'
+                    reuseNode true
+                    args "--network=dockernet254"
                 }
+            }
+            steps {
+//                sh "./gradlew clean build jacocoTestReport pitest jacocoMergeTest sonarqube publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
+                sh "./gradlew clean build publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
+            }
+        }
+        // This stage is only run on master branch
+        stage('Master build') {
+            when { anyOf { branch 'master' } }
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.build'
+                    reuseNode true
+                    args "--network=dockernet254"
+                }
+            }
+            steps {
+                sh "./gradlew clean build publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
+                sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P NEXUS_URL_FOR_PUSH=$NEXUS_DMZ_URL -P MAVEN_USER=$NEXUS_DMZ_USER_USR -P MAVEN_PASSWORD=$NEXUS_DMZ_USER_PSW"
             }
         }
     }
 
     post {
         always {
-            junit testResults: '**/build/test-results/test/*.xml', allowEmptyResults: true
+//            junit testResults: '**/build/test-results/test/*.xml', allowEmptyResults: true
 
             script {
                 // Send the build status as a comment inside the pull request, if any
                 // This method is defined in the DecisionBrain shared library
-                sendBuildStatus(project : 'microservices-blueprint')
+                sendBuildStatus(project : 'decisionbrain-cplex-scala')
             }
         }
     }
