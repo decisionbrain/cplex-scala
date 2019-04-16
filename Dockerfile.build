@@ -12,4 +12,8 @@ RUN  update-ca-certificates
 
 RUN keytool -import -noprompt -trustcacerts -alias loc -file /usr/local/share/ca-certificates/decisionbrain.loc/ca.crt -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit
 
-USER decisionbrain
+RUN useradd jenkins --shell /bin/bash --uid 1001 --create-home
+
+RUN chmod -R 755 /home/jenkins
+
+USER jenkins
