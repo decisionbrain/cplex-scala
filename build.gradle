@@ -15,26 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 //
-// Maven repository configuration
-//
-
-//def mavenFilename = 'maven.gradle'
-//def gradleHome = System.getProperty("user.home") + '/.gradle/'
-//
-//if (file(gradleHome + mavenFilename).exists()) {
-//    def filename = gradleHome + mavenFilename
-//    println("Importing gradle file $filename")
-//    apply from: filename
-//}
-//else if (file(mavenFilename).exists()) {
-//    def filename = mavenFilename
-//    println("Importing gradle file $filename")
-//    apply from: filename
-//}
-//
-
-//
-// DecisionBrain Nexus Repository
+// DecisionBrain Nexus Repository for Jar files and Docker images
 //
 
 task sourcesJar(type: Jar) {
