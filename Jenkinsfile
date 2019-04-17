@@ -88,10 +88,12 @@ pipeline {
         stage('Develop build with sonar') {
             when { anyOf { branch 'develop' } }
             agent {
-                dockerfile {
-                    filename 'Dockerfile.build'
-                    reuseNode true
-                    args "--network=dockernet254"
+                docker.withServer('docker-registry.decisionbrain.loc', 'NEXUS_USER') {
+                    dockerfile {
+                        filename 'Dockerfile.build'
+                        reuseNode true
+                        args "--network=dockernet254"
+                    }
                 }
             }
             steps {
