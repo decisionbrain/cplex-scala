@@ -136,11 +136,11 @@ test {
     String osName = System.getProperty("os.name").toLowerCase();
     if (osName.contains("windows")) {
         // Path to CPLEX Studio Windows native libraries:
-        environment "java.library.path", "$cplexStudioHome/opl/bin/x64_win64"
-        environment "PATH", "$cplexStudioHome/opl/bin/x64_win64"
+        environment "java.library.path", "$cplexStudioHome/cpoptimizer/bin/x64_win64;$cplexStudioHome/cplex/bin/x64_win64"
+        environment "PATH", "$cplexStudioHome/cpoptimizer/bin/x64_win64;$cplexStudioHome/cplex/bin/x64_win64"
     } else if (osName.contains("linux")){
         // Path to ODME Linux native libraries:
-        systemProperty "java.library.path", "$cplexStudioHome/opl/bin/x86-64_linux"
+        systemProperty "java.library.path", "$cplexStudioHome/cpoptimizer/bin/x86-64_linux:$cplexStudioHome/cplex/bin/x86-64_linux"
     } else {
          throw new Exception("OS not supported: $osName")
     }
@@ -178,9 +178,8 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: cplexStudioHome + "/opl/lib", include: ['*.jar'])
-    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
     compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
@@ -195,7 +194,7 @@ dependencies {
 }
 
 test {
-    allJvmArgs = ["-ea", "-Djava.library.path=\"$cplexStudioHome/cplex/bin/x64_win64;$cplexStudioHome/opl/bin/x64_win64;\""]
+    allJvmArgs = ["-ea", "-Djava.library.path=\"$cplexStudioHome/cpoptimizer/bin/x64_win64;$cplexStudioHome/cplex/bin/x64_win64;\""]
 }
 
 task listJars {
