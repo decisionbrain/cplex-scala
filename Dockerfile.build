@@ -1,4 +1,4 @@
-FROM docker-registry.decisionbrain.loc/cplex-studio-java:12.8-jdk8-1.0.0
+FROM docker-registry.decisionbrain.loc/cplex-studio-java:12.9-jdk8-1.0.0
 
 USER root
 
