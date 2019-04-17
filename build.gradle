@@ -98,10 +98,10 @@ configurations.all {
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java']
+            srcDirs = ['src/main/java', 'src/examples/java']
         }
         scala {
-            srcDirs = ['src/main/scala']
+            srcDirs = ['src/main/scala', 'src/examples/scala']
         }
         resources {
             srcDir 'src/main/resources'
@@ -109,10 +109,10 @@ sourceSets {
     }
     test {
         java {
-            srcDirs = ['src/examples/java', 'src/test/java']
+            srcDirs = ['src/test/java']
         }
         scala {
-            srcDirs = ['src/examples/scala', 'src/test/scala']
+            srcDirs = ['src/test/scala']
         }
         resources {
             srcDir 'src/test/resources'
