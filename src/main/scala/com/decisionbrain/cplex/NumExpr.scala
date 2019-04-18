@@ -17,12 +17,19 @@ import ilog.concert.IloNumExpr
 class NumExpr(val expr: IloNumExpr)(implicit modeler: Modeler) {
 
   /**
-    * TODO
+    * Returns true if the given argument is a numeric expression
     *
-    * @param a
-    * @return
+    * @param a is the given argument
+    * @return true if the argument is an instance of class NumExpr
     */
   def canEqual(a: Any) = a.isInstanceOf[NumExpr]
+
+  /**
+    * Returns true if the given argument given is equal to this numeric expression
+    *
+    * @param that is the numeric expression to compare to
+    * @return true if both numeric expressions are equals
+    */
   override def equals(that: scala.Any): Boolean = {
     that match {
       case that: NumExpr => that.canEqual(this) && this.hashCode() == that.hashCode()
@@ -31,9 +38,9 @@ class NumExpr(val expr: IloNumExpr)(implicit modeler: Modeler) {
   }
 
   /**
-    * TODO
+    * Returns the hash code
     *
-    * @return
+    * @return the hash code
     */
   override def hashCode(): Int = return getIloNumExpr().hashCode()
 

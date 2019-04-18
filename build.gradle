@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.5.0-SNAPSHOT'
+version '1.5.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -60,13 +60,6 @@ publishing {
 //
 // CPLEX Home
 //
-
-if (!hasProperty('cplexStudioHome')) {
-    def cplexStudioHome = System.getenv()["CPLEX_STUDIO_HOME"]
-    project.ext.set("cplexStudioHome", cplexStudioHome)
-}
-
-System.out.println("Using CPLEX Studio: ${cplexStudioHome}")
 
 compileJava {
     sourceCompatibility = 1.8
@@ -146,8 +139,8 @@ ext {
 }
 
 dependencies {
-//    compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
-//    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
