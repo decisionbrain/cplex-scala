@@ -76,17 +76,17 @@ println("Using native cplex path: $ext.nativeCplexPath")
 println("Using native cpo path: $ext.nativeCpoPath")
 
 test {
-    environment "PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath" // For Windows dynamic library loading
-    environment "LD_LIBRARY_PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath" // For Linux dynamic library loading
-    environment "DYLD_LIBRARY_PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath"
+    environment "PATH", "$nativeCpoPath$pathSeparator$nativeCplexPath" // For Windows dynamic library loading
+    environment "LD_LIBRARY_PATH", "$nativeCpoPath$pathSeparator$nativeCplexPath" // For Linux dynamic library loading
+    environment "DYLD_LIBRARY_PATH", "$nativeCpoPath$pathSeparator$nativeCplexPath"
     // For Mac OS dynamic library loading (CPO)
-    systemProperty "java.library.path", "$nativeCplexPath$pathSeparator$nativeCpoPath"
+    systemProperty "java.library.path", "$nativeCpoPath$pathSeparator$nativeCplexPath"
     // For Mac OS dynamic library loading (Cplex)
     enableAssertions = true
 }
 
 tasks.withType(JavaExec) {
-    environment('LD_LIBRARY_PATH', "$nativeCplexPath$pathSeparator$nativeCpoPath")
+    environment('LD_LIBRARY_PATH', "$nativeCpoPath$pathSeparator$nativeCplexPath")
 }
 
 dependencies {
