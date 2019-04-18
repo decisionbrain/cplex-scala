@@ -6,6 +6,8 @@
 
 package com.decisionbrain.cplex
 
+import java.util
+
 import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.IloIntSet
 
@@ -17,7 +19,7 @@ import ilog.concert.IloIntSet
   */
 class IntSetIterator(f: IntSet)(implicit modeler: Modeler) extends Iterator[Int] {
 
-  var iter = f.getIloIntSet().iterator()
+  val iter: util.Iterator[_] = f.getIloIntSet().iterator()
 
   override def hasNext: Boolean = iter.hasNext
 

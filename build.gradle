@@ -146,9 +146,8 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: cplexStudioHome + "/opl/lib", include: ['*.jar'])
-    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
     compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
+    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
@@ -160,6 +159,13 @@ dependencies {
     testCompile("junit:junit:4.12")
     testCompile("org.scalatest:scalatest_$scalaVersionShort:3.0.1")
     testCompile 'org.slf4j:slf4j-simple:1.7.10'
+}
+
+
+task listJars {
+    doLast {
+        configurations.compile.each { File file -> println file.name }
+    }
 }
 
 wrapper {

@@ -112,7 +112,10 @@ pipeline {
                 }
             }
             steps {
-                sh "./gradlew clean build publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
+                sh "chmod ugo+x ./gradlew"
+                sh "chmod -R ugo+rx ./gradle"
+                sh "./gradlew clean build"
+                sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
                 sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P NEXUS_URL_FOR_PUSH=$NEXUS_DMZ_URL -P MAVEN_USER=$NEXUS_DMZ_USER_USR -P MAVEN_PASSWORD=$NEXUS_DMZ_USER_PSW"
             }
         }
