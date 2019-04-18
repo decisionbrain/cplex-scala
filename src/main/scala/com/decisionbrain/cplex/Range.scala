@@ -1,10 +1,10 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
 import ilog.concert.IloRange
 
@@ -12,9 +12,9 @@ import ilog.concert.IloRange
   * Constructor of class RangeConstraint.
   *
   * @param r is a CPLEX range constraint
-  * @param model is the constraint programming model
+  * @param modeler is the constraint programming model
   */
-class RangeConstraint(r: IloRange)(implicit model: CpModel) extends Constraint(r) {
+class Range(r: IloRange)(implicit modeler: Modeler) extends Constraint(r) {
 
   /**
     * Returns the CPLEX range constraint
@@ -49,13 +49,13 @@ class RangeConstraint(r: IloRange)(implicit model: CpModel) extends Constraint(r
 
 }
 
-object RangeConstraint {
+object Range {
   /**
     * Converts a CPLKEX range constraint to a range constraint.
     *
     * @param r is the CPLEX range constraint
-    * @param model is the constraint programming model
+    * @param modeler is the constraint programming model
     * @return a range constraint
     */
-  def apply(r: IloRange)(implicit model: CpModel): RangeConstraint = new RangeConstraint(r)
+  def apply(r: IloRange)(implicit modeler: Modeler): Range = new Range(r)
 }

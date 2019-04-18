@@ -1,13 +1,14 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.mp
 
 import java.io.{File, FileReader}
 
+import com.decisionbrain.cplex.Modeler
 import ilog.concert.IloNumVarType
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -57,7 +58,6 @@ class MpModelTest extends FunSuite with Matchers {
     anonymousNumVar.getName() should equal(None)
     val numVar = model.numVar(-10, 15, "aNumVar")
     numVar.getName() should equal(Some("aNumVar"))
-    numVar.getIloCplex() should not equal(null)
     numVar.getIloNumVar() should not equal(null)
     numVar.getLB() should equal(-10.0 +- epsilon)
     numVar.getUB() should equal(15.0 +- epsilon)
@@ -73,7 +73,6 @@ class MpModelTest extends FunSuite with Matchers {
     anonymousIntVar.getName() should equal(None)
     val intVar = model.intVar(-10, 15, "aIntVar")
     intVar.getName() should equal(Some("aIntVar"))
-    numVar.getIloCplex() should not equal(null)
     numVar.getIloNumVar() should not equal(null)
     intVar.getLB() should equal(-10.0 +- epsilon)
     intVar.getUB() should equal(15.0 +- epsilon)
@@ -89,7 +88,6 @@ class MpModelTest extends FunSuite with Matchers {
     anonymousBoolVar.getName() should equal(None)
     val boolVar = model.boolVar("aBoolVar")
     boolVar.getName() should equal(Some("aBoolVar"))
-    numVar.getIloCplex() should not equal(null)
     numVar.getIloNumVar() should not equal(null)
     boolVar.getLB() should equal(.0 +- epsilon)
     boolVar.getUB() should equal(1.0 +- epsilon)
@@ -106,12 +104,10 @@ class MpModelTest extends FunSuite with Matchers {
 
     // linearNumExpr
     val linearNumExpr = model.linearNumExpr(3.5)
-    linearNumExpr.getIloCplex() should not equal(null)
     linearNumExpr.getIloNumExpr should not equal(null)
 
     // linearIntExpr
     val linearIntExpr = model.linearIntExpr(3)
-    linearIntExpr.getIloCplex() should not equal(null)
     linearIntExpr.getIloNumExpr should not equal(null)
 
     // range
@@ -121,7 +117,7 @@ class MpModelTest extends FunSuite with Matchers {
     r1.getLB should equal (.0)
     r1.getUB should equal (10.0)
     r1.getNumExpr should not equal (null)
-    r1.getNumExpr().toString should equal ("x ")
+    r1.getNumExpr().toString should equal ("(1.0*x)")
 
     val r2 = model.range(0, model.numVar(0, 10, "x1") + model.numVar(0, 10, "x2"), 18, "r2")
     r2.getName should equal (Some("r2"))
@@ -174,13 +170,13 @@ class MpModelTest extends FunSuite with Matchers {
     sum3.getIloNumExpr should not equal(null)
 
     val sum4 = model.sum(model.numVar(0, 10), model.numVar(0, 20))
-    sum4.getIloNumExpr should not equal(null)
+//    sum4.getIloNumExpr should not equal(null)
 
     // sum on companion object
-    val cosum1 = MpModel.sum(List(model.numVar(0, 10), model.numVar(0, 20)))(implicitly(model))
+    val cosum1 = Modeler.sum(List(model.numVar(0, 10), model.numVar(0, 20)))(implicitly(model))
     cosum1.getIloNumExpr should not equal null
 
-    val cosum2 = MpModel.sum(model.numVar(0, 10), model.numVar(0, 20))(implicitly(model))
+    val cosum2 = Modeler.sum(model.numVar(0, 10), model.numVar(0, 20))(implicitly(model))
     cosum2.getIloNumExpr should not equal null
 
     // add
@@ -216,8 +212,8 @@ class MpModelTest extends FunSuite with Matchers {
     model2.getObjectiveValue() should equal(5.0 +- epsilon)
 
     // getBestObjValue
-    model1.getBestObjValue() should equal (java.lang.Double.POSITIVE_INFINITY)
-    model2.getBestObjValue() should equal (java.lang.Double.NEGATIVE_INFINITY)
+    model1.getBestObjValue() should equal (1.0E75) // was java.lang.Double.POSITIVE_INFINITY
+    model2.getBestObjValue() should equal (-1.0E75) // was java.lang.Double.NEGATIVE_INFINITY
 
     // getValue
     model1.getValue(varModel1) should equal (5.0 +- epsilon)

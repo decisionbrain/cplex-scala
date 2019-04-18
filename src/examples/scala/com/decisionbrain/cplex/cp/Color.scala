@@ -1,10 +1,12 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
+
+import com.decisionbrain.cplex.IntVar
 
 /**
   * The problem involves choosing colors for the countries on a map in such a way that at most four colors (blue, white,

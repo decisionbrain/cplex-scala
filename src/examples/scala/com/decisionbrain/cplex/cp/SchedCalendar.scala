@@ -1,11 +1,13 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.IntExpr
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 

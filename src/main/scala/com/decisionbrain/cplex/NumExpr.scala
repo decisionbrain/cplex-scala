@@ -1,10 +1,10 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex
 
 import ilog.concert.IloNumExpr
 
@@ -12,11 +12,24 @@ import ilog.concert.IloNumExpr
   * Class for numeric expressions
   *
   * @param expr  is the numeric expression
-  * @param model is the constraint programming model
+  * @param modeler is the constraint programming model
   */
-class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
+class NumExpr(val expr: IloNumExpr)(implicit modeler: Modeler) {
 
+  /**
+    * Returns true if the given argument is a numeric expression
+    *
+    * @param a is the given argument
+    * @return true if the argument is an instance of class NumExpr
+    */
   def canEqual(a: Any) = a.isInstanceOf[NumExpr]
+
+  /**
+    * Returns true if the given argument given is equal to this numeric expression
+    *
+    * @param that is the numeric expression to compare to
+    * @return true if both numeric expressions are equals
+    */
   override def equals(that: scala.Any): Boolean = {
     that match {
       case that: NumExpr => that.canEqual(this) && this.hashCode() == that.hashCode()
@@ -24,6 +37,11 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     }
   }
 
+  /**
+    * Returns the hash code
+    *
+    * @return the hash code
+    */
   override def hashCode(): Int = return getIloNumExpr().hashCode()
 
   /**
@@ -31,7 +49,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     *
     * @return the constraint programming model
     */
-  def getCpModel(): CpModel = model
+  def getModeler(): Modeler = modeler
 
   /**
     * Return the CPLEX numeric expression.
@@ -47,9 +65,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param y is the other numeric expression
     * @return a numeric expression representing the sum <em>x + y</em>
     */
-  def +(y: NumExpr): NumExpr = {
-    NumExpr(model.cp.sum(expr, y.getIloNumExpr))
-  }
+  def +(y: NumExpr): NumExpr = modeler.sum(this, y)
 
   /**
     * Creates and returns an expression representing the sum of this numeric expression and a numeric constant.
@@ -57,9 +73,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param v is the numeric constant
     * @return a numeric expression representing the sum <em>x + v</em>
     */
-  def +(v: Double): NumExpr = {
-    NumExpr(model.cp.sum(expr, v))
-  }
+  def +(v: Double): NumExpr = modeler.sum(this, v)
 
   /**
     * Creates and returns an expression representing the sum of the numeric expressions <em>x</em> and <em>that</em>
@@ -67,9 +81,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param y is the numeric expression to add
     * @return a numeric expression representing the sum <em>x - y</em>
     */
-  def -(y: NumExpr): NumExpr = {
-    NumExpr(model.cp.diff(expr, y.getIloNumExpr))
-  }
+  def -(y: NumExpr): NumExpr = modeler.diff(this, y)
 
   /**
     * Creates and returns an expression representing the diff of this numeric expression and a numeric constant.
@@ -77,16 +89,14 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param v is the numeric constant
     * @return a numeric expression representing the sum <em>x - v</em>
     */
-  def -(v: Double): NumExpr = {
-    NumExpr(model.cp.diff(expr, v))
-  }
+  def -(v: Double): NumExpr = modeler.diff(this, v)
 
   /**
     * Create and returns an expression that is the negation of this expression.
     *
     * @return the negation of this expression
     */
-  def unary_- : NumExpr = NumExpr(model.cp.negative(expr))
+  def unary_- : NumExpr = modeler.negative(this)
 
   /**
     * Creates and returns an expression representing the product of the expression x and the value v.
@@ -94,9 +104,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param v is the value to use in the product.
     * @return a numeric expression representing the product <em>e1 * v</em>.
     */
-  def *(v: Double): NumExpr = {
-    NumExpr(model.cp.prod(expr, v))
-  }
+  def *(v: Double): NumExpr = modeler.prod(this, v)
 
   /**
     * Creates and returns an expression representing the product of the expression x and another expression y.
@@ -104,9 +112,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param expr is the value to use in the product.
     * @return a numeric expression representing the product <em>e1 * v</em>.
     */
-  def *(expr: NumExpr): NumExpr = {
-    NumExpr(model.cp.prod(this.expr, expr.getIloNumExpr))
-  }
+  def *(expr: NumExpr): NumExpr = modeler.prod(this, expr)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr >= v</em>.
@@ -114,9 +120,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param value is the lower bound of the new greater-than-or-equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>x >= value</em>.
     */
-  def >=(value: Double): RangeConstraint = {
-    RangeConstraint(model.cp.ge(expr, value))
-  }
+  def >=(value: Double): Range = modeler.ge(this, value)
 
   /**
     * Creates and returns an instance of IloConstraint that represents the constraint <em>expr1 >= expr2</em>.
@@ -124,9 +128,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param e is the right-hand side expression of the greater than or equal constraint
     * @return a new constraint
     */
-  def >=(e: NumExpr): Constraint = {
-    Constraint(model.cp.ge(expr, e.getIloNumExpr))
-  }
+  def >=(e: NumExpr): Constraint = modeler.ge(this, e)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr <= v</em>.
@@ -134,9 +136,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param value is the upper bound of the new less-than-or-equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>x <= value</em>.
     */
-  def <=(value: Double): RangeConstraint = {
-    RangeConstraint(model.cp.le(expr, value))
-  }
+  def <=(value: Double): Range = modeler.le(this, value)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr1 <= expr2</em>.
@@ -144,9 +144,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param e is the right-handside expression of the new less-than-or-equal-to constraint.
     * @return a new <em>IloConstraint</em>
     */
-  def <=(e: NumExpr): Constraint = {
-    Constraint(model.cp.le(expr, e.getIloNumExpr))
-  }
+  def <=(e: NumExpr): Constraint = modeler.le(this, e)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr == value</em>.
@@ -154,9 +152,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param value is the numeric value of the new equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>expr == value</em>.
     */
-  def ==(value: Double): RangeConstraint = {
-    RangeConstraint(model.cp.eq(expr, value))
-  }
+  def ==(value: Double): Range = modeler.eq(this, value)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr == value</em>.
@@ -164,9 +160,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param value is the integer value of the new equal-to constraint.
     * @return a new <em>IloRange</em> instance that represents the constraint <em>expr == value</em>.
     */
-  def ==(value: Int): RangeConstraint = {
-    RangeConstraint(model.cp.eq(expr, value))
-  }
+  def ==(value: Int): Range = modeler.eq(this, value)
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr1 == expr2</em>.
@@ -174,9 +168,7 @@ class NumExpr(val expr: IloNumExpr)(implicit model: CpModel) {
     * @param e is the numeric expression of the new equal-to constraint.
     * @return a new <em>IloConstraint</em> instance that represents the constraint <em>expr1 == expr2</em>.
     */
-  def ==(e: NumExpr): Constraint = {
-    Constraint(model.cp.eq(expr, e.expr))
-  }
+  def ==(e: NumExpr): Constraint = modeler.eq(this, e)
 
   /**
     * Return a character string that represents the numeric expression.
@@ -191,28 +183,28 @@ object NumExpr {
     * Converts a CPLEX numeric expression to a numeric expression.
     *
     * @param e is the CPLEX numeric expression
-    * @param model is the constraint programming model the numeric expression belongs to
+    * @param modeler is the optimization model the numeric expression belongs to
     * @return a numeric expression
     */
-  def apply(e: IloNumExpr)(implicit model: CpModel) = new NumExpr(e)
+  def apply(e: IloNumExpr)(implicit modeler: Modeler) = new NumExpr(e)
 
   /**
     * Converts a constant value to a numeric expression.
     *
     * @param v is the constant value
-    * @param model is the constraint programming model
+    * @param modeler is the optimization model
     * @return a numeric expression
     */
-  def apply(v: Double)(implicit model: CpModel) = new NumExpr(model.cp.linearNumExpr(v))
+  def apply(v: Double)(implicit modeler: Modeler) = modeler.linearNumExpr(v)
 
   /**
     * Implicit Conversion of an object of type Double to a NumConstant i.e. a constant numeric expression.
     *
     * @param value is the value of the constant numeric expression
-    * @param model is the constraint programming model
+    * @param modeler is the constraint programming model
     */
-  implicit class LinearNumExpr(value: Double)(implicit model: CpModel)
-    extends NumExpr(model.cp.linearNumExpr(value)) {
+  implicit class LinearNumExpr(value: Double)(implicit modeler: Modeler)
+    extends NumExpr(modeler.getIloModeler().linearNumExpr(value)) {
   }
 
 }

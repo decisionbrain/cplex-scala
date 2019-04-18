@@ -1,10 +1,14 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.mp
+
+import com.decisionbrain.cplex.mp.MpModel._
+import com.decisionbrain.cplex.Modeler._
+import com.decisionbrain.cplex._
 
 object Nurses2 {
 
@@ -335,17 +339,17 @@ object Nurses2 {
     averageNurseWorkTime = model.numVar(name="AverageNurseWorkTime")
   }
 
-  def setupConstraints(model: MpModel) = {
+  def setupConstraints(implicit model: MpModel) = {
 
     val maxWorkTime = workRules._1
 
     // define average
-    model.add(model.linearIntExpr(nurses.length) * averageNurseWorkTime == model.sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
+    model.add(linearIntExpr(nurses.length) * averageNurseWorkTime == sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
 
     // compute nurse work time , average and under, over
     for (n <- nurses) {
       val workTimeVar = nurseWorkTimeVars(n)
-      model.add(workTimeVar == model.sum(for (s <- shifts) yield nurseAssignmentVars(n, s)*shiftActivities(s).duration()), s"work_time_$n")
+      model.add(workTimeVar == sum(for (s <- shifts) yield nurseAssignmentVars(n, s)*shiftActivities(s).duration()), s"work_time_$n")
       model.add(workTimeVar == averageNurseWorkTime + nurseOverAverageTimeVars(n) - nurseUnderAverageTimeVars(n), s"averag_work_time_$n")
       model.add(workTimeVar <= maxWorkTime, s"max_time_$n")
     }
@@ -365,12 +369,12 @@ object Nurses2 {
 
     // requirement
     for (s <- shifts)
-      model.addRange(s.minRequirement, model.sum(for (n <- nurses) yield nurseAssignmentVars(n, s)), s.maxRequirement,
+      model.addRange(s.minRequirement, sum(for (n <- nurses) yield nurseAssignmentVars(n, s)), s.maxRequirement,
         s"medium_shift_$s")
 
     for ((dept, skill, required) <- skillRequirements if required > 0) {
       for (s <- shifts if dept == s.department) {
-        model.add(model.sum(for (n <- nurses if nurseSkills.contains(n.name) && nurseSkills(n.name).contains(skill))
+        model.add(sum(for (n <- nurses if nurseSkills.contains(n.name) && nurseSkills(n.name).contains(skill))
           yield nurseAssignmentVars(n, s)) >= required)
       }
     }
@@ -401,15 +405,15 @@ object Nurses2 {
 
   }
 
-  def setupObjective(model: MpModel) = {
+  def setupObjective(implicit model: MpModel) = {
 
     val nurseCosts = for (n <- nurses; s <- shifts) yield nurseAssignmentVars(n, s) * n.payRate * shiftActivities(s).duration()
-    totalNumberOfAssignments = model.sum(for (n <- nurses; s <- shifts) yield nurseAssignmentVars(n, s))
-    totalSalaryCost = model.sum(nurseCosts)
-    totalFairness = model.sum(for (n <- nurses) yield nurseOverAverageTimeVars(n)) +
-      model.sum(for (n <- nurses) yield nurseUnderAverageTimeVars(n))
+    totalNumberOfAssignments = sum(for (n <- nurses; s <- shifts) yield nurseAssignmentVars(n, s))
+    totalSalaryCost = sum(nurseCosts)
+    totalFairness = sum(for (n <- nurses) yield nurseOverAverageTimeVars(n)) +
+      sum(for (n <- nurses) yield nurseUnderAverageTimeVars(n))
 
-    model.add(model.minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
+    model.add(minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
   }
 
   def buildModel() : MpModel = {

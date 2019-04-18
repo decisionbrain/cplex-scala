@@ -1,11 +1,13 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.{IntExpr, IntVar}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 
@@ -100,7 +102,7 @@ object LearningCurve2 {
   var si1: IntervalSequenceVar = _
   var si2: IntervalSequenceVar = _
 
-  var o: Array[IntVar] = _
+  var o: List[IntVar] = _
 
   var IndexOfTask : Map[IntervalVar, Int] = _
 
@@ -111,7 +113,7 @@ object LearningCurve2 {
   var lcm1: Array[IntExpr] = _
   var lcm2: Array[IntExpr] = _
 
-  var prevType: Array[IntVar] = _
+  var prevType: List[IntVar] = _
 
   def build(): CpModel = {
 
@@ -219,30 +221,30 @@ object LearningCurve2 {
     for (i <- 0 until NbTasks) {
 
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a1(i))))
-      val prevOffsetExpr1 =  model.element(o.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
+      val prevOffsetExpr1 =  o(typeOfPrevious(si1, a1(i), i, i))
       model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr1 + startOf(a1(i)) - endOfPrevious(s1, a1(i), LastProductionTime1)))
 
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (o(i) == startOf(a2(i))))
-      val prevOffsetExpr2 =  model.element(o.toArray[IntExpr], typeOfPrevious(si2, a2(i), i))
+      val prevOffsetExpr2 =  o(typeOfPrevious(si2, a2(i), i))
       model.add((typeOfPrevious(s2, a2(i), InitialType1, -1) == TaskType(i)) <= (o(i) == prevOffsetExpr2 + startOf(a2(i)) - endOfPrevious(s2, a2(i), LastProductionTime2)))
 
       model.add((typeOfPrevious(s1, a1(i), InitialType1, TaskType(i)) != TaskType(i)) <= (prevType(i) == typeOfPrevious(s1, a1(i), if (InitialType1 < 0) TaskType(i) else InitialType1, TaskType(i))))
-      val prevTypeExpr1 =  model.element(prevType.toArray[IntExpr], typeOfPrevious(si1, a1(i), i, i))
+      val prevTypeExpr1 =  prevType(typeOfPrevious(si1, a1(i), i, i))
       model.add((typeOfPrevious(s1, a1(i), InitialType1, -1) == TaskType(i)) <= (prevType(i) == prevTypeExpr1))
 
       model.add((typeOfPrevious(s2, a2(i), InitialType2, TaskType(i)) != TaskType(i)) <= (prevType(i) == typeOfPrevious(s2, a2(i), if (InitialType2 < 0) TaskType(i) else InitialType2, TaskType(i))))
-      val prevTypeExpr2 =  model.element(prevType.toArray[IntExpr], typeOfPrevious(si2, a2(i), i, i))
+      val prevTypeExpr2 =  prevType(typeOfPrevious(si2, a2(i), i, i))
       model.add((typeOfPrevious(s2, a2(i), InitialType2, -1) == TaskType(i)) <= (prevType(i) == prevTypeExpr2))
 
-      val plcpa1: Array[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa1(i)(j)))(collection.breakOut)
-      val lcm1Indexes: Array[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM1(j)(TaskType(i)))(collection.breakOut)
-      lcm1(i) = model.element(lcm1Indexes, prevType(i))
-      model.add(presenceOf(lca1(i)) <= (model.element(plcpa1, lcm1(i)) == 1))
+      val plcpa1: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa1(i)(j)))(collection.breakOut)
+      val lcm1Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM1(j)(TaskType(i)))(collection.breakOut)
+      lcm1(i) = lcm1Indexes(prevType(i))
+      model.add(presenceOf(lca1(i)) <= (plcpa1(lcm1(i)) == 1))
 
-      val plcpa2: Array[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa2(i)(j)))(collection.breakOut)
-      val lcm2Indexes: Array[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM2(j)(TaskType(i)))(collection.breakOut)
-      lcm2(i) = model.element(lcm2Indexes, prevType(i))
-      model.add(presenceOf(lca2(i)) <= (model.element(plcpa2, lcm2(i)) == 1))
+      val plcpa2: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa2(i)(j)))(collection.breakOut)
+      val lcm2Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM2(j)(TaskType(i)))(collection.breakOut)
+      lcm2(i) = lcm2Indexes(prevType(i))
+      model.add(presenceOf(lca2(i)) <= (plcpa2(lcm2(i)) == 1))
     }
 
     // minimize makespan

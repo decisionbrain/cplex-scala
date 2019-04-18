@@ -1,13 +1,13 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
 import com.decisionbrain.cplex.Addable
-import ilog.concert.{IloAddable, IloCumulFunctionExpr, IloIntervalSequenceVar}
+import ilog.concert.{IloAddable, IloIntervalSequenceVar}
 
 /**
   * Iterator on sequence variable .

@@ -1,5 +1,19 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.5.0
+
+  * Update Gradle wrapper to release 5.4
+  * Add API for multi-objective in MpModel: see example DietMultiObj.scala
+  * Define method apply in classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray` for element constraint.
+  * Add operator * on classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray`for scalar product.
+  * Refactoring:
+    * Add class Modeler to build optimization model: CpModel and MpModel now inherits from Modeler
+    * Move many classes such as `NumExpr`, `IntExpr`, `NumVar`, `IntVar`, `Objective` from package com.decisoinbrain.cplex.mp and com.decisionbrain.cplex.cp to com.decisionbrain.cplex. 
+    * These entities are now shared and can be used to build either a mathematical programming model or a constraint 
+    programming model.
+  * Update file `build.gradle`: replace dependency with `oplall.jar` by dependencies with `cplex.jar` and 
+  `ILOG.CP.jar` instead.
+
 ## cplex-scala v1.4.0
 
   *  New examples `LearningCurve.scala` and `LearningCurve2`: a scheduling problem on two alternative heterogeneous machines with sequence 

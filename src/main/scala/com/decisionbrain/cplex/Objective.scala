@@ -1,24 +1,27 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
-package com.decisionbrain.cplex.mp
+package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.{Addable, ObjectiveSense}
 import ilog.concert._
 
 /**
-  * Created by dgodard on 10/02/2017.
+  * Constructor of class Objective.
+  *
+  * @param o is the CPLEX objective
+  * @param modeler is the constraint programming model
   */
-class Objective(o: IloObjective)(implicit model: MpModel) extends Addable {
+class Objective(o: IloObjective)(implicit modeler: Modeler) extends Addable {
+
   /**
     * Returns the name of model addable object.
     *
     * @return the name of the object
     */
-  override def getName: Option[String] = Option(o.getName())
+  override def getName(): Option[String] = Option(o.getName())
 
   /**
     * Set the name of the model addable object.
@@ -46,7 +49,7 @@ class Objective(o: IloObjective)(implicit model: MpModel) extends Addable {
     *
     * @return return the numeric expression of the objective
     */
-  def getNumExpr(): IloNumExpr = o.getExpr
+  def getNumExpr(): NumExpr = NumExpr(o.getExpr)(implicitly(modeler))
 
   @deprecated("Replaced by method getNumExpr", "decisionbrain-cplex-scala-1.0.0")
   def getExpr(): IloNumExpr = o.getExpr
@@ -79,11 +82,12 @@ class Objective(o: IloObjective)(implicit model: MpModel) extends Addable {
 
   /**
     * Convert the objective to a character string.
-    * @return
+    *
+    * @return a character string
     */
   override def toString: String = o.toString
 }
 
 object Objective {
-  def apply(o: IloObjective)(implicit model: MpModel) = new Objective(o)
+  def apply(o: IloObjective)(implicit model: Modeler) = new Objective(o)
 }

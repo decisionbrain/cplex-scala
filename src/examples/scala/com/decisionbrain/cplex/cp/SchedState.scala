@@ -1,11 +1,13 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.IntExpr
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.cp.IloCP
 
@@ -54,7 +56,7 @@ object SchedState {
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
           yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
 
-    workersUsage += sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
+    workersUsage += model.sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
 
     taskVars("masonry").setStartMin(releaseDate)
 

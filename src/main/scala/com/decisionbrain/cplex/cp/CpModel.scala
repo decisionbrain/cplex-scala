@@ -1,29 +1,34 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
-import com.decisionbrain.cplex.Addable
+import com.decisionbrain.cplex.{Addable, Constraint, IntExpr, IntSet, IntVar, Modeler, NumExpr, NumVar, Objective, SearchPhase}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 import ilog.concert._
 import ilog.concert.cppimpl.IloConcertUtils
 import ilog.cp.IloCP
 
-import scala.reflect.ClassTag
+/**
+  * An instance of this class represents a constraint programming model.
+  *
+  * @param name is the name of the constraint programming model
+  */
+case class CpModel(name: String=null) extends Modeler {
 
-
-class CpModel(name: String=null) {
-
-  val cp = new IloCP()
+  val cp: IloCP = {
+    val iloCP = new IloCP()
+    iloCP.setName(name)
+    iloCP
+  }
 
   private val trueConstraint = cp.trueConstraint()
   private val falseConstraint = cp.falseConstraint()
 
-  private val numExprNumeric = NumExprNumeric(this)
-  private val intExprNumeric = IntExprNumeric(this)
   private val cumulFunctionExprNumeric = CumulFunctionExprNumeric(this)
 
   //
@@ -31,32 +36,26 @@ class CpModel(name: String=null) {
   //
 
   /**
-    * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
-    * numeric expressions. For instance:
-    * <pre>
-    *   <code>
-    *     implicit val num = model.getNumExprNumeric()
-    *     val exprs = List(model.numVar(), model.numVar())
-    *     val sumExpr = exprs.sum
-    *   </code>
-    * </pre>
-    * @return the numeric for numeric expression
+    * Returns the CPLEX modeler i.e the interface for building optimization models.
+    *
+    * @return the CPLEX modeler
     */
-  def getNumExprNumeric(): Numeric[NumExpr] = numExprNumeric
+  def getIloModeler(): IloModeler = this.cp
+
 
   /**
-    * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
-    * numeric expressions. For instance:
-    * <pre>
-    *   <code>
-    *     implicit val num = model.getIntExprNumeric()
-    *     val exprs = List(model.intVar(), model.intVar())
-    *     val sumExpr = exprs.sum
-    *   </code>
-    * </pre>
-    * @return the numeric for integer expression
+    * Returns the name of the optimization model
+    *
+    * @return the name of the optimization model
     */
-  def getIntExprNumeric(): Numeric[IntExpr] = intExprNumeric
+  def getName(): Option[String] = Option(cp.getName())
+
+  /**
+    * Return the CPLEX CP Optimizer
+    *
+    * @return the CPELX CP Optimizer
+    */
+  def getIloCP(): IloCP = cp
 
   /**
     * Returns the numeric for cumul function expressions. This allows to do things such as calling method sum on list of
@@ -71,24 +70,6 @@ class CpModel(name: String=null) {
     * @return the numeric for cumul function expression
     */
   def getCumulFunctionExprNumeric(): Numeric[CumulFunctionExpr] = cumulFunctionExprNumeric
-
-  /**
-    * Returns the name of the mathematical programming model.
-    *
-    * @return the name of the model
-    */
-  def getName(): Option[String] = Option(name)
-
-  /**
-    * Create an integer variable.
-    *
-    * @param min is the lower bound
-    * @param max is the upper bound
-    * @param name is the name of the variable
-    * @return a numeric variable
-    */
-  def intVar(min: Int=0, max: Int=Int.MaxValue, name: String=null): IntVar =
-    IntVar(cp.intVar(min, max, name))(implicitly(this))
 
   /**
     * Creates and returns a integer variable and initialize its domain with the given integer values.
@@ -127,62 +108,6 @@ class CpModel(name: String=null) {
     */
   def intVar(values: Array[Int]): IntVar =
     IntVar(cp.intVar(values))(implicitly(this))
-
-  /**
-    * Create a numeric variable for each element in the set and add it in a dictionary
-    * where the key is element of the set and the value is the numeric variable.
-    *
-    * @param set is the set
-    * @param min is the minimum value
-    * @param max is the maximum value
-    * @param namer is a function that is used to set the name of a numeric variable
-    * @tparam T it the type of the elements in the set
-    * @return a dictionary of numeric variables indexed by the element of the set
-    */
-  def intVars[T](set: Iterable[T],
-                 min: Int = 0,
-                 max: Int= Int.MaxValue,
-                 namer: (T) => String = (t: T) => "") : Map[T, IntVar] = {
-    val dict: Map[T, IntVar] = set.map(t => {
-      val v: IntVar = IntVar(cp.intVar(min, max, namer(t)))(implicitly(this))
-      (t, v)
-    })(collection.breakOut)
-    dict
-  }
-
-  /**
-    * Creates and returns a list of integer variables.
-    *
-    * @param count is the number of integer variables to be created
-    * @param min is the minimum value of the integer variables
-    * @param max is the maximum value of the integer variables
-    * @param namer is a function to set the name of the integer variables
-    * @return a list of integer variables
-    */
-  def intVars(count: Int,
-              min: Int,
-              max: Int,
-              namer: (Int) => String) : List[IntVar] = {
-    val vars = for (i <- 0 until count)
-      yield IntVar(cp.intVar(min, max, namer(i)))(implicitly(this))
-    vars.toList
-  }
-
-  /**
-    * Creates and returns a list of integer variables.
-    *
-    * @param count is the number of integer variables to be created
-    * @param min is the minimum value of the integer variables
-    * @param max is the maximum value of the integer variables
-    * @return a list of integer variables
-    */
-  def intVars(count: Int,
-              min: Int,
-              max: Int) : List[IntVar] = {
-    val vars = for (i <- 0 until count)
-      yield IntVar(cp.intVar(min, max))(implicitly(this))
-    vars.toList
-  }
 
   /**
     * This method creates an interval variable. By default, the start, the end and the size of the new interval variable
@@ -286,6 +211,159 @@ class CpModel(name: String=null) {
   def intervalSequenceVar(vars: Array[IntervalVar], types: Array[Int]): IntervalSequenceVar =
     IntervalSequenceVar(cp.intervalSequenceVar(vars.map(v => v.getIloIntervalVar()), types))(implicitly(this))
 
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
+    */
+  def div(expr1: IntExpr, expr2: IntExpr): IntExpr =
+    IntExpr(cp.div(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
+    */
+  def div(expr: IntExpr, v: Int): IntExpr =
+    IntExpr(cp.div(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the integer division of two integer expressions.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
+    */
+  def div(v: Int, expr: IntExpr): IntExpr =
+    IntExpr(cp.div(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
+    */
+  def gt(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.gt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
+    */
+  def gt(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.gt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
+    */
+  def gt(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.gt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
+    *
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
+    */
+  def lt(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.lt(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
+    *
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.lt(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
+    *
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
+    */
+  def lt(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.lt(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
+    *
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
+    */
+  def neq(expr1: IntExpr, expr2: IntExpr): Constraint =
+    Constraint(cp.neq(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
+    *
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
+    */
+  def neq(expr: IntExpr, v: Int): Constraint =
+    Constraint(cp.neq(expr.getIloIntExpr(), v))(implicitly(this))
+
+  /**
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
+    *
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
+    */
+  def neq(v: Int, expr: IntExpr): Constraint =
+    Constraint(cp.neq(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
+    *
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
+    */
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint): Constraint =
+    Constraint(cp.ifThenElse(c1.getIloConstraint(), c2.getIloConstraint(), c3.getIloConstraint()))(implicitly(this))
+
+  /**
+    * This function returns a constraint that states that the value of cumul function expression f should never be
+    * smaller than this integer expression.
+    *
+    * @param expr is the integer expression
+    * @param f is the cumul function expression
+    * @return a constraint on the minimum value of the cumul function
+    */
+  def le(expr: IntExpr, f: CumulFunctionExpr): Constraint =
+    Constraint(cp.le(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
+
+  /**
+    * This function returns a constraint that states that the value of cumul function expression f should never be
+    * greater than this integer expression.
+    *
+    * @param expr is the integer expression
+    * @param f is the cumul function expression
+    * @return a constraint on the maximum value of the cumul function
+    */
+  def ge(expr: IntExpr, f: CumulFunctionExpr): Constraint =
+    Constraint(cp.ge(expr.getIloIntExpr(), f.getIloCumulFunctionExpr()))(implicitly(this))
 
   /**
     * Returns a constraint that is always true or false.
@@ -321,156 +399,6 @@ class CpModel(name: String=null) {
     IntervalVar(cp.intervalVar(sizeMin, sizeMax, optional, intensity.getIloNumToNumStepFunction(), granularity))(implicitly(this))
 
   /**
-    * Return the sum of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
-    */
-  def sum(exprs: NumExprArray) : NumExpr = {
-    NumExpr(cp.sum(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the integer sum of integer expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the sum of the integer expressions
-    */
-  def sumi(exprs: IntExprArray) : IntExpr = {
-    IntExpr(cp.sum(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Return the sum of numeric expressions.
-    *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
-    */
-  def sum(exprs: Array[NumExpr]) : NumExpr = {
-    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
-  }
-
-  /**
-    * Return the sum of integer expressions.
-    *
-    * @param exprs is a sequence of integer variables
-    * @return a numeric expression that represents the sum of the integer expressions
-    */
-  def sum(exprs: Array[IntExpr]) : IntExpr = {
-    IntExpr(cp.sum(exprs.map(e => e.getIloIntExpr)))(implicitly(this))
-  }
-
-  /**
-    * Returns the sum of numeric expressions.
-    *
-    * @param exprs is a variable number of numeric expressions
-    * @return a numeric expression that represents the sum numeric expressions
-    */
-  def sum(exprs: NumExpr*) : NumExpr = {
-    NumExpr(cp.sum(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the maximum of a set of numeric expressions.
-    *
-    * @param exprs is an array of numeric expressions
-    * @return a numeric expression that represents the maximum of the numeric expressions
-    */
-  def max(exprs: NumExprArray) : NumExpr = {
-    NumExpr(cp.max(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the maximum of set of integer expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the maximum of the integer expressions
-    */
-  def maxi(exprs: IntExprArray) : IntExpr = {
-    IntExpr(cp.max(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the maximum of a set of numeric expressions.
-    *
-    * @param exprs is an array of numeric expressions
-    * @return a numeric expression that represents the maximum of the numeric expressions
-    */
-  def max(exprs: Array[NumExpr]) : NumExpr = {
-    NumExpr(cp.max(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
-  }
-
-  /**
-    * Returns the maximum of a set of integer expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the maximum of the integer expressions
-    */
-  def max(exprs: Array[IntExpr]) : IntExpr = {
-    IntExpr(cp.max(exprs.map(e => e.getIloIntExpr())))(implicitly(this))
-  }
-
-  /**
-    * Returns the maximum numeric expressions.
-    *
-    * @param exprs is a variable number of numeric expressions
-    * @return a numeric expression that represents the maximum of the numeric expressions
-    */
-  def max(exprs: NumExpr*) : NumExpr = {
-    NumExpr(cp.max(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the minimum of numeric expressions.
-    *
-    * @param exprs is an array of numeric expressions
-    * @return a numeric expression that represents the minimum of the numeric expressions
-    */
-  def min(exprs: NumExprArray) : NumExpr = {
-    NumExpr(cp.min(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the minimum of a set of integer expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the minimum of the integer expressions
-    */
-  def mini(exprs: IntExprArray) : IntExpr = {
-    IntExpr(cp.min(exprs.toIloArray))(implicitly(this))
-  }
-
-  /**
-    * Returns the minimum of numeric expressions.
-    *
-    * @param exprs is an array of numeric expressions
-    * @return a numeric expression that represents the minimum of the numeric expressions
-    */
-  def min(exprs: Array[NumExpr]) : NumExpr = {
-    NumExpr(cp.min(exprs.map(e => e.getIloNumExpr())))(implicitly(this))
-  }
-
-  /**
-    * Returns the minimum of integer expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return a numeric expression that represents the minimum of the numeric expressions
-    */
-  def min(exprs: Array[IntExpr]) : IntExpr = {
-    IntExpr(cp.min(exprs.map(e => e.getIloIntExpr())))(implicitly(this))
-  }
-
-  /**
-    * Returns the minimum of a numeric expressions.
-    *
-    * @param exprs is a variable number of numeric variables
-    * @return a numeric expression that represents the minimum of the numeric expressions
-    */
-  def min(exprs: NumExpr*) : NumExpr = {
-    NumExpr(cp.min(exprs.map(e => e.getIloNumExpr()).toArray))(implicitly(this))
-  }
-
-  /**
     * This function creates a new constrained integer expression equal to the number of integer variables that are
     * fixed to the value v.
     *
@@ -493,138 +421,6 @@ class CpModel(name: String=null) {
   def count(exprs: Array[IntExpr], v: Int): IntExpr = {
     IntExpr(cp.count(exprs.map(e => e.getIloIntExpr()), v))(implicitly(this))
   }
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
-    IntExpr(cp.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: Array[Int], vars: Array[IntVar]): IntExpr =
-    IntExpr(cp.scalProd(vars.map(v => v.getIloIntVar()), values))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: IntArray, exprs: IntExprArray): IntExpr =
-    IntExpr(cp.prod(exprs.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: Array[Int], exprs: Array[IntExpr]): IntExpr =
-    IntExpr(cp.prod(exprs.map(e => e.getIloIntExpr()), values))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is the array of integer expressions
-    * @param exps2 is the array of integer expressions
-    * @return the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: IntExprArray, exps2: IntExprArray): IntExpr =
-    IntExpr(cp.prod(exps1.toIloArray, exps2.toIloArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is the array of integer expressions
-    * @param exps2 is the array of integer expressions
-    * @return the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr]): IntExpr =
-    IntExpr(cp.prod(exps1.map(e => e.getIloIntExpr()), exps2.map(e => e.getIloIntExpr())))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is the array of integer expressions
-    * @param values is the array of integer values
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(exps: IntExprArray, values: IntArray): IntExpr =
-    IntExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is the array of integer expressions
-    * @param values is the array of integer values
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(exps: Array[IntExpr], values: Array[Int]): IntExpr =
-    IntExpr(cp.prod(exps.map(e => e.getIloIntExpr()), values))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of integer values
-    * @param exps is the array of integer expressions
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(values: NumArray, exps: NumExprArray): NumExpr =
-    NumExpr(cp.prod(values.toArray, exps.toIloArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of integer values
-    * @param exps is the array of integer expressions
-    * @return the scalar product of integer expressions with integer values
-    */
-  def prod(values: Array[Double], exps: Array[NumExpr]): NumExpr =
-    NumExpr(cp.prod(values, exps.map(e => e.getIloNumExpr)))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of numeric values
-    * @param exps is the array of numeric expressions
-    * @return the scalar product of numeric expressions with numeric values
-    */
-  def prod(exps: NumExprArray, values: NumArray): NumExpr =
-    NumExpr(cp.prod(exps.toIloArray, values.toArray))(implicitly(this))
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is the array of numeric values
-    * @param exps is the array of numeric expressions
-    * @return the scalar product of numeric expressions with numeric values
-    */
-  def prod(exps: Array[NumExpr], values: Array[Double]): NumExpr =
-    NumExpr(cp.prod(exps.map(e => e.getIloNumExpr), values))(implicitly(this))
 
   /**
     *  Creates and returns a new integer expression equal to values[index] where index is an integer expression.
@@ -2120,28 +1916,12 @@ class CpModel(name: String=null) {
   }
 
   /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr): Objective = Objective(cp.minimize(expr.getIloNumExpr))(implicitly(this))
-
-  /**
-    * Creates a minimization multicriteria objective.
+    * Creates a minimization multi-criteria objective.
     *
     * @param expr is the multicriteria expressions
     * @return an objective
     */
   def minimize(expr: MultiCriterionExpr): Objective = Objective(cp.minimize(expr))(implicitly(this))
-
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to maximize
-    * @return An objective object the objective to maximize
-    */
-  def maximize(expr: NumExpr): Objective = Objective(cp.maximize(expr.getIloNumExpr))(implicitly(this))
 
   /**
     * Creates a maximization multicriteria objective.
@@ -2152,7 +1932,7 @@ class CpModel(name: String=null) {
   def maximize(expr: MultiCriterionExpr): Objective = Objective(cp.maximize(expr))(implicitly(this))
 
   /**
-    * This function defines a multicriteria expression for lexicographic ordering. A lexicographic ordering means that
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
     * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
     *
     * @param exprs a set of integer expressions for the lexicographic ordering
@@ -2675,124 +2455,124 @@ object CpModel {
   def apply(name: String=null) = new CpModel(name)
 
   /**
-    * Return the sum of a set of numeric expressions.
+    * Returns a new expression that is the integer division of two integer expressions.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
+    * @param expr1 is the dividend integer expression
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of integer division
     */
-  def sum(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.sum(exprs)
+  def div(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): IntExpr = model.div(expr1, expr2)
 
   /**
-    * Returns the integer sum of a set of integer expressions.
+    * Returns a new expression that is the integer division of two integer expressions.
     *
-    * @param exprs is an array of integer expressions
-    * @return a integer expression that represents the sum of the integer expressions
+    * @param expr is the integer expression
+    * @param v is the integer value
+    * @return the quotient of the integer division
     */
-  def sumi(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.sumi(exprs)
+  def div(expr: IntExpr, v: Int)(implicit model: CpModel): IntExpr = model.div(expr, v)
 
   /**
-    * Return the sum of a set of numeric expressions.
+    * Returns a new expression that is the integer division of two integer expressions.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the integer division
     */
-  def sum(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.sum(exprs)
+  def div(v: Int, expr: IntExpr)(implicit model: CpModel): IntExpr = model.div(v, expr)
 
   /**
-    * Return the integer sum of a sequence of integer expressions.
+    * Returns a new constraint <i>greater-than</i> between two integer expressions.
     *
-    * @param exprs is a sequence of integer variables
-    * @return a integer expression that represents the sum of the integer expressions
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 > expr2</code>
     */
-  def sum(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.sum(exprs)
+  def gt(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.gt(expr1, expr2)
 
   /**
-    * Return the sum of a set of numeric expressions.
+    * Returns a new constraint <i>greater-than</i> between an integer expression and an integer value.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the sum of the numeric expressions
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr > v</code>
     */
-  def sum(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.sum(exprs)
+  def gt(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.gt(expr, v)
 
   /**
-    * Returns the maximum of a set of numeric expressions.
+    * Returns a new constraint <i>greater-than</i> between an integer value and an integer expression.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the maximum of the numeric expressions
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>v > expr</code>
     */
-  def max(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.max(exprs)
+  def gt(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.gt(expr, v)
 
   /**
-    * Returns the maximum of a set of numeric expressions.
+    * Returns a new constraint <i>less-than</i> between two integer expressions.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the maximum of the numeric expressions
+    * @param expr1 is the righthand side integer expression
+    * @param expr2 is the lefthand side integer expression
+    * @return the constraint <code>expr1 < expr2</code>
     */
-  def maxi(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.maxi(exprs)
+  def lt(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.lt(expr1, expr2)
 
   /**
-    * Returns the maximum of a set of numeric expressions.
+    * Returns a new constraint <i>less-than</i> between an integer expression and an integer value.
     *
-    * @param exprs is an array of numeric expressions
-    * @return a numeric expression that represents the maximum of the numeric expressions
+    * @param expr is the righthand side integer expression
+    * @param v is the lefthand side integer value
+    * @return the constraint <code>expr < v</code>
     */
-  def max(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.max(exprs)
+  def lt(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.lt(expr, v)
 
   /**
-    * Returns the maximum of a set of integer expressions.
+    * Returns a new constraint <i>less-than</i> between an integer value and an integer expression.
     *
-    * @param exprs is an array of integer expressions
-    * @return a numeric expression that represents the maximum of the numeric expressions
+    * @param v is the lefthand side integer value
+    * @param expr is the righthand side integer expression
+    * @return the constraint <code>expr < v</code>
     */
-  def max(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.max(exprs)
+  def lt(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.lt(v, expr)
 
   /**
-    * Returns the maximum of a numeric expressions.
+    * Returns a new constraint <i>not equal to</i> between two integer expression.
     *
-    * @param exprs is a variable number of numeric variables
-    * @return a numeric expression that represents the maximum of the numeric expressions
+    * @param expr1 is the lefthand side integer expression
+    * @param expr2 is the righthand side integer expression
+    * @return the constraint <code>expr1 == expr2</code>
     */
-  def max(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.max(exprs)
+  def neq(expr1: IntExpr, expr2: IntExpr)(implicit model: CpModel): Constraint = model.neq(expr1, expr2)
 
   /**
-    * Returns the minimum of a set of numeric expressions.
+    * Returns a new constraint <i>not equal to</i> between an integer expression and an integer value.
     *
-    * @param exprs is a sequence of numeric variables
-    * @return a numeric expression that represents the minimum of the numeric expressions
+    * @param expr is the lefthand side integer expression
+    * @param v is the righthand side integer value
+    * @return the constraint <code>expr1 == v</code>
     */
-  def min(exprs: NumExprArray)(implicit model: CpModel): NumExpr = model.min(exprs)
+  def neq(expr: IntExpr, v: Int)(implicit model: CpModel): Constraint = model.neq(expr, v)
 
   /**
-    * Returns the minimum of a set of integer expressions.
+    * Returns a new constraint <i>not equal to</i> between an integer value and an integer expression.
     *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the minimum of the numeric expressions
+    * @param v is the righthand side integer value
+    * @param expr is the lefthand side integer expression
+    * @return the constraint <code>v == expr</code>
     */
-  def mini(exprs: IntExprArray)(implicit model: CpModel): IntExpr = model.mini(exprs)
+  def neq(v: Int, expr: IntExpr)(implicit model: CpModel): Constraint = model.neq(v, expr)
 
   /**
-    * Returns the minimum of a set of numeric expressions.
+    * Returns a new constraint <code>(c1 => c2) && (! c1 => c3)</code>, that is, if the constraint <i>c1</i> is true, the
+    * constraint <i>c2</i> must be true, and if the constraint <i>c1</i> is false, the constraint <i>c3</i> must be false.
     *
-    * @param exprs is an array of numeric variables
-    * @return a numeric expression that represents the minimum of the numeric expressions
+    * @param c1 is the conditional constraint
+    * @param c2 is the constraint that must be true if the condition is true
+    * @param c3 is the constraint that must be true if the condition is false
+    * @return the conditional constraint
     */
-  def min(exprs: Array[NumExpr])(implicit model: CpModel): NumExpr = model.min(exprs)
-
-  /**
-    * Returns the minimum of a numeric expressions.
-    *
-    * @param exprs is an array of integer expressions
-    * @return an integer expression that represents the minimum of the integer expressions
-    */
-  def min(exprs: Array[IntExpr])(implicit model: CpModel): IntExpr = model.min(exprs)
-
-  /**
-    * Returns the minimum of a numeric expressions.
-    *
-    * @param exprs is a variable number of numeric variables
-    * @return a numeric expression that represents the minimum of the numeric expressions
-    */
-  def min(exprs: NumExpr*)(implicit model: CpModel): NumExpr = model.min(exprs)
+  def ifThenElse(c1: Constraint, c2: Constraint, c3: Constraint)(implicit model: CpModel): Constraint =
+    model.ifThenElse(c1, c2, c3)
 
   /**
     * Creates a new constrained integer expression equal to the number of variables that are equals to the
@@ -2813,130 +2593,6 @@ object CpModel {
     * @return a integer expression that is the number of variables equal to the given value
     */
   def count(vars: Array[IntExpr], v: Int)(implicit model: CpModel): IntExpr = model.count(vars, v)
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is an arrayr of integer values
-    * @param vars is an array of integer variables
-    * @return an integer expression equals to the scalar product of the integer values with the integer variables
-    */
-  def scalarProduct(values: IntArray, vars: IntVarArray)(implicit model: CpModel): IntExpr =
-    model.scalarProduct(values, vars)
-
-  /**
-    * Creates and returns an integer linear expression representing the scalar product of the given integer values
-    * with the given integer variables.
-    *
-    * @param values is the sequence of values
-    * @param vars is the sequence of variables
-    * @return the scalar product of integer values with integer variables
-    */
-  def scalarProduct(values: Array[Int], vars: Array[IntVar])(implicit model: CpModel): IntExpr =
-    model.scalarProduct(values, vars)
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is the sequence of integer expressions
-    * @param values is the sequence of integer values
-    * @return the scalar product of integer values with integer expressions
-    */
-  def prod(values: IntArray, exprs: IntExprArray)(implicit model: CpModel): IntExpr =
-    model.prod(values, exprs)
-
-  /**
-    * Returns an expression equal to the scalar product of values and exps, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param exprs is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer values with the integer expressions
-    */
-  def prod(values: Array[Int], exprs: Array[IntExpr])(implicit model: CpModel): IntExpr =
-    model.prod(values, exprs)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is an array of integer expressions
-    * @param exps2 is an array of integer expressions
-    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: IntExprArray, exps2: IntExprArray)(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps1 is an array of integer expressions
-    * @param exps2 is an array of integer expressions
-    * @return an integer expression equals to the scalar product of two arrays of integer expressions
-    */
-  def prod(exps1: Array[IntExpr], exps2: Array[IntExpr])(implicit model: CpModel): IntExpr = model.prod(exps1, exps2)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-    */
-  def prod(exps: IntExprArray, values: IntArray)(implicit model: CpModel): IntExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, exps1[0]*exps2[0] +
-    * exps1[1]*exps2[1] + ...
-    *
-    * @param exps is an array of integer expressions
-    * @param values is an array of integer values
-    * @return an integer expression equals to the scalar product of the integer expressions with the integer values
-    */
-  def prod(exps: Array[IntExpr], values: Array[Int])(implicit model: CpModel): IntExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an  array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(values: NumArray, exps: NumExprArray)(implicit model: CpModel): NumExpr = model.prod(values, exps)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an  array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(values: Array[Double], exps: Array[NumExpr])(implicit model: CpModel): NumExpr = model.prod(values, exps)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(exps: NumExprArray, values: NumArray)(implicit model: CpModel): NumExpr = model.prod(exps, values)
-
-  /**
-    * Returns an expression equal to the scalar product of exps1 and exps2, that is, values[0]*exps[0] +
-    * values[1]*exps[1] + ...
-    *
-    * @param values is an array of numeric values
-    * @param exps is an array of numeric expressions
-    * @return a numeric expression equals to the scalar product of the numeric expressions with the numeric values
-    */
-  def prod(exps: Array[NumExpr], values: Array[Double])(implicit model: CpModel): NumExpr = model.prod(exps, values)
 
   /**
     * Creates and returns a new integer expression equals to exprs[index] where index is an integer expression.
@@ -3948,22 +3604,6 @@ object CpModel {
     model.step(t, v)
 
   /**
-    * Creates and returns a new cumul function expressions that is the sum of a set of cumul function expressions.
-    *
-    * @param exprs is an array of cumul function expressions
-    * @return a new cumul function expressions
-    */
-  def sum(exprs: CumulFunctionExprArray)(implicit model: CpModel): CumulFunctionExpr = model.sum(exprs)
-
-  /**
-    * Returns a cumul function expressions that is the sum of a set of cumul function expressions.
-    *
-    * @param exprs the set of cumul function expressions
-    * @return the sum of the cumul function expressions
-    */
-  def sum(exprs: Array[CumulFunctionExpr])(implicit model: CpModel): CumulFunctionExpr = model.sum(exprs)
-
-  /**
     * This function returns a constraint that states that the value of cumul function expression f should be always
     * within the range [vmin,vmax] between start and end.
     *
@@ -4124,42 +3764,10 @@ object CpModel {
     model.alwaysEqual(f, a, v, startAlign, endAlign)
 
   /**
-    * Creates and returns an objective object to minimize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to minimize
-    * @return An objective object representing the objective to minimize
-    */
-  def minimize(expr: NumExpr)(implicit model: CpModel): Objective = model.minimize(expr)
-
-  /**
-    * Creates a minimization multicriteria objective.
-    *
-    * @param expr is the multicriteria expressions
-    * @return an objective
-    */
-  def minimize(expr: MultiCriterionExpr)(implicit model: CpModel): Objective = model.minimize(expr)
-
-  /**
-    * Creates and returns an objective object to maximize the expression <em>expr</em>.
-    *
-    * @param expr is the expression to maximize
-    * @return An objective object the objective to maximize
-    */
-  def maximize(expr: NumExpr)(implicit model: CpModel): Objective = model.maximize(expr)
-
-  /**
-    * Creates a maximization multicriteria objective.
-    *
-    * @param expr is the multicriteria expressions
-    * @return an objective
-    */
-  def maximize(expr: MultiCriterionExpr)(implicit model: CpModel): Objective = model.maximize(expr)
-
-  /**
-    * This function defines a multicriteria expression for lexicographic ordering. A lexicographic ordering means that
+    * This function defines a multi-criteria expression for lexicographic ordering. A lexicographic ordering means that
     * any improvement of the i-th criterion is more important than any improvement of the subsequent criteria.
     *
-    * @param exprs a set of integer expressions for the lexicographic ordering
+    * @param exprs a set of numeric expressions for the lexicographic ordering
     */
   def staticLex(exprs: NumExpr*)(implicit model: CpModel): MultiCriterionExpr = model.staticLex(exprs: _*)
 
@@ -4192,124 +3800,6 @@ object CpModel {
     */
   def searchPhase(vars: Array[IntervalVar])(implicit model: CpModel): SearchPhase =
     model.searchPhase(vars)
-
-  /**
-    *  Implicit conversion of set of numeric expressions: add behavior
-    *
-    * @param exprs are the integer expressions
-    * @param model is the constraint programming model
-    */
-  implicit class NumExprArray(val exprs: Iterable[NumExpr])(implicit model: CpModel) {
-
-    /**
-      * Converts to scala array
-      */
-    def toArray: Array[NumExpr] = exprs.toArray
-
-    /**
-      * Convert to CPLEX array
-      */
-    def toIloArray: Array[IloNumExpr] = exprs.map(e => e.getIloNumExpr()).toArray
-  }
-
-  /**
-    *  Implicit conversion of set of integer expressions: add behavior
-    *
-    * @param exprs are the integer expressions
-    * @param model is the constraint programming model
-    */
-  implicit class IntExprArray(val exprs: Iterable[IntExpr])(implicit model: CpModel)
-    extends Iterable[IntExpr] {
-
-    /**
-      * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
-      * expression.
-      *
-      * @param expr is the integer expression for the index
-      * @return an new integer expression
-      */
-    def element(expr: IntExpr): IntExpr = model.element(exprs.toArray, expr)
-
-    /**
-      * Converts to scala array
-      */
-    override def toArray[B >: IntExpr : ClassTag]: Array[B] = exprs.toArray[B]
-
-    /**
-      * Converts to scala array
-      */
-    def toIloArray: Array[IloIntExpr] = exprs.map(e => e.getIloIntExpr()).toArray
-
-    /**
-      * Returns an iterator.
-      *
-      * @return an iterator
-      */
-    override def iterator: Iterator[IntExpr] = exprs.iterator
-  }
-
-  /**
-    *  Class IterableInt give additional behavior such as a method get to on a set of integer values.
-    *
-    * @param values are the integer values
-    * @param model is the constraint programming model
-    */
-  implicit class NumArray(val values: Iterable[Double])(implicit model: CpModel)
-    extends Iterable[Double] {
-
-    /**
-      * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
-      * expression.
-      *
-      * @param expr is the integer expression for the index
-      * @return an new integer expression
-      */
-    def element(expr: IntExpr): NumExpr = model.element(values, expr)
-
-    /**
-      * Converts to scala array
-      */
-    def toArray: Array[Double] = values.toArray
-
-    /**
-      * Returns an iterator.
-      *
-      * @return an iterator
-      */
-    override def iterator: Iterator[Double] = values.iterator
-  }
-
-  /**
-    *  Class IterableInt give additional behavior such as a method get to on a set of integer values.
-    *
-    * @param values are the integer values
-    * @param model is the constraint programming model
-    */
-  implicit class IntArray(val values: Iterable[Int])(implicit model: CpModel)
-    extends Iterable[Int] {
-
-    /**
-      * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer
-      * expression.
-      *
-      * @param expr is the integer expression for the index
-      * @return an new integer expression
-      */
-    def element(expr: IntExpr): IntExpr = model.element(values, expr)
-
-    /**
-      * Converts to scala array
-      */
-    def toArray: Array[Int] = values.toArray
-
-    /**
-      * Returns an iterator.
-      *
-      * @return an iterator
-      */
-    override def iterator: Iterator[Int] = values.iterator
-
-  }
 
   /**
     *  Class IterableIntervalVar gives additional behavior such as implicit conversion to search phase
@@ -4346,39 +3836,6 @@ object CpModel {
       */
     override def iterator: Iterator[IntervalVar] = exprs.iterator
 
-  }
-
-  /**
-    *  Class IntVarArray gives additional behavior such as implicit conversion to search phase
-    *
-    * @param vars are the integer variables
-    * @param model is the constraint programming model
-    */
-  implicit class IntVarArray(val vars: Iterable[IntVar])(implicit model: CpModel) extends Iterable[IntVar] {
-
-    /**
-      * Converts to search phase.
-      *
-      * @return a search phase
-      */
-    def toSearchPhase: SearchPhase = SearchPhase(model.cp.searchPhase(vars.map(v => v.getIloIntVar()).toArray))
-
-    /**
-      * Converts to scala array
-      */
-    override def toArray[B >: IntVar: ClassTag]: Array[B] = vars.toArray[B]
-
-    /**
-      * Converts to CPLEX array
-      */
-    def toIloArray[B >: IloIntVar: ClassTag]: Array[B] = vars.map(v => v.getIloIntVar()).toArray
-
-    /**
-      * Returns an iterator.
-      *
-      * @return an iterator
-      */
-    override def iterator: Iterator[IntVar] = vars.iterator
   }
 
   /**

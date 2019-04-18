@@ -1,11 +1,13 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.cp
 
+import com.decisionbrain.cplex.{Constraint, NumExpr, IntExpr, IntVar}
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel._
 
 /**
@@ -57,7 +59,7 @@ object TruckFleet {
   // Number of trucks used
   var numUsed: IntVar = _
 
-  var obj1: IntExpr = _
+  var obj1: NumExpr = _
   var obj2: IntExpr = _
 
   def build(): CpModel = {
@@ -86,7 +88,7 @@ object TruckFleet {
     // Constrain the volume of the orders in each truck
     model.add(pack(load, where, volumes, numUsed))
     for (t <- 0 until nbTrucks) {
-      model.add(load(t) <= element(maxTruckConfigLoad, truckConfigs(t)))
+      model.add(load(t) <= maxTruckConfigLoad(truckConfigs(t)))
     }
 
     // Compatibility between the colors of an order and the configuration of its truck
@@ -98,12 +100,12 @@ object TruckFleet {
     for (o <- 0 until nbOrders) {
       val values = allowedContainerConfigs(colors(o))
       val configOfContainer = model.intVar(values)
-      model.add(configOfContainer == truckConfigs.element(where(o)))
+      model.add(configOfContainer == truckConfigs(where(o)))
     }
 
     // Only one customer per truck
     for (o <- 0 until nbOrders)
-      model.add(customerOfTruck.element(where(o)) == customerOfOrder(o))
+      model.add(customerOfTruck(where(o)) == customerOfOrder(o))
 
     // Non-used trucks are at the end
     for (j <- 1 until nbTrucks) {
@@ -118,7 +120,7 @@ object TruckFleet {
 
     // Dominance: regroup deliveries with same configuration
     for (i <- nbTrucks - 2 until 0 by -1) {
-      var ct: Constraint = Constraint.TRUE // equivalent to 'model.constraint(true)'
+      var ct: Constraint = model.constraint(true) // equivalent to 'model.constraint(true)'
       for (p <- i + 1 until nbTrucks) {
         ct = (truckConfigs(p) != truckConfigs(i - 1)) && ct
         model.add((truckConfigs(i) == truckConfigs(i - 1)) || ct)
@@ -127,19 +129,19 @@ object TruckFleet {
 
     // Objective: first criterion for minimizing the cost for configuring and loading trucks
     //            second criterion for minimizing the number of trucks
-    obj1 = IntExpr(0)
+    obj1 = .0
     for (i <- 0 until nbTrucks) {
-      obj1 = obj1 + element(truckCost, truckConfigs(i)) * (load(i) != 0)
+      obj1 = obj1 + truckCost(truckConfigs(i)) * (load(i) != 0)
     }
-    obj1 = obj1 + sum(transitionCost.toArray[IntExpr])
+    obj1 = obj1 + sum(transitionCost)
 
     obj2 = numUsed
 
     // Search strategy: first assign order to truck
     model.setSearchPhases(searchPhase(where))
 
-    // Multicriteria lexicographic optimization
-    model.add(minimize(staticLex(obj1, obj2)))
+    // Multi-criteria lexicographic optimization
+    model.add(model.minimize(staticLex(obj1, obj2)))
 
     model
   }

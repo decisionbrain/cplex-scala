@@ -4,23 +4,27 @@
  *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
-package com.decisionbrain.cplex.cp
+package com.decisionbrain.cplex.mp
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FunSuite, Matchers}
 
+/**
+  * Created by dgodard on 07/02/2017.
+  */
 @RunWith(classOf[JUnitRunner])
-class SchedSquareTest extends FunSuite with Matchers {
+class DietMultiObjTest extends FunSuite with Matchers {
 
-  val epsilon = 1e-6
+  private val epsilon = 1e-6
 
-  test("SchedSquare") {
-    val model = SchedSquare.build()
-    val status = model.solve()
+  test("DietMultiObj") {
+    val model = DietMultiObj.buildDietModel()
+    val status = DietMultiObj.solve()
 
     status should equal(true)
-
+    model.getObjectiveValue() should equal(3.190409 +- epsilon)
     model.end()
+
   }
 }

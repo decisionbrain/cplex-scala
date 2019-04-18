@@ -1,13 +1,16 @@
 /*
- * Source file provided under Apache License, Version 2.0, January 2004,
- * http://www.apache.org/licenses/
- * (c) Copyright DecisionBrain SAS 2016,2018
+ *  Source file provided under Apache License, Version 2.0, January 2004,
+ *  http://www.apache.org/licenses/
+ *  (c) Copyright DecisionBrain SAS 2016,2019
  */
 
 package com.decisionbrain.cplex.mp
 
+import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.mp.MpModel._
-import com.decisionbrain.cplex.mp.NumExprNumeric._
+import com.decisionbrain.cplex.NumExprNumeric._
+import com.decisionbrain.cplex.NumExpr
+import com.decisionbrain.cplex.NumVar
 
 object Nurses {
 
@@ -345,7 +348,7 @@ object Nurses {
     // define average
     // notice the syntax below where the integer "nurses.length" is converted to an numeric expression: this automatic
     // conversion is possible as the model is declared as implicit
-    model.add(nurses.length * averageNurseWorkTime == sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
+    model.add(averageNurseWorkTime * nurses.length == sum(for (n <- nurses) yield nurseWorkTimeVars(n)), "")
 
     // compute nurse work time , average and under, over
     for (n <- nurses) {
@@ -414,7 +417,7 @@ object Nurses {
     totalFairness = sum(for (n <- nurses) yield nurseOverAverageTimeVars(n)) +
       sum(for (n <- nurses) yield nurseUnderAverageTimeVars(n))
 
-    model.add(model.minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
+    model.add(minimize(totalSalaryCost + totalNumberOfAssignments + totalFairness))
   }
 
   def buildModel() : MpModel = {
