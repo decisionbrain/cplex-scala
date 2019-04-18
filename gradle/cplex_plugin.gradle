@@ -1,0 +1,95 @@
+//class cplexStudioPlugin implements Plugin<Project> {
+class ArchUtil {
+
+    private static final String ARCH_PROPERTY = 'os.arch'
+    private static final String OS_PROPERTY = 'os.name'
+
+    private static final String ARCH = System.getProperty(ARCH_PROPERTY)
+    private static final String OS = System.getProperty(OS_PROPERTY)
+
+
+    static boolean isWindows() {
+        return (OS.toLowerCase().indexOf("win") >= 0)
+    }
+
+    static boolean isMac() {
+        return (OS.indexOf("mac") >= 0 || OS.indexOf("Mac OS X") >= 0)
+    }
+
+    static boolean isUnix() {
+        return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0)
+    }
+
+    static boolean isSolaris() {
+        return (OS.indexOf("sunos") >= 0)
+    }
+
+    static boolean isArch64Bits() {
+        return ARCH.equals("amd64") || ARCH.equals("x86_64")
+    }
+
+    static String getOdmeBinFolderName() {
+        if (isWindows()) {
+            if (isArch64Bits())
+                return "x64_win64"
+            else
+                return "x86_win32"
+        } else if (isUnix()) {
+            if (isArch64Bits())
+                return "x86-64_linux"
+            else
+                return "x86-32_linux"
+        } else if (isMac()) {
+            if (isArch64Bits())
+                return "x86-64_osx"
+            else
+                return "x86-32_osx"
+        } else "unsupported"
+    }
+
+    static String getPathSeparator() {
+        if (isWindows()) {
+            return ";"
+        } else ":"
+    }
+}
+
+//void apply(Project project) {
+
+if (!hasProperty('cplexStudioHome') && !System.getenv()["CPLEX_STUDIO_HOME"]) {
+    throw new Exception("You have to define CPLEX_STUDIO_HOME to a valid CPLEX_STUDIO installation.")
+}
+
+def cplexStudioHomeVar = hasProperty("cplexStudioHome") ? getProperty("cplexStudioHome") : System.getenv()["CPLEX_STUDIO_HOME"]
+def binFolderNameVar = ArchUtil.getOdmeBinFolderName()
+
+ext {
+    cplexStudioHome = cplexStudioHomeVar
+    binFolderName = binFolderNameVar
+    pathSeparator = ArchUtil.getPathSeparator()
+    nativeCplexPath = "$cplexStudioHomeVar/cplex/bin/$binFolderNameVar"
+    nativeCpoPath = "$cplexStudioHomeVar/cpoptimizer/bin/$binFolderNameVar"
+}
+
+println("Using cplex studio: $ext.cplexStudioHome")
+println("Using native cplex path: $ext.nativeCplexPath")
+println("Using native cpo path: $ext.nativeCpoPath")
+
+test {
+    environment "PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath" // For Windows dynamic library loading
+    environment "LD_LIBRARY_PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath" // For Linux dynamic library loading
+    environment "DYLD_LIBRARY_PATH", "$nativeCplexPath$pathSeparator$nativeCpoPath"
+    // For Mac OS dynamic library loading (CPO)
+    systemProperty "java.library.path", "$nativeCplexPath$pathSeparator$nativeCpoPath"
+    // For Mac OS dynamic library loading (Cplex)
+    enableAssertions = true
+}
+
+tasks.withType(JavaExec) {
+    environment('LD_LIBRARY_PATH', "$nativeCplexPath$pathSeparator$nativeCpoPath")
+}
+
+dependencies {
+//    compile files("$cplexStudioHome/cplex/lib/cplex.jar")
+//    compile files("$cplexStudioHome/cpoptimizer/lib/ILOG.CP.jar")
+}

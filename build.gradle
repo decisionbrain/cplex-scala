@@ -13,6 +13,7 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply from: 'gradle/cplex_plugin.gradle'
 
 //
 // DecisionBrain Nexus Repository for Jar files and Docker images
@@ -96,26 +97,9 @@ configurations.all {
 
 // Custom sourceSets
 sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', 'src/examples/java']
-        }
-        scala {
-            srcDirs = ['src/main/scala', 'src/examples/scala']
-        }
-        resources {
-            srcDir 'src/main/resources'
-        }
-    }
     test {
-        java {
-            srcDirs = ['src/test/java']
-        }
         scala {
-            srcDirs = ['src/test/scala']
-        }
-        resources {
-            srcDir 'src/test/resources'
+            srcDirs += 'src/examples/scala'
         }
     }
 }
@@ -130,22 +114,6 @@ idea {
     module {
         downloadSources = true
     }
-}
-
-test {
-    String osName = System.getProperty("os.name").toLowerCase();
-    if (osName.contains("windows")) {
-        // Path to CPLEX Studio Windows native libraries:
-        environment "java.library.path", "$cplexStudioHome/opl/bin/x64_win64"
-        environment "PATH", "$cplexStudioHome/opl/bin/x64_win64"
-    } else if (osName.contains("linux")){
-        // Path to ODME Linux native libraries:
-        systemProperty "java.library.path", "$cplexStudioHome/opl/bin/x86-64_linux"
-    } else {
-         throw new Exception("OS not supported: $osName")
-    }
-    // Enable assertions for tests:
-    enableAssertions = true
 }
 
 
@@ -194,18 +162,8 @@ dependencies {
     testCompile 'org.slf4j:slf4j-simple:1.7.10'
 }
 
-test {
-    allJvmArgs = ["-ea", "-Djava.library.path=\"$cplexStudioHome/cplex/bin/x64_win64;$cplexStudioHome/opl/bin/x64_win64;\""]
-}
-
-task listJars {
-    doLast {
-        configurations.compile.each { File file -> println file.name }
-    }
-}
-
 wrapper {
-    gradleVersion = '4.8.1'
+    gradleVersion = '5.4'
     description = 'Install Gradle Wrapper'
 }
 
