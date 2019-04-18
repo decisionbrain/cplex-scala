@@ -20,17 +20,17 @@ apply from: 'gradle/cplex_plugin.gradle'
 //
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allJava
 }
 
 task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task scaladocJar(type: Jar) {
-    classifier = 'scaladoc'
+    archiveClassifier = 'scaladoc'
     from scaladoc.destinationDir
 }
 
@@ -66,7 +66,7 @@ if (!hasProperty('cplexStudioHome')) {
     project.ext.set("cplexStudioHome", cplexStudioHome)
 }
 
-System.out.println("Using CPLEX : ${cplexStudioHome}")
+System.out.println("Using CPLEX Studio: ${cplexStudioHome}")
 
 compileJava {
     sourceCompatibility = 1.8
@@ -146,8 +146,8 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
-    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
+//    compile fileTree(dir: cplexStudioHome + "/cpoptimizer/lib", include: ['*.jar'])
+//    compile fileTree(dir: cplexStudioHome + "/cplex/lib", include: ['*.jar'])
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'

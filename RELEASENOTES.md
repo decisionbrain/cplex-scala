@@ -2,7 +2,17 @@
 
 ## cplex-scala v1.5.0-SNAPSHOT
 
-  * Add API for multi-objective in MpModel
+  * Update Gradle wrapper to release 5.4
+  * Add API for multi-objective in MpModel: see example DietMultiObj.scala
+  * Define method apply in classes NumArray, IntArray, NumVarArray and IntVarArray for element constraint
+  * Add operator * on classes NumArray, IntArray, NumVarArray and for scalar product
+  * Refactoring:
+    * Add class Modeler to build optimization model: CpModel and MpModel now inherits from Modeler
+    * Move many classes from package com.decisoinbrain.cplex.mp and com.decisionbrain.cplex.cp to com.decisionbrain.cplex
+    * These classes are now shared and can be used to build either a mathermatical programming model or a constraint 
+    programming model
+  * Update Gradle file build.gradle: replace dependency with `oplall.jar` by dependencies with `cplex.jar` and 
+  `ILOG.CP.jar` instead.
 
 ## cplex-scala v1.4.0
 
