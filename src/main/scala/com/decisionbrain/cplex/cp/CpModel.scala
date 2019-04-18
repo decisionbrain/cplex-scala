@@ -14,14 +14,14 @@ import ilog.concert.cppimpl.IloConcertUtils
 import ilog.cp.IloCP
 
 /**
-  * TODO
+  * An instance of this class represents a constraint programming model.
   *
-  * @param name
+  * @param name is the name of the constraint programming model
   */
 case class CpModel(name: String=null) extends Modeler {
 
   val cp: IloCP = {
-    val iloCP = new IloCP();
+    val iloCP = new IloCP()
     iloCP.setName(name)
     iloCP
   }

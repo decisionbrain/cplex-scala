@@ -91,7 +91,7 @@ object Diet {
       val amount = sum(for (f <- theFoods) yield qtyFoods(f)* theFoodNutrients(f.name, n.name))
       qtyNutrients += (n -> amount)
       model.addRange(n.qmin, amount, n.qmax)
-//      model.addKpi(amount, publish_name=s"Total $n.name") // TODO: to have same API as in DOCplex
+//      model.addKpi(amount, publish_name=s"Total $n.name") // TODO: add same API similar to DOCplex
     }
 
     val objective = minimize(sum(for (f <- theFoods) yield qtyFoods(f) * f.unitCost))
