@@ -90,6 +90,6 @@ tasks.withType(JavaExec) {
 }
 
 dependencies {
-//    compile files("$cplexStudioHome/cplex/lib/cplex.jar")
-//    compile files("$cplexStudioHome/cpoptimizer/lib/ILOG.CP.jar")
+    compile files("$cplexStudioHome/cpoptimizer/lib/ILOG.CP.jar")
+    compile files("$cplexStudioHome/cplex/lib/cplex.jar")
 }
