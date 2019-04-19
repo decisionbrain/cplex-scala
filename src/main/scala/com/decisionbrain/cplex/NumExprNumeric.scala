@@ -6,8 +6,6 @@
 
 package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.cp.CpModel
-
 /**
   * Created by dgodard on 11/02/2017.
   */
