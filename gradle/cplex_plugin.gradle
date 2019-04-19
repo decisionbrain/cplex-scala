@@ -72,8 +72,8 @@ ext {
 }
 
 println("Using cplex studio: $ext.cplexStudioHome")
-println("Using native cplex path: $ext.nativeCplexPath")
 println("Using native cpo path: $ext.nativeCpoPath")
+println("Using native cplex path: $ext.nativeCplexPath")
 
 test {
     environment "PATH", "$nativeCpoPath$pathSeparator$nativeCplexPath" // For Windows dynamic library loading
