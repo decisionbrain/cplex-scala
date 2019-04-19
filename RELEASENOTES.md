@@ -4,7 +4,9 @@
 
   * Update Gradle wrapper to release 5.4
   * Add API for multi-objective in MpModel: see example DietMultiObj.scala
-  * Define method apply in classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray` for element constraint.
+  * Define method apply in classes `NumArray`, `IntArray` and `IntExprArray` for element constraint: this allows to 
+  write constructs like `cost = costs(supplier)` where costs is an array of integer, supplier is an integer variable 
+  and `cost` is an integer expression that represents the cost of the chosen supplier. See Facility.scala for a complete example..
   * Add operator * on classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray`for scalar product.
   * Refactoring:
     * Add class Modeler to build optimization model: CpModel and MpModel now inherits from Modeler
