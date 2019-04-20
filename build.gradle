@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.5.0'
+version '1.6.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -91,6 +91,9 @@ configurations.all {
 // Custom sourceSets
 sourceSets {
     test {
+        java {
+            srcDirs += 'src/examples/java'
+        }
         scala {
             srcDirs += 'src/examples/scala'
         }

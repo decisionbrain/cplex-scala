@@ -22,6 +22,13 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
   def getIloIntExpr(): IloIntExpr = expr
 
   /**
+    * Converts the integer expression to a numeric expression
+    *
+    * @return a numeric expression
+    */
+  def toNumExpr: NumExpr = expr.asInstanceOf[NumExpr]
+
+  /**
     * Creates and returns an expression representing the sum of this numeric expression and another numeric
     * expression.
     *
@@ -87,7 +94,6 @@ class IntExpr(expr: IloIntExpr)(implicit modeler: Modeler) extends NumExpr(expr)
     case model: CpModel => model.div(this, expr)
     case _ => throw new UnsupportedOperationException("Operator \'/\' only supported on CpModel")
   }
-
 
   /**
     * Creates and returns the integer division e1 / e2.

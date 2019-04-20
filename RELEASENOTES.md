@@ -1,5 +1,10 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.6.0-SNAPSHOT
+
+  * Add API for KPIs in CpModel: see example PlantLocation.scala
+  * Add methods quot in class CpModel for division and define operators '/' in class NumExpr 
+
 ## cplex-scala v1.5.0
 
   * Update Gradle wrapper to release 5.4

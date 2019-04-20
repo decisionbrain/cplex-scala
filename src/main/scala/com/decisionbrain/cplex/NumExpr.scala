@@ -6,6 +6,7 @@
 
 package com.decisionbrain.cplex
 
+import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.IloNumExpr
 
 /**
@@ -113,6 +114,18 @@ class NumExpr(val expr: IloNumExpr)(implicit modeler: Modeler) {
     * @return a numeric expression representing the product <em>e1 * v</em>.
     */
   def *(expr: NumExpr): NumExpr = modeler.prod(this, expr)
+
+  /**
+    * Creates and returns the division e1 / e2.
+    *
+    * @param expr is the divisor
+    * @return an integer expression equals to the integer division e1 / e2.
+    */
+  def /(expr: NumExpr): NumExpr = modeler match {
+    case model: CpModel => model.quot(this, expr)
+    case _ => throw new UnsupportedOperationException("Operator \'/\' only supported on CpModel")
+  }
+
 
   /**
     * Creates and returns an instance of IloRange that represents the constraint <em>expr >= v</em>.

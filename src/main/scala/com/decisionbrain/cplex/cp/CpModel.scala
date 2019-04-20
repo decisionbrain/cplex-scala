@@ -222,7 +222,7 @@ case class CpModel(name: String=null) extends Modeler {
     IntExpr(cp.div(expr1.getIloIntExpr(), expr2.getIloIntExpr()))(implicitly(this))
 
   /**
-    * Returns a new expression that is the integer division of two integer expressions.
+    * Returns a new expression that is the integer division of an integer expression and an integer value.
     *
     * @param expr is the integer expression
     * @param v is the integer value
@@ -232,7 +232,7 @@ case class CpModel(name: String=null) extends Modeler {
     IntExpr(cp.div(expr.getIloIntExpr(), v))(implicitly(this))
 
   /**
-    * Returns a new expression that is the integer division of two integer expressions.
+    * Returns a new expression that is the integer division of an integer value and an integer expression.
     *
     * @param v is the dividend integer value
     * @param expr is the divisor integer expression
@@ -240,6 +240,36 @@ case class CpModel(name: String=null) extends Modeler {
     */
   def div(v: Int, expr: IntExpr): IntExpr =
     IntExpr(cp.div(v, expr.getIloIntExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the quotient of a numeric value and a numeric expression.
+    *
+    * @param expr1 is the dividend integer value
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of the division
+    */
+  def quot(expr1: NumExpr, expr2: NumExpr): NumExpr =
+    NumExpr(cp.quot(expr1.getIloNumExpr(), expr2.getIloNumExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the quotient of a numeric value and a numeric expression.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the division
+    */
+  def quot(v: Double, expr: NumExpr): NumExpr =
+    NumExpr(cp.quot(v, expr.getIloNumExpr()))(implicitly(this))
+
+  /**
+    * Returns a new expression that is the quotient of a numeric expression and a numeric value.
+    *
+    * @param expr is the divisor integer expression
+    * @param v is the dividend integer value
+    * @return the quotient of the division
+    */
+  def quot(expr: NumExpr, v: Double): NumExpr =
+    NumExpr(cp.quot(expr.getIloNumExpr(), v))(implicitly(this))
 
   /**
     * Returns a new constraint <i>greater-than</i> between two integer expressions.
@@ -583,6 +613,98 @@ case class CpModel(name: String=null) extends Modeler {
     val v = weights.toArray
     val u = used.getIloIntExpr()
     Constraint(cp.pack(l, w, v, u))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * Finally, the number, or indeed the set of containers used can be specified by the integer expression used. A
+    * container is used if at least one item is placed in the container in question.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @param used
+    * @return
+    */
+  def pack(load: Iterable[IntExpr], where: Iterable[IntExpr], weights: Iterable[Int], used: IntExpr): Constraint = {
+    val l = load.map(e => e.getIloIntExpr()).toArray
+    val w = where.map(e => e.getIloIntExpr()).toArray
+    val v = weights.toArray
+    val u = used.getIloIntExpr()
+    Constraint(cp.pack(l, w, v, u))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: IntExprArray, where: IntExprArray, weights: IntArray) = {
+    Constraint(cp.pack(load.toIloArray, where.toIloArray, weights.toArray))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: Array[IntExpr], where: Array[IntExpr], weights: Array[Int]) = {
+    val l = load.map(e => e.getIloIntExpr())
+    val w = where.map(e => e.getIloIntExpr())
+    val v = weights
+    Constraint(cp.pack(l, w, v))(implicitly(this))
+  }
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: Iterable[IntExpr], where: Iterable[IntExpr], weights: Iterable[Int]) = {
+    val l = load.map(e => e.getIloIntExpr()).toArray
+    val w = where.map(e => e.getIloIntExpr()).toArray
+    val v = weights.toArray
+    Constraint(cp.pack(l, w, v))(implicitly(this))
   }
 
   /**
@@ -2421,6 +2543,16 @@ case class CpModel(name: String=null) extends Modeler {
   def printInformation() = cp.printInformation()
 
   /**
+    * Add a named key performance indicator (KPI) i.e.  a value which can be associated with a solution which represents an
+    * interesting measure of some aspect of the solution.
+    *
+    * @param expr is the
+    * @param name is the name of the KPI
+    * @return
+    */
+  def addKPI(expr: NumExpr, name: String = null) = cp.addKPI(expr.getIloNumExpr(), name)
+
+  /**
     * Frees all memory resources allocated by the invoking CP Optimizer.
     */
   def end() = cp.end()
@@ -2480,6 +2612,33 @@ object CpModel {
     * @return the quotient of the integer division
     */
   def div(v: Int, expr: IntExpr)(implicit model: CpModel): IntExpr = model.div(v, expr)
+
+  /**
+    * Returns a new expression that is the quotient of a numeric value and a numeric expression.
+    *
+    * @param expr1 is the dividend integer value
+    * @param expr2 is the divisor integer expression
+    * @return the quotient of the division
+    */
+  def quot(expr1: NumExpr, expr2: NumExpr)(implicit model: CpModel): NumExpr = model.quot(expr1, expr2)
+
+  /**
+    * Returns a new expression that is the quotient of a numeric value and a numeric expression.
+    *
+    * @param v is the dividend integer value
+    * @param expr is the divisor integer expression
+    * @return the quotient of the division
+    */
+  def quot(v: Double, expr: NumExpr)(implicit model: CpModel): NumExpr = model.quot(v, expr)
+
+  /**
+    * Returns a new expression that is the quotient of a numeric expression and a numeric value.
+    *
+    * @param expr is the divisor integer expression
+    * @param v is the dividend integer value
+    * @return the quotient of the division
+    */
+  def quot(expr: NumExpr, v: Double)(implicit model: CpModel): NumExpr = model.quot(expr, v)
 
   /**
     * Returns a new constraint <i>greater-than</i> between two integer expressions.
@@ -2727,6 +2886,85 @@ object CpModel {
     */
   def pack(load: Array[IntExpr], where: Array[IntExpr], weight: Array[Int], used: IntExpr)(implicit model: CpModel): Constraint =
     model.pack(load, where, weight, used)
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * Finally, the number, or indeed the set of containers used can be specified by the integer expression used. A
+    * container is used if at least one item is placed in the container in question.
+    *
+    * Note: This constraint cannot be used in a logical constraint.
+    *
+    * @param load is an array of integer expressions
+    * @param where is an array of integer expressions
+    * @param weight is an array of integer values
+    * @param used is a interger expression
+    * @param model is the constraint programming model
+    * @return a new 'pack' constraint
+    */
+  def pack(load: Iterable[IntExpr], where: Iterable[IntExpr], weight: Iterable[Int], used: IntExpr)(implicit model: CpModel): Constraint =
+    model.pack(load, where, weight, used)
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: IntExprArray, where: IntExprArray, weights: IntArray)(implicit model: CpModel): Constraint =
+    model.pack(load, where, weights)
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: Array[IntExpr], where: Array[IntExpr], weights: Array[Int])(implicit model: CpModel): Constraint =
+    model.pack(load, where, weights)
+
+  /**
+    * Creates and returns a pack constraint which maintains the load of a set of containers or bins, given a set of
+    * weighted items and an assignment of items to containers. Consider that we have n items and m containers. Each
+    * item i has an integer weight weight[i] and a constrained integer variable where[i] associated with it, indicating
+    * in which container (numbered contiguously from 0) item i is to be placed. No item can be split up, and so an item
+    * can go in only one container. Associated with each container j is an integer variable load[j] representing the
+    * load in that container; that is, the sum of the weights of the items which have been assigned to that container.
+    * A capacity can be set for each container placing an upper bound on this load variable. The constraint also ensures
+    * that the total sum of the loads of the containers is equal to the sum of the weights of the items being placed.
+    *
+    * @param load
+    * @param where
+    * @param weights
+    * @return
+    */
+  def pack(load: Iterable[IntExpr], where: Iterable[IntExpr], weights: Iterable[Int])(implicit model: CpModel): Constraint =
+    model.pack(load, where, weights)
 
   /**
     * Creates and returns an inverse constraint. In formal terms, if the length of the arrays f and invf is n, then the

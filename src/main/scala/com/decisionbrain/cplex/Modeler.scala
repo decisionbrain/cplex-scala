@@ -211,7 +211,7 @@ abstract class Modeler {
     * @return the scalar product of integer values with integer variables
     */
   def scalProd(values: IntArray, vars: IntVarArray): IntExpr =
-    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
+    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
 
   @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
@@ -226,11 +226,11 @@ abstract class Modeler {
     * @return the scalar product of integer values with integer variables
     */
   def scalProd(vars: IntVarArray, values: IntArray): IntExpr =
-    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
+    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: IntVarArray, values: IntArray): IntExpr =
-    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
+    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   /**
     * Returns a new integer linear expression representing the scalar product of the given integer values
