@@ -15,9 +15,22 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply from: 'gradle/cplex_plugin.gradle'
 
+
 //
 // DecisionBrain Nexus Repository for Jar files and Docker images
 //
+
+ext {
+    if (!project.hasProperty('NEXUS_URL'))
+        NEXUS_URL = "None"
+    if (!project.hasProperty('MAVEN_USER'))
+        MAVEN_USER= "None"
+    if (!project.hasProperty('MAVEN_PASSWORD'))
+        MAVEN_PASSWORD = "None"
+}
+
+println("Nexus URL: $NEXUS_URL")
+println("Maven user: $MAVEN_USER")
 
 task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
@@ -57,6 +70,7 @@ publishing {
     }
 }
 
+
 //
 // CPLEX Home
 //
@@ -72,13 +86,6 @@ repositories {
     // HACK: if we ask Gradle to refresh the dependencies, don't look at local repo!
     if (!gradle.startParameter.refreshDependencies) {
         mavenLocal()
-    }
-    maven {
-        credentials {
-            username "$MAVEN_USER"
-            password "$MAVEN_PASSWORD"
-        }
-        url "$NEXUS_URL/repository/public"
     }
     mavenCentral()
 }
