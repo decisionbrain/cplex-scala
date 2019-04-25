@@ -15,7 +15,6 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply from: 'gradle/cplex_plugin.gradle'
 
-
 //
 // DecisionBrain Nexus Repository for Jar files and Docker images
 //
@@ -70,7 +69,6 @@ publishing {
     }
 }
 
-
 //
 // CPLEX Home
 //
@@ -98,9 +96,6 @@ configurations.all {
 // Custom sourceSets
 sourceSets {
     test {
-        java {
-            srcDirs += 'src/examples/java'
-        }
         scala {
             srcDirs += 'src/examples/scala'
         }

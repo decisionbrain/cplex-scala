@@ -5,6 +5,24 @@
   * Add API for KPIs in CpModel: see example PlantLocation.scala
   * Add methods quot in class CpModel for division and define operators '/' in class NumExpr 
 
+## cplex-scala v1.5.2
+
+This is a hotfix:
+
+  * Update build.gradle: use default values for environment variables for Nexus
+  
+The library cplex-scala.jar is the same as the same as in release 1.5.0. 
+
+## cplex-scala v1.5.1
+
+This is a hotfix:
+
+  * Update release notes for release 1.5.0
+  * Fix issues in Jenkinsfile
+
+The library cplex-scala.jar is the same as the same as in release 1.5.0. 
+ 
+
 ## cplex-scala v1.5.0
 
   * Update Gradle wrapper to release 5.4
