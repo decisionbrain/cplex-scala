@@ -1,10 +1,30 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.5.2
+
+This is a hotfix:
+
+  * Update build.gradle: use default values for environment variables for Nexus
+  
+The library cplex-scala.jar is the same as the same as in release 1.5.0. 
+
+## cplex-scala v1.5.1
+
+This is a hotfix:
+
+  * Update release notes for release 1.5.0
+  * Fix issues in Jenkinsfile
+
+The library cplex-scala.jar is the same as the same as in release 1.5.0. 
+ 
+
 ## cplex-scala v1.5.0
 
   * Update Gradle wrapper to release 5.4
   * Add API for multi-objective in MpModel: see example DietMultiObj.scala
-  * Define method apply in classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray` for element constraint.
+  * Define method apply in classes `NumArray`, `IntArray` and `IntExprArray` for element constraint: this allows to 
+    write constructs like `cost = costs(supplier)` where costs is an array of integer, supplier is an integer variable 
+    and `cost` is an integer expression that represents the cost of the chosen supplier. See Facility.scala for a complete example..
   * Add operator * on classes `NumArray`, `IntArray`, `NumVarArray` and `IntVarArray`for scalar product.
   * Refactoring:
     * Add class Modeler to build optimization model: CpModel and MpModel now inherits from Modeler
