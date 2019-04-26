@@ -24,19 +24,6 @@ class NumVar(v: IloNumVar)(implicit modeler: Modeler) extends NumExpr(v) with Ad
   def getType(): IloNumVarType = v.getType
 
   /**
-    * Return the name of the numeric variable
-    * @return the name
-    */
-  def getName(): Option[String] = Option(v.getName())
-
-  /**
-    * Set the name of the numeric variable.
-    *
-    * @param name is the name of the numeric variable
-    */
-  def setName(name: String) = v.setName(name)
-
-  /**
     * Return the upper bound of the numeric variable.
     *
     * @return the upper bound
@@ -85,7 +72,7 @@ class NumVar(v: IloNumVar)(implicit modeler: Modeler) extends NumExpr(v) with Ad
     */
   override def toString() : String = {
     val strBuilder = new StringBuilder()
-    if (getName().isDefined) strBuilder.append(getName().get)
+    if (getName.isDefined) strBuilder.append(getName.get)
     strBuilder.append("[")
     val vmin = getLB()
     val vmax = getUB()

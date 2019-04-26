@@ -34,20 +34,6 @@ class IntervalVar(v: IloIntervalVar)(implicit model: CpModel) extends Addable {
     */
   def getIloIntervalVar(): IloIntervalVar = v
 
-
-  /**
-    * Return the name of the numeric variable
-    * @return the name
-    */
-  def getName(): Option[String] = Option(v.getName())
-
-  /**
-    * Set the name of the numeric variable.
-    *
-    * @param name is the name of the numeric variable
-    */
-  def setName(name: String) = v.setName(name)
-
   /**
     * Returns the CPLEX numeric variable
     *
