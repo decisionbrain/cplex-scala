@@ -2024,19 +2024,6 @@ case class CpModel(name: String=null) extends Modeler {
     */
   def intSet(values: Array[Int]): IntSet = IntSet(cp.intSet(values))(implicitly(this))
 
-
-  /**
-    * Add an addable object in the model.
-    *
-    * @param a is the object to add to the model
-    * @return the model
-    */
-  def add(a: Addable, name: String=null): CpModel = {
-    a.setName(name)
-    cp.add(a.getIloAddable())
-    this
-  }
-
   /**
     * Creates a minimization multi-criteria objective.
     *

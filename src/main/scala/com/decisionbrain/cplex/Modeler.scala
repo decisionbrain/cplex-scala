@@ -8,6 +8,7 @@ package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
+import com.decisionbrain.cplex.mp.MpModel
 import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
 
 import scala.reflect.ClassTag
@@ -833,6 +834,29 @@ abstract class Modeler {
     */
   def ifThen(ct1: Constraint, ct2: Constraint): Constraint =
     Constraint(modeler.ifThen(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
+
+  /**
+    * Add an addable object in the model.
+    *
+    * @param a is the object to add to the model
+    * @return the model
+    */
+  def add(a: Addable, name: String=null): Modeler = {
+    a.setName(name)
+    modeler.add(a.getIloAddable())
+    this
+  }
+
+  /**
+    * Add addable objects in the model.
+    *
+    * @param addables are the object to add to the model
+    * @return the model
+    */
+  def add(addables: Iterable[Addable]): Modeler = {
+    modeler.add(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
 
   /**
     * Creates and returns an objective object to minimize the expression <em>expr</em>.

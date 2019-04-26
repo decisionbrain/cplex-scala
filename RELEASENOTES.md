@@ -4,6 +4,7 @@
 
   * Add API for KPIs in CpModel: see example PlantLocation.scala
   * Add methods quot in class CpModel for division and define operators '/' in class NumExpr 
+  * Move methods `add` from CpModel and MpModel to Modeler
 
 ## cplex-scala v1.5.2
 

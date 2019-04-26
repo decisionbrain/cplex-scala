@@ -163,17 +163,6 @@ case class MpModel(name: String=null) extends Modeler {
     */
   def addRange(lb: Double, expr: NumExpr, ub: Double, name: String=""): MpModel = {
     add(range(lb, expr, ub, name))
-  }
-
-  /**
-    * Add an addable object in the model.
-    *
-    * @param a is the object to add to the model
-    * @return the model
-    */
-  def add(a: Addable, name: String=null): MpModel = {
-    a.setName(name)
-    cplex.add(a.getIloAddable())
     this
   }
 
