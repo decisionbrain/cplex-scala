@@ -123,20 +123,6 @@ class CumulFunctionExpr(val expr: IloCumulFunctionExpr)(implicit model: CpModel)
   override def toString: String = expr.toString()
 
   /**
-    * Returns the name of model addable object.
-    *
-    * @return the name of the object
-    */
-  override def getName: Option[String] = Option(expr.getName())
-
-  /**
-    * Set the name of the model addable object.
-    *
-    * @param name is the name of the object
-    */
-  override def setName(name: String): Unit = expr.setName(name)
-
-  /**
     * Returns the CPLEX addable object.
     *
     * @return the CPLEX addable object

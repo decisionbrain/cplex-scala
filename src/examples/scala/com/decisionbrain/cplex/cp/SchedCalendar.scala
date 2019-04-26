@@ -92,7 +92,7 @@ object SchedCalendar {
     val results = for ((rd, index) <- houses.zipWithIndex) yield makeHouse(index, rd)
 
     endVars = results.map(_._1)
-    allTaskVars = results.flatMap(_._2).map(v => (v.getName().getOrElse(""), v)).toMap
+    allTaskVars = results.flatMap(_._2).map(v => (v.getName.getOrElse(""), v)).toMap
     joeTaskVars = results.flatMap(_._3)
     jimTaskVars = results.flatMap(_._4)
 

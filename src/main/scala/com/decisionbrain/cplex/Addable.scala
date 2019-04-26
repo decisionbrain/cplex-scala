@@ -16,14 +16,17 @@ trait Addable {
     *
     * @return the name of the object
     */
-  def getName: Option[String]
+  def getName: Option[String] = Option(getIloAddable().getName)
 
   /**
     * Set the name of the model addable object.
     *
     * @param name is the name of the object
     */
-  def setName(name: String)
+  def setName(name: String): Addable = {
+    getIloAddable().setName(name)
+    this
+  }
 
   /**
     * Returns the CPLEX addable object.
