@@ -23,7 +23,7 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
   * @param name is the name of the model
   */
-case class MpModel(name: String=null) extends Modeler {
+class MpModel(val name: String=null) extends Modeler {
 
   val cplex: IloCplex = {
     val iloCplex = new IloCplex()

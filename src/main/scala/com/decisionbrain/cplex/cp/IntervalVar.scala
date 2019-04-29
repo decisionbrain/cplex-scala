@@ -17,7 +17,7 @@ import ilog.concert._
   */
 class IntervalVar(v: IloIntervalVar)(implicit model: CpModel) extends Addable {
 
-  def canEqual(a: Any) = a.isInstanceOf[IntervalVar]
+  def canEqual(a: Any): Boolean = a.isInstanceOf[IntervalVar]
   override def equals(that: scala.Any): Boolean = {
     that match {
       case that: IntervalVar => that.canEqual(this) && this.hashCode() == that.hashCode()
