@@ -1061,11 +1061,10 @@ class CpModel(val name: String=null) extends Modeler {
     *
     * @param v is the interval variable
     * @param f is the step function
-    * @param model is the constraint programming model
     * @return a new forbid start constraint
     */
-  def forbidStart(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
-    Constraint(cp.forbidStart(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+  def forbidStart(v: IntervalVar, f: NumToNumStepFunction): Constraint =
+    Constraint(cp.forbidStart(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))(this)
 
   /**
     * This function returns a constraint that states that whenever interval variable a is present, it cannot end at a
@@ -1078,11 +1077,10 @@ class CpModel(val name: String=null) extends Modeler {
     *
     * @param v is the interval variable
     * @param f is the step function
-    * @param model is the constraint programming model
     * @return a new forbid end constraint
     */
-  def forbidEnd(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
-    Constraint(cp.forbidEnd(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+  def forbidEnd(v: IntervalVar, f: NumToNumStepFunction): Constraint =
+    Constraint(cp.forbidEnd(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))(this)
 
   /**
     * This function returns a constraint that states that whenever interval variable a is present, it cannot contain a
@@ -1095,11 +1093,10 @@ class CpModel(val name: String=null) extends Modeler {
     *
     * @param v is the interval variable
     * @param f is the step function
-    * @param model is the constraint programming model
     * @return a new forbid extent constraint
     */
-  def forbidExtent(v: IntervalVar, f: NumToNumStepFunction)(implicit model: CpModel): Constraint =
-    Constraint(cp.forbidExtent(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))
+  def forbidExtent(v: IntervalVar, f: NumToNumStepFunction): Constraint =
+    Constraint(cp.forbidExtent(v.getIloIntervalVar(), f.getIloNumToNumStepFunction()))(this)
 
   /**
     * This method creates a no-overlap constraint on the set of interval variables defined by array a.
