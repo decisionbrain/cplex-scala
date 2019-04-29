@@ -18,7 +18,7 @@ import ilog.cp.IloCP
   *
   * @param name is the name of the constraint programming model
   */
-case class CpModel(name: String=null) extends Modeler {
+class CpModel(val name: String=null) extends Modeler {
 
   val cp: IloCP = {
     val iloCP = new IloCP()
