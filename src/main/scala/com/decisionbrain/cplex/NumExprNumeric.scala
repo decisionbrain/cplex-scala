@@ -14,7 +14,7 @@ package com.decisionbrain.cplex
   *
   * @param modeler is the mathematical programming model
   */
-class NumExprNumeric(implicit modeler: Modeler) extends Numeric[NumExpr] {
+class NumExprNumeric(modeler: Modeler) extends Numeric[NumExpr] {
 
   override def fromInt(x: Int): NumExpr = modeler.linearNumExpr(x)
 
@@ -39,7 +39,7 @@ class NumExprNumeric(implicit modeler: Modeler) extends Numeric[NumExpr] {
 
 object NumExprNumeric {
 
-  def apply(modeler: Modeler): Numeric[NumExpr] = new NumExprNumeric()(implicitly(modeler))
+  def apply(modeler: Modeler): NumExprNumeric = new NumExprNumeric(modeler)
 
-  implicit def num(implicit model: Modeler): Numeric[NumExpr] = model.getNumExprNumeric()
+  implicit def num(implicit model: Modeler): NumExprNumeric = model.getNumExprNumeric()
 }

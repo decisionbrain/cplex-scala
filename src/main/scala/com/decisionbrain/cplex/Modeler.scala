@@ -894,7 +894,7 @@ abstract class Modeler {
     * </pre>
     * @return the numeric for numeric expression
     */
-  def getNumExprNumeric(): Numeric[NumExpr] = numExprNumeric
+  def getNumExprNumeric(): NumExprNumeric = numExprNumeric
 
   /**
     * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
@@ -908,7 +908,7 @@ abstract class Modeler {
     * </pre>
     * @return the numeric for integer expression
     */
-  def getIntExprNumeric(): Numeric[IntExpr] = intExprNumeric
+  def getIntExprNumeric(): IntExprNumeric = intExprNumeric
 
 }
 

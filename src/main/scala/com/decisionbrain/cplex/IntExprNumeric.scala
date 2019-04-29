@@ -6,8 +6,6 @@
 
 package com.decisionbrain.cplex
 
-import com.decisionbrain.cplex.cp.CpModel
-
 /**
   * Created by dgodard on 11/02/2017.
   */
@@ -16,7 +14,7 @@ import com.decisionbrain.cplex.cp.CpModel
   *
   * @param modeler is the optimization model
   */
-class IntExprNumeric(implicit modeler: Modeler) extends Numeric[IntExpr] {
+class IntExprNumeric(modeler: Modeler) extends Numeric[IntExpr] {
 
   override def fromInt(x: Int): IntExpr = modeler.linearIntExpr(x)
 
@@ -42,7 +40,7 @@ class IntExprNumeric(implicit modeler: Modeler) extends Numeric[IntExpr] {
 
 object IntExprNumeric {
 
-  def apply(modeler: Modeler): Numeric[IntExpr] = new IntExprNumeric()(implicitly(modeler))
+  def apply(modeler: Modeler): IntExprNumeric = new IntExprNumeric(modeler)
 
-  implicit def num(implicit modeler: Modeler): Numeric[IntExpr] = modeler.getIntExprNumeric()
+  implicit def num(implicit modeler: Modeler): IntExprNumeric = modeler.getIntExprNumeric()
 }

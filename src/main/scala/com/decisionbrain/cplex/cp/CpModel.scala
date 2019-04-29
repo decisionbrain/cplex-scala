@@ -2227,6 +2227,14 @@ class CpModel(val name: String=null) extends Modeler {
   def isFixed(expr: NumVar) : Boolean = cp.isFixed(expr.getIloNumVar())
 
   /**
+    * Returns true if and only if interval variable a is present in the invoking instance of CpModel.
+    *
+    * @param v is an IntervalVar
+    * @return a boolean
+    */
+  def isPresent(v: IntervalVar): Boolean = cp.isPresent(v.getIloIntervalVar())
+
+  /**
     * Returns the start of the interval variable.
     *
     * @param v is the interval variable
@@ -3915,7 +3923,7 @@ object CpModel {
     * @param f is the cumul function expression
     * @param a is the interval variable
     * @param v is the value of the cumul funcfion expression if the interval variable is present
-    * @return a new constraint on the cumul functoin expression
+    * @return a new constraint on the cumul function expression
     */
   def alwaysEqual(f: CumulFunctionExpr, a: IntervalVar, v: Int)(implicit model: CpModel): Constraint =
     model.alwaysEqual(f, a, v)
