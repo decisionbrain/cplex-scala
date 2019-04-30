@@ -8,7 +8,6 @@ package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
-import com.decisionbrain.cplex.mp.MpModel
 import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
 
 import scala.reflect.ClassTag
@@ -556,6 +555,22 @@ abstract class Modeler {
     IntExpr(modeler.prod(v, expr.getIloIntExpr()))(implicitly(this))
 
   /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: NumExpr): NumExpr = NumExpr(modeler.square(expr.getIloNumExpr))(implicitly(this))
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: IntExpr): IntExpr = IntExpr(modeler.square(expr.getIloIntExpr))(implicitly(this))
+
+  /**
     * Returns the maximum of a set of numeric expressions.
     *
     * @param exprs is an array of numeric expressions
@@ -853,8 +868,52 @@ abstract class Modeler {
     * @param addables are the object to add to the model
     * @return the model
     */
+  def add(addables: Addable*): Modeler = {
+    modeler.add(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Add addable objects in the model.
+    *
+    * @param addables are the object to add to the model
+    * @return the model
+    */
   def add(addables: Iterable[Addable]): Modeler = {
     modeler.add(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Remove an object from the model.
+    *
+    * @param a is the object to remove
+    * @return the optimization model
+    */
+  def remove(a: Addable): Modeler = {
+    modeler.remove(a.getIloAddable())
+    this
+  }
+
+  /**
+    * Remove a set of objects from the model.
+    *
+    * @param addables are the objects to remove
+    * @return the optimization model
+    */
+  def remove(addables: Addable*): Modeler = {
+    modeler.remove(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Remove a set of objects from the model.
+    *
+    * @param addables are the objects to remove
+    * @return the optimization model
+    */
+  def remove(addables: Iterable[Addable]): Modeler = {
+    modeler.remove(addables.map(a => a.getIloAddable()).toArray)
     this
   }
 
@@ -1494,6 +1553,22 @@ object Modeler {
     * @return the product of the integer value and the integer expression
     */
   def prod(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.prod(v, expr)
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.square(expr)
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.square(expr)
 
   /**
     * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.
