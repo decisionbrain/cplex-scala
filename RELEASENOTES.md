@@ -1,5 +1,9 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.7.0-SNAPSHOT
+
+  * 
+
 ## cplex-scala v1.6.0
 
   * Add API for KPIs in class `CpModel`: see example `PlantLocation.scala`
