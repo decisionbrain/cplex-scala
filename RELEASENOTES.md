@@ -2,9 +2,13 @@
 
 ## cplex-scala v1.6.0-SNAPSHOT
 
-  * Add API for KPIs in CpModel: see example PlantLocation.scala
-  * Add methods quot in class CpModel for division and define operators '/' in class NumExpr 
-  * Move methods `add` from CpModel and MpModel to Modeler
+  * Add API for KPIs in class `CpModel`: see example `PlantLocation.scala`
+  * Add methods `quot` in class `CpModel` for division and define operators '/' in class NumExpr 
+  * Move methods `add` from `CpModel` and `MpModel` to class `Modeler`
+  * Add methods `remove` in class `Modeler` to remove object(s) from the optimization model
+  * Add method `square` in class `Modeler` for quadratic programming. 
+  * Add methods to get the reduced cost(s), the dual(s) and the slack(s)
+  * Add an first example of quadratic programming problem, see example `IndefQPex1`
 
 ## cplex-scala v1.5.2
 

@@ -62,6 +62,94 @@ class MpModel(val name: String=null) extends Modeler {
   def getValue(expr: NumExpr) : Double = cplex.getValue(expr.getIloNumExpr())
 
   /**
+    * Return the values of a numeric expressions in the solution.
+    *
+    * @param exprs are the numeric expressions; the expressions must be in the active model
+    * @return the valued of the expressions in the solution
+    */
+  def getValues(exprs: Array[NumVar]) : Array[Double] = cplex.getValues(exprs.map(e => e.getIloNumVar()))
+
+  /**
+    * Return the values of a numeric expressions in the solution.
+    *
+    * @param exprs are the numeric expressions; the expressions must be in the active model
+    * @return the valued of the expressions in the solution
+    */
+  def getValues(exprs: Iterable[NumVar]) : Array[Double] = cplex.getValues(exprs.map(e => e.getIloNumVar()).toArray)
+
+  /**
+    * Returns the reduced cost of a numeric variable.
+    *
+    * @param v is the numeric variable
+    * @return the reduced cost of the numeric variable
+    */
+  def getReducedCost(v: NumVar): Double = cplex.getReducedCost(v.getIloNumVar())
+
+  /**
+    * Returns the reduced cost of numeric variables.
+    *
+    * @param vars are the numeric variables
+    * @return the reduced cost of the numeric variables
+    */
+  def getReducedCosts(vars: Array[NumVar]): Array[Double] = cplex.getReducedCosts(vars.map(v => v.getIloNumVar()))
+
+  /**
+    * Returns the reduced cost of numeric variables.
+    *
+    * @param vars are the numeric variables
+    * @return the reduced cost of the numeric variables
+    */
+  def getReducedCosts(vars: Iterable[NumVar]): Array[Double] = cplex.getReducedCosts(vars.map(v => v.getIloNumVar()).toArray)
+
+  /**
+    * Returns the dual value of a range.
+    *
+    * @param r is the range
+    * @return the dual value of the range
+    */
+  def getDual(r: Range): Double = cplex.getDual(r.getIloRange())
+
+  /**
+    * Returns the dual values of ranges.
+    *
+    * @param ranges are the ranges
+    * @return the dual value of the ranges
+    */
+  def getDuals(ranges: Array[Range]): Array[Double] = cplex.getDuals(ranges.map(r => r.getIloRange()))
+
+  /**
+    * Returns the dual values of ranges.
+    *
+    * @param ranges are the ranges
+    * @return the dual value of the ranges
+    */
+  def getDuals(ranges: Iterable[Range]): Array[Double] = cplex.getDuals(ranges.map(r => r.getIloRange()).toArray)
+
+  /**
+    * Get the slack of a range.
+    *
+    * @param r is the range
+    * @return the slack of the range
+    */
+  def getSlack(r: Range): Double = cplex.getSlack(r.getIloRange())
+
+  /**
+    * Get the slack of a range.
+    *
+    * @param ranges is the range
+    * @return the slack of the range
+    */
+  def getSlacks(ranges: Array[Range]): Array[Double] = cplex.getSlacks(ranges.map(r => r.getIloRange()))
+
+  /**
+    * Get the slack of a range.
+    *
+    * @param ranges is the range
+    * @return the slack of the range
+    */
+  def getSlacks(ranges: Iterable[Range]): Array[Double] = cplex.getSlacks(ranges.map(r => r.getIloRange()).toArray)
+
+  /**
     * Print some information on the CPLEX model e.g. number of variables, number of constraints...
     */
   def printInformation(): Unit = {
