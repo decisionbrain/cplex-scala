@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.5.2'
+version '1.6.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -33,7 +33,7 @@ println("Maven user: $MAVEN_USER")
 
 task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
-    from sourceSets.main.allJava
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar) {

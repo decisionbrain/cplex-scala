@@ -182,9 +182,9 @@ object DietMultiObj {
 
     // Print the objective value(s).
 
-    val costName = cost.getName()
+    val costName = cost.getName
     val costValue = model.getValue(cost.getNumExpr())
-    val varietyName = variety.getName()
+    val varietyName = variety.getName
     val varietyValue = model.getValue(variety.getNumExpr())
     println(s"Solution value 0 ($costName) = $costValue")
     println(s"Solution value 1 ($varietyName) = $varietyValue")

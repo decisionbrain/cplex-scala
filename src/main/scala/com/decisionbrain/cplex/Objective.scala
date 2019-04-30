@@ -17,20 +17,6 @@ import ilog.concert._
 class Objective(o: IloObjective)(implicit modeler: Modeler) extends Addable {
 
   /**
-    * Returns the name of model addable object.
-    *
-    * @return the name of the object
-    */
-  override def getName(): Option[String] = Option(o.getName())
-
-  /**
-    * Set the name of the model addable object.
-    *
-    * @param name is the name of the object
-    */
-  override def setName(name: String): Unit = o.setName(name)
-
-  /**
     * Returns the CPLEX addable object
     *
     * @return the CPLEX addable object

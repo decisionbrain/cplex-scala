@@ -24,20 +24,6 @@ class Constraint(c: IloConstraint)(implicit modeler: Modeler) extends IntExpr(c)
   def getIloConstraint(): IloConstraint = c
 
   /**
-    * Returns the name of model addable object.
-    *
-    * @return the name of the object
-    */
-  override def getName(): Option[String] = Option(c.getName())
-
-  /**
-    * Set the name of the model addable object.
-    *
-    * @param name is the name of the object
-    */
-  override def setName(name: String): Unit = c.setName(name)
-
-  /**
     * Returns the CPLEX addable object.
     *
     * @return the CPLEX addable object

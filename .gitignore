@@ -55,3 +55,6 @@ Thumbs.db
 build/
 
 
+/.env
+/gradle.properties
+src/examples/java/

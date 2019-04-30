@@ -97,8 +97,9 @@ pipeline {
             steps {
                 sh "chmod ugo+x ./gradlew"
                 sh "chmod -R ugo+rx ./gradle"
-//                sh "./gradlew clean build jacocoTestReport pitest jacocoMergeTest sonarqube publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
-                sh "./gradlew clean build publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
+                sh "./gradlew clean build"
+//                sh "./gradlew jacocoTestReport pitest jacocoMergeTest sonarqube"
+                sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW -Dsonar.host.url=$SONAR_URL"
             }
         }
         // This stage is only run on master branch
@@ -114,9 +115,9 @@ pipeline {
             steps {
                 sh "chmod ugo+x ./gradlew"
                 sh "chmod -R ugo+rx ./gradle"
-                sh "./gradlew clean build -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
+                sh "./gradlew clean build"
                 sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P MAVEN_USER=$NEXUS_USER_USR -P MAVEN_PASSWORD=$NEXUS_USER_PSW"
-                sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P NEXUS_URL_FOR_PUSH=$NEXUS_DMZ_URL -P MAVEN_USER=$NEXUS_DMZ_USER_USR -P MAVEN_PASSWORD=$NEXUS_DMZ_USER_PSW"
+//                sh "./gradlew publish -P NEXUS_URL=$NEXUS_URL -P NEXUS_URL_FOR_PUSH=$NEXUS_DMZ_URL -P MAVEN_USER=$NEXUS_DMZ_USER_USR -P MAVEN_PASSWORD=$NEXUS_DMZ_USER_PSW"
             }
         }
     }

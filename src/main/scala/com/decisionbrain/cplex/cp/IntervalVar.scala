@@ -17,7 +17,7 @@ import ilog.concert._
   */
 class IntervalVar(v: IloIntervalVar)(implicit model: CpModel) extends Addable {
 
-  def canEqual(a: Any) = a.isInstanceOf[IntervalVar]
+  def canEqual(a: Any): Boolean = a.isInstanceOf[IntervalVar]
   override def equals(that: scala.Any): Boolean = {
     that match {
       case that: IntervalVar => that.canEqual(this) && this.hashCode() == that.hashCode()
@@ -33,20 +33,6 @@ class IntervalVar(v: IloIntervalVar)(implicit model: CpModel) extends Addable {
     * @return the CPLEX integer variable
     */
   def getIloIntervalVar(): IloIntervalVar = v
-
-
-  /**
-    * Return the name of the numeric variable
-    * @return the name
-    */
-  def getName(): Option[String] = Option(v.getName())
-
-  /**
-    * Set the name of the numeric variable.
-    *
-    * @param name is the name of the numeric variable
-    */
-  def setName(name: String) = v.setName(name)
 
   /**
     * Returns the CPLEX numeric variable

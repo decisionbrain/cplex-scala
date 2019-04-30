@@ -211,7 +211,7 @@ abstract class Modeler {
     * @return the scalar product of integer values with integer variables
     */
   def scalProd(values: IntArray, vars: IntVarArray): IntExpr =
-    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
+    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
 
   @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(values: IntArray, vars: IntVarArray): IntExpr =
@@ -226,11 +226,11 @@ abstract class Modeler {
     * @return the scalar product of integer values with integer variables
     */
   def scalProd(vars: IntVarArray, values: IntArray): IntExpr =
-    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
+    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   @deprecated("Replaced by method scalProd", "decisionbrain-cplex-scala-1.5.0")
   def scalarProduct(vars: IntVarArray, values: IntArray): IntExpr =
-    IntExpr(modeler.scalProd(values.toArray, vars.toIloArray))(implicitly(this))
+    IntExpr(modeler.scalProd(vars.toIloArray, values.toArray))(implicitly(this))
 
   /**
     * Returns a new integer linear expression representing the scalar product of the given integer values
@@ -555,6 +555,22 @@ abstract class Modeler {
     IntExpr(modeler.prod(v, expr.getIloIntExpr()))(implicitly(this))
 
   /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: NumExpr): NumExpr = NumExpr(modeler.square(expr.getIloNumExpr))(implicitly(this))
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: IntExpr): IntExpr = IntExpr(modeler.square(expr.getIloIntExpr))(implicitly(this))
+
+  /**
     * Returns the maximum of a set of numeric expressions.
     *
     * @param exprs is an array of numeric expressions
@@ -835,6 +851,73 @@ abstract class Modeler {
     Constraint(modeler.ifThen(ct1.getIloConstraint(), ct2.getIloConstraint()))(implicitly(this))
 
   /**
+    * Add an addable object in the model.
+    *
+    * @param a is the object to add to the model
+    * @return the model
+    */
+  def add(a: Addable, name: String=null): Modeler = {
+    a.setName(name)
+    modeler.add(a.getIloAddable())
+    this
+  }
+
+  /**
+    * Add addable objects in the model.
+    *
+    * @param addables are the object to add to the model
+    * @return the model
+    */
+  def add(addables: Addable*): Modeler = {
+    modeler.add(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Add addable objects in the model.
+    *
+    * @param addables are the object to add to the model
+    * @return the model
+    */
+  def add(addables: Iterable[Addable]): Modeler = {
+    modeler.add(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Remove an object from the model.
+    *
+    * @param a is the object to remove
+    * @return the optimization model
+    */
+  def remove(a: Addable): Modeler = {
+    modeler.remove(a.getIloAddable())
+    this
+  }
+
+  /**
+    * Remove a set of objects from the model.
+    *
+    * @param addables are the objects to remove
+    * @return the optimization model
+    */
+  def remove(addables: Addable*): Modeler = {
+    modeler.remove(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
+    * Remove a set of objects from the model.
+    *
+    * @param addables are the objects to remove
+    * @return the optimization model
+    */
+  def remove(addables: Iterable[Addable]): Modeler = {
+    modeler.remove(addables.map(a => a.getIloAddable()).toArray)
+    this
+  }
+
+  /**
     * Creates and returns an objective object to minimize the expression <em>expr</em>.
     *
     * @param expr is the expression to minimize
@@ -870,7 +953,7 @@ abstract class Modeler {
     * </pre>
     * @return the numeric for numeric expression
     */
-  def getNumExprNumeric(): Numeric[NumExpr] = numExprNumeric
+  def getNumExprNumeric(): NumExprNumeric = numExprNumeric
 
   /**
     * Returns the numeric for numeric expressions. This allows to do things such as calling method sum on list of
@@ -884,7 +967,7 @@ abstract class Modeler {
     * </pre>
     * @return the numeric for integer expression
     */
-  def getIntExprNumeric(): Numeric[IntExpr] = intExprNumeric
+  def getIntExprNumeric(): IntExprNumeric = intExprNumeric
 
 }
 
@@ -1470,6 +1553,22 @@ object Modeler {
     * @return the product of the integer value and the integer expression
     */
   def prod(v: Int, expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.prod(v, expr)
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: NumExpr)(implicit modeler: Modeler): NumExpr = modeler.square(expr)
+
+  /**
+    * Returns a new numeric expression that is the square of the given numeric expression.
+    *
+    * @param expr is the numeric expression
+    * @return the square of the numeric expression
+    */
+  def square(expr: IntExpr)(implicit modeler: Modeler): IntExpr = modeler.square(expr)
 
   /**
     * Returns a new constraint <i>greater-than-or-equal-to</i> between numeric expressions.

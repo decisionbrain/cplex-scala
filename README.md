@@ -26,7 +26,7 @@ If you want to play with this library and do not have a license of CPLEX, you ca
 [Community Edition of IBM ILOG CPLEX Optimization Studio](https://www-01.ibm.com/software/websphere/products/optimization/cplex-studio-community-edition/)
 
 To build this library use the Gradle wrapper provided or install [Gradle 2.10](https://gradle.org) and set the environment variable `CPLEX_STUDIO_HOME` (e.g. 
-on windows `C:\IBM\ILOG\CPLEX_Studio129`). 
+on windows `C:\IBM\ILOG\CPLEX_Studio129`).  
 
 Then do:
 
