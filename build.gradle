@@ -99,6 +99,9 @@ sourceSets {
         scala {
             srcDirs += 'src/examples/scala'
         }
+        java {
+            srcDirs += 'src/examples/java'
+        }
     }
 }
 
