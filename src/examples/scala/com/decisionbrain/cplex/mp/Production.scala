@@ -126,7 +126,7 @@ object Production {
     }
 
     // print the solution: objective, criteria, inside production, outside production
-    val obj = model.getObjectiveValue()
+    val obj = model.getObjValue()
     val totalInsideCostValue = model.getValue(totalInsideCost)
     val totalOutsideCostValue = model.getValue(totalOutsideCost)
 

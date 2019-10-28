@@ -116,7 +116,7 @@ object Diet {
       return
     }
 
-    val obj = model.getObjectiveValue()
+    val obj = model.getObjValue()
     println("Solution found!")
     println("Total cost: " + obj)
     println("Foods:")

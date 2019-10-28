@@ -18,7 +18,7 @@ To get up to speed, the easiest way to start with this library is to study the e
  * src/examples/mp: examples of optimization models based on mathematical programming
  * src/examples/cp: examples of optimization models based on constraint programming
 
-This library has been tested using IBM ILOG CPLEX 12.9, Scala 2.12.8 and Java JDK 1.8.0_202 on Windows 10 
+This library has been tested using IBM ILOG CPLEX 12.10, Scala 2.12.10 and Java JDK 8 on Windows 10 
 64 bits. Port to 32 bits or Linux should be fairly easy, see file `build.gradle`. Last revision compatible with 
 IBM ILOG Decision Optimization Center 3.9 is release 1.2.0 (Java 6, Scala 2.11.8)
 

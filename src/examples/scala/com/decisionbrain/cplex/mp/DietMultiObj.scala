@@ -254,7 +254,7 @@ object DietMultiObj {
   }
 
   def printSolution(): Unit = {
-    val obj = model.getObjectiveValue()
+    val obj = model.getObjValue()
     println("Solution found!")
     println("Total cost: " + obj)
     println("Foods:")

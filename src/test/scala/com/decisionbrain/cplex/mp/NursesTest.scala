@@ -24,7 +24,7 @@ class NursesTest extends FunSuite with Matchers {
     val model = nursesModel.buildModel()
     val status = nursesModel.solve(model)
 
-    model.getObjectiveValue() should be <= 29975.5
+    model.getObjValue() should be <= 29975.5
     model.getValue(nursesModel.totalSalaryCost) should equal(29736.0 +- epsilon)
     model.getValue(nursesModel.totalNumberOfAssignments) should equal(224.0 +- epsilon)
     model.getValue(nursesModel.averageNurseWorkTime) should equal(39.75 +- epsilon)
@@ -39,7 +39,7 @@ class NursesTest extends FunSuite with Matchers {
     val model = nursesModel.buildModel()
     val status = nursesModel.solve(model)
 
-    model.getObjectiveValue() should be <= 29975.5
+    model.getObjValue() should be <= 29975.5
     model.getValue(nursesModel.totalSalaryCost) should equal(29736.0 +- epsilon)
     model.getValue(nursesModel.totalNumberOfAssignments) should equal(224.0 +- epsilon)
     model.getValue(nursesModel.averageNurseWorkTime) should equal(39.75 +- epsilon)

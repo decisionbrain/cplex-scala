@@ -145,8 +145,8 @@ object SportScheduling {
       return -1
     }
 
-    val objectiveValue = model.getObjectiveValue()
-    println(s"Found solution with cost $objectiveValue")
+    val objValue = model.getObjValue()
+    println(s"Found solution with cost $objValue")
 
     val solution = for (w <- weeks; m <- matches; (team1, team2, isDivisional) = m if model.getValue(playVars(m, w)) >= (1.0 - 1e-6)) yield (w, isDivisional, teams(team1), teams(team2))
 
@@ -171,7 +171,7 @@ object SportScheduling {
 
     model.end()
 
-    objectiveValue
+    objValue
   }
 
   def main(args: Array[String]): Unit = {

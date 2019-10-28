@@ -24,7 +24,7 @@ class ProductionTest extends FunSuite with Matchers {
     val status = model.solve()
 
     status should equal(true)
-    model.getObjectiveValue() should equal(372.0 +- epsilon)
+    model.getObjValue() should equal(372.0 +- epsilon)
     model.getValue(Production.totalInsideCost) should equal(24.0 +- epsilon)
     model.getValue(Production.totalOutsideCost) should equal(348.0 +- epsilon)
     model.end()
