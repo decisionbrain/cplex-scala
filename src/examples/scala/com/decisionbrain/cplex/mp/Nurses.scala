@@ -486,10 +486,10 @@ object Nurses {
 
   def solve(model: MpModel): Option[Double] = {
     if (model.solve()) {
-      println("solution for a cost of %f".format(model.getObjectiveValue()))
+      println("solution for a cost of %f".format(model.getObjValue()))
       printInformation(model)
       printSolution(model)
-      return Some(model.getObjectiveValue())
+      return Some(model.getObjValue())
     }
     else {
       println("* model is infeasible")

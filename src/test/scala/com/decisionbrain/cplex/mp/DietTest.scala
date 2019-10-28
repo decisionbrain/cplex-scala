@@ -23,7 +23,7 @@ class DietTest extends FunSuite with Matchers {
     val status = model.solve()
 
     status should equal(true)
-    model.getObjectiveValue() should equal(2.690409 +- epsilon)
+    model.getObjValue() should equal(2.690409 +- epsilon)
     model.end()
 
   }

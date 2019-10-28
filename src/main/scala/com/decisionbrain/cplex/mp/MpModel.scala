@@ -9,7 +9,7 @@ package com.decisionbrain.cplex.mp
 import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.Modeler._
-import ilog.concert.IloModeler
+import ilog.concert.{IloAddable, IloLPMatrix, IloModeler}
 import ilog.cplex.IloCplex.Param
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
@@ -158,6 +158,28 @@ class MpModel(val name: String=null) extends Modeler {
     println("\t# binary variables: " + cplex.getNbinVars)
     println("\t# integer variables: " + cplex.getNintVars())
     println("\t# constraints: " + cplex.getNrows())
+  }
+
+  /**
+   * Returns the set of numeric variables in the mathematical model.
+   *
+   * @return an array of numeric variables
+   */
+  def getNumVars() : Array[NumVar] = {
+    val lp = cplex.LPMatrixIterator.next.asInstanceOf[IloLPMatrix]
+    val vars = lp.getNumVars().map(v => NumVar(v)(implicitly(this)))
+    vars
+  }
+
+  /**
+   * Returns the set of range constraints in the mathematical model.
+   *
+   * @return an array of range constraints
+   */
+  def getRanges(): Array[Range] = {
+    val lp = cplex.LPMatrixIterator.next.asInstanceOf[IloLPMatrix]
+    val ranges  = lp.getRanges().map(r => Range(r)(implicitly(this)))
+    ranges
   }
 
   /**
@@ -392,8 +414,10 @@ class MpModel(val name: String=null) extends Modeler {
     *
     * @return the value of the objective in the solution
     */
-  def getObjectiveValue() = cplex.getObjValue
+  def getObjValue() = cplex.getObjValue
 
+  @deprecated("This method has been replaced by method getObjValue", "decisionbrain-cplex-scala-1.7.0")
+  def getObjectiveValue() = getObjValue
 
   /**
     * Returns the objective value of the best remaining node.
@@ -519,8 +543,153 @@ class MpModel(val name: String=null) extends Modeler {
     */
   def setParam(param: IloCplex.StringParam, value: String) = cplex.setParam(param, value)
 
+  //
+  // Annotations
+  //
+
   /**
-    * Writes the active model to a file named name. The file format is determined by the extension of the filename.
+   * Creates a new annotation of type long.
+   *
+   * @param annotation is the name of the annotation
+   * @param value is the value of the annotation
+   * @return
+   */
+  def newLongAnnotation(annotation: String, value: Long = 0): IloCplex.LongAnnotation =
+    cplex.newLongAnnotation(annotation, value)
+
+  /**
+   * Returns the annotation value for an instance of IloNumVar.
+   *
+   * @param annotation is the annotation
+   * @param v is the numeric variable
+   * @return the annotation value
+   */
+  def getAnnotation(annotation: LongAnnotation, v: NumVar): Long = cplex.getAnnotation(annotation, v.getIloNumVar())
+
+  /**
+   * Returns the annotation value for an instance of IloNumVar.
+   *
+   * @param annotation is the annotation
+   * @param v is the numeric variable
+   * @return the annotation value
+   */
+  def getAnnotation(annotation: LongAnnotation, v: IntVar): Long = cplex.getAnnotation(annotation, v.getIloIntVar())
+
+  /**
+   * Returns the annotation value for an objective function.
+   *
+   * @param annotation is the annotation
+   * @param o is the objective
+   * @return the annotation value
+   */
+  def getAnnotation(annotation: LongAnnotation, o: Objective): Long = cplex.getAnnotation(annotation, o.getIloObjective())
+
+  /**
+   * Returns the annotation value for a constraint.
+   *
+   * @param annotation is the annotation
+   * @param c is the constraint
+   * @return the annotation value
+   */
+  def getAnnotation(annotation: LongAnnotation, c: Constraint): Long = cplex.getAnnotation(annotation, c.getIloConstraint())
+
+  /**
+   * Returns the annotation values of an array of objects
+   *
+   * @param annotation is the annotation
+   * @param items are the objects for which the annotation values are requested
+   * @return the annotation values
+   */
+  def getAnnotations(annotation: LongAnnotation, items: Iterable[Addable]): Array[Long] =
+    cplex.getAnnotation(annotation, items.map(a => a.getIloAddable()).toArray[IloAddable])
+
+  /**
+   * Sets the annotation value for a numeric variable
+   *
+   * @param annotation is the annotation
+   * @param v is the numeric variable
+   * @param value is the value to set
+   */
+  def setAnnotation(annotation: LongAnnotation, v: NumVar, value: Int): Unit = cplex.setAnnotation(annotation, v.getIloNumVar(), value)
+
+  /**
+   * Sets the annotation value for an integer variable
+   *
+   * @param annotation is the annotation
+   * @param v is the integer variable
+   * @param value is the value to set
+   */
+  def setAnnotation(annotation: LongAnnotation, v: IntVar, value: Int): Unit = cplex.setAnnotation(annotation, v.getIloIntVar(), value)
+
+  /**
+   * Sets the annotation value for an objective function
+   *
+   * @param annotation is the annotation
+   * @param o is the objective
+   * @param value is the value to set
+   */
+  def setAnnotation(annotation: LongAnnotation, o: Objective, value: Int): Unit = cplex.setAnnotation(annotation, o.getIloObjective(), value)
+
+  /**
+   * Sets the annotation value for a constraint
+   *
+   * @param annotation is the annotation
+   * @param c is the constraint
+   * @param value is the value to set
+   */
+  def setAnnotation(annotation: LongAnnotation, c: Constraint, value: Long): Unit = cplex.setAnnotation(annotation, c.getIloConstraint(), value)
+
+  /**
+   * Returns the annotation values of an array of objects
+   *
+   * @param annotation is the annotation
+   * @param items are the objects to set annotation values
+   */
+  def setAnnotations(annotation: LongAnnotation, items: Iterable[Addable], values: Iterable[Long]): Unit =
+    cplex.setAnnotation(annotation, items.map(a => a.getIloAddable()).toArray[IloAddable], values.toArray)
+
+  /**
+   *
+   * Reads annotations from a file.
+   *
+   * See the topic Annotating a model for CPLEX in the CPLEX User's Manual for a sample of the header of an annotation
+   * file. See the sample UFL_25_35_1 distributed with the product for an example of an annotated model.
+   * Important: CPLEX deletes existing annotations before CPLEX attempts to read filename. Consequently, all currently
+   * existing annotations are deleted even if reading fails.
+   *
+   * Because indicator constraints are not top-level modeling objects in Concert, this method ignores annotations for
+   * indicator constraints in filename. More specifically, upon input, this method resets the annotation for any
+   * indicator constraint to its default value.
+   *
+   * @param filename is the name of the file
+   */
+  def readAnnotations(filename: String): Unit = cplex.readAnnotations(filename)
+
+  /**
+   * Writes all annotations to a file.
+   *
+   * This method writes the annotations of all types currently stored in this instance to filename.
+   *
+   * See the topic Annotating a model for CPLEX in the CPLEX User's Manual for a sample of the header of an annotation
+   * file. See the sample UFL_25_35_1 distributed with the product for an example of an annotated model.
+   *
+   * @param filename is the name of the file
+   */
+
+  def writeAnnotations(filename: String): Unit = cplex.writeAnnotations(filename)
+  /**
+   * Writes the annotation that CPLEX automatically generates for a Benders decomposition to the specified file.
+   *
+   * @param filename is the name of the file
+   */
+  def writeBendersAnnotation(filename: String): Unit = cplex.writeBendersAnnotation(filename)
+
+  //
+  // Import & Export
+  //
+
+  /**
+    * Writes the active model to a file named <em>name</em>. The file format is determined by the extension of the filename.
     * The following extensions are recognized on most platforms:
     * <ul>
     *   <li>*.sav</li>
@@ -536,9 +705,37 @@ class MpModel(val name: String=null) extends Modeler {
     * writing the model (or in the optimization log). Default names are of the form IloXj for variables and
     * IloC i, where i and j are internal indices of IloCplex.
     *
-    * @param name is the name of the file to which the model is written. The extension of the filename determines the format in which to write the model file.
+    * @param filename is the name of the file to which the model is written. The extension of the filename determines
+   *                 the format in which to write the model file.
     */
-  def exportModel(name: String) = cplex.exportModel(name)
+  def exportModel(filename: String) = cplex.exportModel(filename)
+
+  /**
+   * Reads a mathematical programming model from the file specified by <em>filename</em> into the active model.
+   * The format of the file is specified by the extension of the filename. The following extensions are recognized:
+   *
+   * <ul>
+   *   <li>.sav</li>
+   *   <li>.mps</li>
+   *   <li>.lp</li>
+   *   <li>.sav.gz</li>
+   *   <li>.mps.gz</li>
+   *   <li>.lp.gz</li>
+   *   <li>.bz2</li>
+   * </ul>
+   *
+   * When CPLEX reads a file, the existing active model is first cleaned out and then new modeling objects, as
+   * specified by the input file, are added to it. In particular, one IloObjective object and one IloLPMatrix object
+   * are always added to the active model. The IloLPMatrix object will contain all the constraints of the imported
+   * model. IloSOS1 and IloSOS2 objects are added as needed.
+   *
+   * @param filename
+   */
+  def importModel(filename: String): Unit = cplex.importModel(filename)
+
+  //
+  // This is the End (in reference to the Doors)
+  //
 
   /**
     * Releases the IloCplex license held by the invoking object, and all the memory allocated by it. When you no
@@ -558,6 +755,8 @@ object MpModel {
 
   type CplexMultiCriterionExpr = IloCplexMultiCriterionExpr
   type ParameterSet = IloCplex.ParameterSet
+  type LongAnnotation = IloCplex.LongAnnotation
+  type DoubleAnnotation = IloCplex.DoubleAnnotation
 
   /**
     * Create and return a new mathematical programming model.

@@ -208,8 +208,8 @@ class MpModelTest extends FunSuite with Matchers {
     model2.solve() should equal(true)
 
     // getObjectiveValue
-    model1.getObjectiveValue() should equal(5.0 +- epsilon)
-    model2.getObjectiveValue() should equal(5.0 +- epsilon)
+    model1.getObjValue() should equal(5.0 +- epsilon)
+    model2.getObjValue() should equal(5.0 +- epsilon)
 
     // getBestObjValue
     model1.getBestObjValue() should equal (1.0E75) // was java.lang.Double.POSITIVE_INFINITY
