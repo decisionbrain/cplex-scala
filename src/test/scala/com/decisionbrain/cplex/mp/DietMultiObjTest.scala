@@ -23,7 +23,7 @@ class DietMultiObjTest extends FunSuite with Matchers {
     val status = DietMultiObj.solve()
 
     status should equal(true)
-    model.getObjectiveValue() should equal(3.190409 +- epsilon)
+    model.getObjValue() should equal(3.190409 +- epsilon)
     model.end()
 
   }

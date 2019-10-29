@@ -69,7 +69,7 @@ object IndefQPex1 {
       val slacks = model.getSlacks(ranges)
 
       System.out.println("Solution status = " + model.getStatus)
-      System.out.println("Solution value  = " + model.getObjectiveValue())
+      System.out.println("Solution value  = " + model.getObjValue())
 
       for (j <- vars.indices) {
         val value = values(j)

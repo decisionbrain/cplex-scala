@@ -2,7 +2,9 @@
 
 ## cplex-scala v1.7.0-SNAPSHOT
 
-  * 
+  * Method `getObjectiveValue` is now obsolete and replaced by method `getObjValue`
+  * Add example `Benders` that applies a Benders decomposition using the CPLEX annotations
+   
 
 ## cplex-scala v1.6.0
 

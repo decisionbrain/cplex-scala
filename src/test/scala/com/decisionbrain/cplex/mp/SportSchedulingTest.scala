@@ -24,7 +24,7 @@ class SportSchedulingTest extends FunSuite with Matchers {
     val status = model.solve()
 
     status should equal(true)
-    model.getObjectiveValue() should equal(4448.0 +- epsilon)
+    model.getObjValue() should equal(4448.0 +- epsilon)
     model.end()
 
   }

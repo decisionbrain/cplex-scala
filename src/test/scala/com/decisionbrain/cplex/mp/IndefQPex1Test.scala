@@ -23,7 +23,7 @@ class IndefQPex1Test extends FunSuite with Matchers {
     val status = IndefQPex1.solve()
 
     status should equal(true)
-    model.getObjectiveValue() should equal(-2.5 +- epsilon)
+    model.getObjValue() should equal(-2.5 +- epsilon)
 
     model.end()
   }
