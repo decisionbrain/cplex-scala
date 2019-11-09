@@ -8,7 +8,7 @@ package com.decisionbrain.cplex
 
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
-import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
+import ilog.concert._
 
 import scala.reflect.ClassTag
 

@@ -2,9 +2,12 @@
 
 ## cplex-scala v1.7.0-SNAPSHOT
 
+  * Port to CPLEX 12.10  
   * Method `getObjectiveValue` is now obsolete and replaced by method `getObjValue`
+  * Add API for the CPLEX annotations, see methods `newLongAnnotation`, `setAnnotation`, `getAnnotation`...
   * Add example `Benders` that applies a Benders decomposition using the CPLEX annotations
-   
+  * Add functional programming API for piecewise linear functions.
+  * Add example `SailcoPW` that uses of a piecewise linear function to create the objective.
 
 ## cplex-scala v1.6.0
 

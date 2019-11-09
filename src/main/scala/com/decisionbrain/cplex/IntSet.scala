@@ -8,7 +8,6 @@ package com.decisionbrain.cplex
 
 import java.util
 
-import com.decisionbrain.cplex.cp.CpModel
 import ilog.concert.IloIntSet
 
 /**
@@ -82,6 +81,6 @@ object IntSet {
     * @param model is the constraint programming model
     * @return a set of integer values
     */
-  def apply(e: IloIntSet)(implicit model: CpModel) = new IntSet(e)
+  def apply(e: IloIntSet)(implicit model: Modeler) = new IntSet(e)
 }
 

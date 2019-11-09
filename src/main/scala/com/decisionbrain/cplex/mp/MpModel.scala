@@ -53,6 +53,22 @@ class MpModel(val name: String=null) extends Modeler {
     */
   def getIloCplex(): IloCplex = cplex
 
+  //
+  // Piecewise Linear Function
+  //
+
+  /**
+   * Returns a new piecewise linear functions.
+   *
+   * @param preslope is the slope of the first segment of the piecewise linear function
+   * @param points is the set of points of the piecewise linear function
+   * @param postslope is the slope of the last segment of the piecewise linear function
+   * @return a new piecewise linear function
+   */
+  def piecewiseLinear(preslope: Double, points: Iterable[(Double, Double)], postslope: Double): PiecewiseLinearFunction = {
+    PiecewiseLinearFunction(preslope, points, postslope)(implicitly(this))
+  }
+
   /**
     * Return the value of a numeric expression in the solution.
     *
@@ -732,6 +748,24 @@ class MpModel(val name: String=null) extends Modeler {
    * @param filename
    */
   def importModel(filename: String): Unit = cplex.importModel(filename)
+
+  //
+  // KPI
+  //
+
+  /**
+   * Add a named key performance indicator (KPI) i.e.  a value which can be associated with a solution which represents
+   * an interesting measure of some aspect of the solution.
+   *
+   * @param expr is the KPI
+   * @param name is the name of the KPI
+   * @return
+   */
+  def addKPI(expr: NumExpr, name: String = null) : Unit =
+  // TODO: unfortunately CPLEX MIP does not have this KPI.
+  // cplex.addKPI(expr.getIloNumExpr(), name)
+    None
+
 
   //
   // This is the End (in reference to the Doors)
