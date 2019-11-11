@@ -24,7 +24,7 @@ class SailcoPWTest  extends FunSuite with Matchers {
   test("sailcopw") {
     val model = SailcoPW.buildModel()
 
-    model.exportModel("sailcopw.lp")
+//    model.exportModel("sailcopw.lp")
 
     val status = model.solve()
 

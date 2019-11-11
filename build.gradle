@@ -78,6 +78,10 @@ compileJava {
     targetCompatibility = 1.8
 }
 
+compileScala {
+    targetCompatibility = 1.8
+}
+
 project.ext.set("copyright", new File("copyright.txt").text)
 
 repositories {
