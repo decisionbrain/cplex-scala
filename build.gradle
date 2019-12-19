@@ -146,8 +146,8 @@ scaladoc {
 }
 
 ext {
-    scalaVersion = '2.12.10'
-    scalaVersionShort = '2.12'
+    scalaVersion = '2.13.1'
+    scalaVersionShort = '2.13'
     scalaTestVersion = '3.0.8'
 }
 

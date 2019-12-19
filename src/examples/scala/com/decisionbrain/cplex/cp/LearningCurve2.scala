@@ -42,7 +42,7 @@ object LearningCurve2 {
 
   val NbTaskTtypes = TaskType.max + 1
 
-  val TaskIndex : Vector[Int]= (for (i <- 0 until NbTasks) yield i)(collection.breakOut)
+  val TaskIndex : Vector[Int]= (for (i <- 0 until NbTasks) yield i).toVector
 
   val TaskDurM1 = Vector(
     4, 17,  4,  7, 17, 14,  2, 14,  2,  8,
@@ -126,36 +126,36 @@ object LearningCurve2 {
         f.setValue(s, e, v)
       }
       f
-    })(collection.breakOut)
+    }).toVector
 
     // interval variables
 
     val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_TP" + TaskType(i))).toArray
     val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i))).toArray
     val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i))).toArray
 
     // interval variables for learning curve
     lca1 = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i))).toArray
     lca2 = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="LCA" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="LCA" + i + "_M2_TP" + TaskType(i))).toArray
 
     lcpa1 = Array.ofDim[IntervalVar](NbTasks, NbLearningCurves)
     lcpa2 = Array.ofDim[IntervalVar](NbTasks, NbLearningCurves)
     for (i <- 0 until NbTasks) {
       lcpa1(i) =   (for (c <- 0 until NbLearningCurves) yield
-        model.intervalVar(name="LCA_" + i + "_" + c + "_M1_TP" + TaskType(i)))(collection.breakOut)
+        model.intervalVar(name="LCA_" + i + "_" + c + "_M1_TP" + TaskType(i))).toArray
       lcpa2(i) =   (for (c <- 0 until NbLearningCurves) yield
-        model.intervalVar(name="LCA_" + i + "_" + c + "_M2_TP" + TaskType(i)))(collection.breakOut)
+        model.intervalVar(name="LCA_" + i + "_" + c + "_M2_TP" + TaskType(i))).toArray
     }
 
     // offset variables for learning curve
-    o = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_TP" + TaskType(i)))(collection.breakOut)
+    o = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_TP" + TaskType(i))).toList
 
-    prevType = (for (i <- 0 until NbTasks) yield model.intVar(max=NbTypes-1, name="PrevType" + i + "_TP" + TaskType(i)))(collection.breakOut)
+    prevType = (for (i <- 0 until NbTasks) yield model.intVar(max=NbTypes-1, name="PrevType" + i + "_TP" + TaskType(i))).toList
 
     // interval variables on machines are optional
 
@@ -195,8 +195,8 @@ object LearningCurve2 {
       model.add(alternative(lca2(i), lcpa2(i)))
     }
 
-    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i))(collection.breakOut)
-    IndexOfTask = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
+    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i)).toMap
+    IndexOfTask = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i)).toMap
 
     // sequence variables (one per machine)
     s1 = model.intervalSequenceVar(a1, TaskType.toArray)
@@ -236,13 +236,13 @@ object LearningCurve2 {
       val prevTypeExpr2 =  prevType(typeOfPrevious(si2, a2(i), i, i))
       model.add((typeOfPrevious(s2, a2(i), InitialType2, -1) == TaskType(i)) <= (prevType(i) == prevTypeExpr2))
 
-      val plcpa1: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa1(i)(j)))(collection.breakOut)
-      val lcm1Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM1(j)(TaskType(i)))(collection.breakOut)
+      val plcpa1: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa1(i)(j))).toList
+      val lcm1Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM1(j)(TaskType(i))).toList
       lcm1(i) = lcm1Indexes(prevType(i))
       model.add(presenceOf(lca1(i)) <= (plcpa1(lcm1(i)) == 1))
 
-      val plcpa2: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa2(i)(j)))(collection.breakOut)
-      val lcm2Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM2(j)(TaskType(i)))(collection.breakOut)
+      val plcpa2: List[IntExpr] = (for (j <- 0 until NbLearningCurves) yield presenceOf(lcpa2(i)(j))).toList
+      val lcm2Indexes: List[Int] = (for (j <- 0 until NbLearningCurves) yield LearningCurveM2(j)(TaskType(i))).toList
       lcm2(i) = lcm2Indexes(prevType(i))
       model.add(presenceOf(lca2(i)) <= (plcpa2(lcm2(i)) == 1))
     }
@@ -284,12 +284,12 @@ object LearningCurve2 {
         System.out.print(model.getValue(typeOfPrevious(si1, x, IndexOfTask(x), IndexOfTask(x))))
         System.out.print("; previous type : ")
         val prevTypeVar = prevType(IndexOfTask(x))
-        System.out.print(model.getMin(prevTypeVar) + ".." + model.getMax(prevTypeVar))
+        System.out.print("%d..%d".format(model.getMin(prevTypeVar), model.getMax(prevTypeVar)))
         System.out.print("; learning curve : ")
         System.out.print(model.getValue(lcm1(IndexOfTask(x))))
         System.out.print("; time offset : ")
         val v = o(IndexOfTask(x))
-        System.out.print(model.getMin(v) + ".." + model.getMax(v))
+        System.out.print("%d..%d".format(model.getMin(v), model.getMax(v)))
         System.out.println()
       }
 
@@ -309,12 +309,12 @@ object LearningCurve2 {
         System.out.print(model.getValue(typeOfPrevious(si2, x, IndexOfTask(x), IndexOfTask(x))))
         System.out.print("; previous type : ")
         val prevTypeVar = prevType(IndexOfTask(x))
-        System.out.print(model.getMin(prevTypeVar) + ".." + model.getMax(prevTypeVar))
+        System.out.print("%d..%d".format(model.getMin(prevTypeVar), model.getMax(prevTypeVar)))
         System.out.print("; learning curve : ")
         System.out.print(model.getValue(lcm2(IndexOfTask(x))))
         System.out.print("; time offset : ")
         val v = o(IndexOfTask(x))
-        System.out.print(model.getMin(v) + ".." + model.getMax(v))
+        System.out.print("%d..%d".format(model.getMin(v), model.getMax(v)))
         System.out.println()
       }
 

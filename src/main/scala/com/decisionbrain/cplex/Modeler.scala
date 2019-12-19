@@ -64,7 +64,7 @@ abstract class Modeler {
     val dict: Map[T, NumVar] = set.map(t => {
       val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
       (t, v)
-    })(collection.breakOut)
+    }).toMap
     dict
   }
 
@@ -97,7 +97,7 @@ abstract class Modeler {
     val dict: Map[T, IntVar] = set.map(t => {
       val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
       (t, v)
-    })(collection.breakOut)
+    }).toMap
     dict
   }
 
@@ -156,7 +156,7 @@ abstract class Modeler {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
       v.setName(namer(t))
       t -> v
-    })(collection.breakOut)
+    }).toMap
   }
 
   /**
@@ -182,7 +182,7 @@ abstract class Modeler {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
       v.setName(namer(t, u))
       (t,u) -> v
-    })(collection.breakOut)
+    }).toMap
   }
 
   /**

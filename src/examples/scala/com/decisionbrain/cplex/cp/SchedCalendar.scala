@@ -52,7 +52,7 @@ object SchedCalendar {
   def makeHouse(id: Int, rd: Int): (IntExpr, Iterable[IntervalVar], Iterable[IntervalVar], Iterable[IntervalVar]) = {
 
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
-          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
+          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname))).toMap
 
     // The lines below are equivalent
     model.add(taskVars("masonry") < taskVars("carpentry"))

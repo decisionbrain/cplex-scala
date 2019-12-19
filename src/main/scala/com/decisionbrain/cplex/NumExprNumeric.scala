@@ -35,6 +35,8 @@ class NumExprNumeric(modeler: Modeler) extends Numeric[NumExpr] {
   override def toDouble(x: NumExpr): Double = ???
 
   override def compare(x: NumExpr, y: NumExpr): Int = ???
+
+  override def parseString(str: String): Option[NumExpr] = ???
 }
 
 object NumExprNumeric {

@@ -85,7 +85,7 @@ object DietMultiObj {
 
     theFoodNutrients =
       (for (t <- foodNutients; n <- nutrients.indices)
-        yield (t._1, nutrients(n)._1) -> t.productElement(1 + n).asInstanceOf[Double])(collection.breakOut).toMap
+        yield (t._1, nutrients(n)._1) -> t.productElement(1 + n).asInstanceOf[Double]).toMap
 
 
     model = new MpModel("diet")

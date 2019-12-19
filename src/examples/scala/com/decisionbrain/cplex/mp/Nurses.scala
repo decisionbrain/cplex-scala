@@ -240,7 +240,7 @@ object Nurses {
   class Shift(val tshift: TShift) {
     val (department, day, startTime, endTime, minRequirement, maxRequirement) = tshift
     override def toString() = {
-      val dept2 = department slice (0, 4) toUpperCase()
+      val dept2 = department.slice(0, 4).toUpperCase()
       val dayname = day.toString() slice (0, 3)
       s"$dept2-$dayname-$startTime"
     }
@@ -313,10 +313,10 @@ object Nurses {
   var nursesById: Map[String, Nurse] = _
 
   def setupData(model: MpModel) = {
-    vacationsByNurse = (for (n <- nurses) yield (n, for ((nurseId, day) <- vacations if nurseId == n.name) yield day))(collection.breakOut)
+    vacationsByNurse = (for (n <- nurses) yield (n, for ((nurseId, day) <- vacations if nurseId == n.name) yield day)).toMap
     // compute shift activities (start, end duration)
-    shiftActivities = (for (s <- shifts) yield s -> new ShiftActivity(s.day, s.startTime, s.endTime))(collection.breakOut)
-    nursesById = (for (n <- nurses) yield n.name -> n)(collection.breakOut)
+    shiftActivities = (for (s <- shifts) yield s -> new ShiftActivity(s.day, s.startTime, s.endTime)).toMap
+    nursesById = (for (n <- nurses) yield n.name -> n).toMap
   }
 
   // variables

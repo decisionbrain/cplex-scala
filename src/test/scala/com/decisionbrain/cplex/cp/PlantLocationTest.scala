@@ -16,6 +16,9 @@ class PlantLocationTest extends FunSuite with Matchers {
   val epsilon = 1e-6
 
   test("PlantLocation") {
+
+    implicit val order = Ordering.Double.IeeeOrdering
+
     val model = PlantLocation.build("data/plant_location.data")
     val status = PlantLocation.solve(failLimit=50000, logPeriod = 10000)
 

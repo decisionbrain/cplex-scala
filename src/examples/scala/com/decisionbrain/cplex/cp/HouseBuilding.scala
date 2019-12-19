@@ -114,11 +114,11 @@ object HouseBuilding {
     override def toString: String = "(" + worker + "," + task1 + "," + task2 + ")"
   }
 
-  var theTasks: Map[String, Task] = (for (t <- tasks; (name, duration) = t) yield (name -> new Task(name, duration)))(collection.breakOut)
+  var theTasks: Map[String, Task] = (for (t <- tasks; (name, duration) = t) yield (name -> new Task(name, duration))).toMap
   var thePrecedences : List[Precedence] = for (p <- precedences) yield new Precedence(findTask(p._1), findTask(p._2))
-  var theWorkers : Map[String, Worker] = (for (w <- workers) yield (w -> new Worker(w)))(collection.breakOut)
+  var theWorkers : Map[String, Worker] = (for (w <- workers) yield (w -> new Worker(w))).toMap
   var theSkills: Map[(String, String), Skill] = (for (s <- skills; (worker, task, level) = s)
-      yield (worker, task) -> new Skill(findWorker(worker), findTask(task), level))(collection.breakOut)
+      yield (worker, task) -> new Skill(findWorker(worker), findTask(task), level)).toMap
   var theContinuities: List[Continuity] = for (c <- continuities; (worker, task1, task2) = c)
     yield new Continuity(findWorker(worker), findTask(task1), findTask(task2))
 
@@ -152,10 +152,10 @@ object HouseBuilding {
     // variables
 
     taskVars = (for (house <- HOUSES; entry <- theTasks; (name, task) = entry)
-      yield (house, task) -> model.intervalVar(startMin=0, endMax=HORIZON, sizeMin=task.duration, sizeMax=task.duration, name=s"house $house task $task"))(collection.breakOut)
+      yield (house, task) -> model.intervalVar(startMin=0, endMax=HORIZON, sizeMin=task.duration, sizeMax=task.duration, name=s"house $house task $task")).toMap
 
     wtaskVars = (for (house <- HOUSES; e <- theSkills; ((worker, task), skill) = e)
-      yield (house, skill) -> model.intervalVar(optional=true, name=s"house $house skill $skill"))(collection.breakOut)
+      yield (house, skill) -> model.intervalVar(optional=true, name=s"house $house skill $skill")).toMap
 
     // objective
 

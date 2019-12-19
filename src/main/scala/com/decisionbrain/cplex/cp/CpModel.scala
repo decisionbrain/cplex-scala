@@ -197,7 +197,7 @@ class CpModel(val name: String=null) extends Modeler {
     val dict: Map[T, IntervalVar] = keys.map(t => {
       val v: IntervalVar = intervalVar(startMin, startMax, endMin, endMax, sizeMin, sizeMax, optional, namer(t))
       (t, v)
-    })(collection.breakOut)
+    }).toMap
     dict
   }
 

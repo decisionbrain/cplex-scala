@@ -88,7 +88,7 @@ object Transport {
 
   def main(args: Array[String]): Unit = {
 
-    val transport = Transport(args: _*)
+    val transport = Transport(args.toList: _*)
     if (transport.isEmpty) return
 
     val model = transport.get

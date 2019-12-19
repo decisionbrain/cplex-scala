@@ -32,6 +32,8 @@ class CumulFunctionExprNumeric(implicit model: CpModel) extends Numeric[CumulFun
   override def toDouble(x: CumulFunctionExpr): Double = ???
 
   override def compare(x: CumulFunctionExpr, y: CumulFunctionExpr): Int = ???
+
+  override def parseString(str: String): Option[CumulFunctionExpr] = ???
 }
 
 object CumulFunctionExprNumeric {

@@ -16,6 +16,9 @@ class LearningCurve2Test extends FunSuite with Matchers {
   val epsilon = 1e-6
 
   test("LearningCurve2") {
+
+    implicit val order = Ordering.Double.IeeeOrdering
+
     val model = LearningCurve2.build()
 
     //    val status = LearningCurve2.solve(timeLimit=600, logPeriod=10000)

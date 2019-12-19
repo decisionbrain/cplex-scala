@@ -54,7 +54,7 @@ object SchedState {
   def makeHouse(id: Int, releaseDate: Int): (IntExpr, IntervalVarArray, StateFunction) = {
 
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
-          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
+          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname))).toMap
 
     workersUsage += model.sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
 

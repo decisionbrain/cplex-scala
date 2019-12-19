@@ -29,7 +29,7 @@ object Golomb {
     marks = model.intVars(ORDER, 0, MAX_LENGTH, namer= (i: Int) => "marks_" + i)
 
     val dist: List[IntExpr] = (for (i <- 1 until ORDER; j <- 0 until i)
-          yield marks(i) - marks(j))(collection.breakOut)
+          yield marks(i) - marks(j)).toList
 
     model.add(allDiff(dist))
 

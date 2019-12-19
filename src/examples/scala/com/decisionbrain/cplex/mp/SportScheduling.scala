@@ -82,12 +82,12 @@ object SportScheduling {
 
     // All possible matches (pairings) and whether of not each is intradivisional.
     def sameDivision(a: Int, b: Int) = if (b <= nbTeamsInDivision || a > nbTeamsInDivision) 1 else 0
-    matches = (for (t1 <- teamRange; t2 <- teamRange if t1 < t2) yield (t1, t2, sameDivision(t1, t2)))(collection.breakOut)
+    matches = (for (t1 <- teamRange; t2 <- teamRange if t1 < t2) yield (t1, t2, sameDivision(t1, t2))).toList
 
     // Number of games to play between pairs depends on
     // whether the pairing is intradivisional or not.
     def nbGames(m: Match) = if (m._3 == 1) nbIntraDivisional else nbInterDivisional
-    val nbPlay : Map[Match, Int] = (for (m <- matches) yield m -> nbGames(m))(collection.breakOut)
+    val nbPlay : Map[Match, Int] = (for (m <- matches) yield m -> nbGames(m)).toMap
 
     def playName(m: Match, w: Int) = {
       val (team1, team2, _) = m

@@ -65,7 +65,7 @@ object Benders {
    */
   def main(args: Array[String]): Unit = {
 
-    val benders  = Benders(args: _*)
+    val benders  = Benders(args.toList: _*)
 
     if (benders.isEmpty) return
 

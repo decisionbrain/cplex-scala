@@ -2,7 +2,7 @@
 
 ## cplex-scala v1.7.0-SNAPSHOT
 
-  * Port to CPLEX 12.10  
+  * Port to CPLEX 12.10 and Scala 2.13
   * Method `getObjectiveValue` is now obsolete and replaced by method `getObjValue`
   * Add API for the CPLEX annotations, see methods `newLongAnnotation`, `setAnnotation`, `getAnnotation`...
   * Add example `Benders` that applies a Benders decomposition using the CPLEX annotations

@@ -16,6 +16,9 @@ class SchedSetupTest extends FunSuite with Matchers {
   val epsilon = 1e-6
 
   test("SchedSetup") {
+
+    implicit val order = Ordering.Double.IeeeOrdering
+
     val model = SchedSetup.build()
 
 //    val status = SchedSetup.solve(timeLimit=60)

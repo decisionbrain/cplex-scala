@@ -98,9 +98,9 @@ object SchedSetup {
 
     // interval variables
 
-    val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_TP" + TaskType(i)))(collection.breakOut)
-    val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
-    val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+    val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_TP" + TaskType(i))).toArray
+    val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i))).toArray
+    val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i))).toArray
 
     // interval variables on machines are optional
 
