@@ -93,7 +93,7 @@ object SportScheduling {
       val (team1, team2, _) = m
       "play_%d_%d_w%d".format(team1, team2, w)
     }
-    playVars = model.boolVars(matches, weeks.toArray, namer=playName)
+    playVars = model.boolVars(matches, weeks.toArray, namer=playName(_,_))
 
     for (m <- matches) {
       val (team1, team2, _) = m

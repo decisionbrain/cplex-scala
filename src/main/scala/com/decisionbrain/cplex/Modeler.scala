@@ -148,15 +148,31 @@ abstract class Modeler {
     * Creates and returns a map of binary variables.
     *
     * @param keys is an iterable representing the keys
+    * @param defaultValue the default variable returned if the key is not found
     * @param namer is a function that is used to give a name to the variables
     * @return a map of binary variables
     */
-  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
-    (for (t <- keys) yield {
+  def boolVars[T](keys: Iterable[T], defaultValue: Option[NumVar], namer: (T) => String) : Map[T, NumVar] = {
+    val tmp = (for (t <- keys) yield {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
       v.setName(namer(t))
       t -> v
-    }).toMap
+    })
+    if (defaultValue.isDefined)
+         tmp.toMap.withDefaultValue(defaultValue.get)
+    else
+      tmp.toMap
+  }
+
+  /**
+   * Creates and returns a map of binary variables.
+   *
+   * @param keys is an iterable representing the keys
+   * @param namer is a function that is used to give a name to the variables
+   * @return a map of binary variables
+   */
+  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
+    boolVars(keys, None, namer)
   }
 
   /**
