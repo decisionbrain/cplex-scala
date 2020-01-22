@@ -46,6 +46,34 @@ abstract class Modeler {
   def numVar(lb: Double=0.0, ub: Double=Double.MaxValue, name: String=null): NumVar =
     NumVar(modeler.numVar(lb, ub, name))(implicitly(this))
 
+
+  /**
+   * Create a numeric variable for each element in the set and add it in a dictionary
+   * where the key is element of the set and the value is the numeric variable.
+   *
+   * @param set is the set
+   * @param lb is the lowver bound
+   * @param ub is the upper bound
+   * @param defaultValue is the numeric variable returns if the key is not found in the map
+   * @param namer is a function that is used to set the name of a numeric variable
+   * @tparam T it the type of the elements in the set
+   * @return a dictionary of numeric variables indexed by the element of the set
+   */
+  def numVars[T](set: Iterable[T],
+                 lb: Double,
+                 ub: Double,
+                 defaultValue: Option[NumVar],
+                 namer: (T) => String) : Map[T, NumVar] = {
+    val dict = set.map(t => {
+      val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
+      (t, v)
+    })
+    if (defaultValue.isDefined)
+      dict.toMap.withDefaultValue(defaultValue.get)
+    else
+      dict.toMap
+  }
+
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
     * where the key is element of the set and the value is the numeric variable.
@@ -61,11 +89,7 @@ abstract class Modeler {
                  lb: Double = 0.0,
                  ub: Double = Double.MaxValue,
                  namer: (T) => String = (t: T) => "") : Map[T, NumVar] = {
-    val dict: Map[T, NumVar] = set.map(t => {
-      val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
-      (t, v)
-    }).toMap
-    dict
+    numVars(set, lb, ub, None, namer)
   }
 
   /**
@@ -78,6 +102,33 @@ abstract class Modeler {
     */
   def intVar(min: Int=0, max: Int=Int.MaxValue, name: String=null): IntVar =
     IntVar(modeler.intVar(min, max, name))(implicitly(this))
+
+  /**
+   * Create a numeric variable for each element in the set and add it in a dictionary
+   * where the key is element of the set and the value is the numeric variable.
+   *
+   * @param set is the set
+   * @param min is the minimum value
+   * @param max is the maximum value
+   * @param defaultValue is the numeric variable return if the key is not found
+   * @param namer is a function that is used to set the name of a numeric variable
+   * @tparam T it the type of the elements in the set
+   * @return a dictionary of numeric variables indexed by the element of the set
+   */
+  def intVars[T](set: Iterable[T],
+                 min: Int,
+                 max: Int,
+                 defaultValue: Option[IntVar],
+                 namer: (T) => String) : Map[T, IntVar] = {
+    val dict = set.map(t => {
+      val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
+      (t, v)
+    })
+    if (defaultValue.isDefined)
+      dict.toMap.withDefaultValue(defaultValue.get)
+    else
+      dict.toMap
+  }
 
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
@@ -94,11 +145,7 @@ abstract class Modeler {
                  min: Int = 0,
                  max: Int= Int.MaxValue,
                  namer: (T) => String = (t: T) => "") : Map[T, IntVar] = {
-    val dict: Map[T, IntVar] = set.map(t => {
-      val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
-      (t, v)
-    }).toMap
-    dict
+    intVars(set, min, max, None, namer)
   }
 
   /**
@@ -193,6 +240,7 @@ abstract class Modeler {
     * @param namer is a function that is used to give a name to the variables
     * @return a map of binary variables where the key is a tuple (key1, key2)
     */
+  @deprecated("Use the method with one array of iterable", "decisionbrain-cplex-scala-1.7.0")
   def boolVars[T, U](keys1: Iterable[T], keys2: Iterable[U], namer: (T, U) => String) : Map[(T,U), NumVar] = {
     (for (t <- keys1; u <- keys2) yield {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))

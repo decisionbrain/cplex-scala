@@ -175,7 +175,7 @@ task listJars {
 }
 
 wrapper {
-    gradleVersion = '5.4'
+    gradleVersion = '5.6.2'
     description = 'Install Gradle Wrapper'
 }
 
