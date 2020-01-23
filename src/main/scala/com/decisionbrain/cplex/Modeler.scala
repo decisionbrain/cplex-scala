@@ -6,8 +6,12 @@
 
 package com.decisionbrain.cplex
 
+import java.io.OutputStream
+import java.io.PrintStream
+
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
+import com.decisionbrain.cplex.mp.MpModel
 import ilog.concert._
 
 import scala.reflect.ClassTag
@@ -34,6 +38,78 @@ abstract class Modeler {
     * @return the name of the optimization model
     */
   def getName(): Option[String]
+
+  /**
+   * Returns the version of the CPLEX
+   *
+   * @return the version of the CPLEX
+   */
+  def getVersion(): String = this match {
+    case model: CpModel => model.cp.getVersion
+    case model: MpModel => model.cplex.getVersion
+  }
+
+  /**
+   * Returns the output stream of the optimization model.
+   *
+   * @return the output stream
+   */
+  def output(): PrintStream = this match {
+    case model: CpModel => model.cp.output()
+    case model: MpModel => model.cplex.output()
+  }
+
+  /**
+   * Returns the warning stream of the optimization model.
+   *
+   * @return the warning stream
+   */
+  def warning(): PrintStream = this match {
+    case model: CpModel => model.cp.warning()
+    case model: MpModel => model.cplex.warning()
+  }
+
+  /**
+   * Returns the warning stream of the optimization model.
+   *
+   * @return the warning stream
+   */
+  def error(): PrintStream = this match {
+    case model: CpModel => model.cp.error()
+//    case model: MpModel => model.cplex.error()
+  }
+
+  /**
+   * Sets the default output stream.
+   *
+   * @param stream is the new default output stream
+   */
+  def setOut(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setOut(stream)
+    case model: MpModel  => model.cplex.setOut(stream)
+  }
+
+  /**
+   * Sets the warning stream of the invoking IloCplex object. After this call, all warnings will be output via the new
+   * stream. Passing null as the new output stream will turn off all warnings.
+   *
+   * @param stream is the new default warning stream
+   */
+  def setWarning(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setWarning(stream)
+    case model: MpModel  => model.cplex.setWarning(stream)
+  }
+
+  /**
+   * Sets the warning stream of the invoking IloCplex object. After this call, all warnings will be output via the new
+   * stream. Passing null as the new output stream will turn off all warnings.
+   *
+   * @param stream is the new default warning stream
+   */
+  def setError(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setError(stream)
+//    case model: MpModel  => model.cplex.setError(stream) // not available in CPLEX MIP
+  }
 
   /**
     * Create a numeric variable.
@@ -1080,7 +1156,6 @@ object Modeler {
       case model: CpModel => model.element(this, expr)
       case _ => throw new UnsupportedOperationException("Method \'element\' only supported on CpModel")
     }
-
 
     /**
       * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer

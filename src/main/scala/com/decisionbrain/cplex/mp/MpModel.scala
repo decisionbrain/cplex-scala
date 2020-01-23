@@ -54,6 +54,109 @@ class MpModel(val name: String=null) extends Modeler {
   def getIloCplex(): IloCplex = cplex
 
   //
+  // Solution
+  //
+
+  /**
+   * Read the solution from a file and add it to the optimization model.
+   *
+   * @param filename
+   */
+  def readSolution(filename: String): Unit = cplex.readSolution(filename)
+
+  /**
+   * Write the current solution of the optimization model to a file.
+   *
+   * @param filename is the name of the file.
+   */
+  def writeSolution(filename: String): Unit = cplex.writeSolution(filename)
+
+  /**
+   * Write all the solutions of the optimization model to a file.
+   *
+   * @param filename is the name of the file.
+   */
+  def writeSolutions(filename: String): Unit = cplex.writeSolutions(filename)
+
+  //
+  // MIP Starts
+  //
+
+  /**
+   * Adds a MIP start to the current problem.
+   *
+   * @param vars are the set of variables in the MIP start
+   * @param values are the values of the variables in the MIP start
+   * @param effort is the effort CPLEX should spend to solve the MIP start.
+   * @param name is the name of the MIP start
+   * @return The index of the added MIP start among all the existing ones associated with the optimization model.
+   */
+  def addMIPStart(vars: Iterable[NumVar],
+                  values: Iterable[Double],
+                  effort: MIPStartEffort  = IloCplex.MIPStartEffort.Auto,
+                  name: String ): Int =
+    cplex.addMIPStart(vars.map(_.getIloNumVar()).toArray, values.toArray, effort, name)
+
+  /**
+   * Deletes the MIP start designated by its index.
+   * @param index is the index of the MIP start to remove from the optimization model
+   */
+  def deleteMIPStart(index: Int): Unit = cplex.deleteMIPStarts(index)
+
+  /**
+   * Changes the MIP start with the specified index in the current optimization model by substituting the corresponding
+   * values of the designated variables and associates a level of effort.
+   *
+   * @param index is the index of the MIP start to change
+   * @param vars are the variables to change in the MIP start
+   * @param values are the new values of the variables in the MIP start
+   * @param effort is the effort CPLEX should spend to solve the modified MIP start
+   */
+  def changeMIPStart(index: Int,
+                     vars: Iterable[NumVar],
+                     values: Iterable[Double],
+                     effort: MIPStartEffort): Unit =
+    cplex.changeMIPStart(index, vars.map(_.getIloNumVar).toArray, values.toArray, effort)
+  /**
+   * Write all the MIP start of the optimization model to a file.
+   *
+   * @param filename is the name of the file
+   */
+  def writeMIPStarts(filename: String): Unit = cplex.writeMIPStarts(filename)
+
+  /**
+   * Read the MIP start from a file and add it to the optimization model
+   *
+   * @param filename is the name of the file
+   */
+  def readMIPStarts(filename: String): Unit = cplex.readMIPStarts(filename)
+
+  //
+  // Aborter
+  //
+
+  /**
+   * Specifies the aborter to be used by the optimization model to control termination of its solving and tuning methods.
+   *
+   * @param aborter is the aborter
+   * @return the aborter used by the optimization model
+   */
+  def use(aborter: Aborter): Aborter = cplex.use(aborter)
+
+  /**
+   * Returns the aborter currently used by the optimizaiton model.
+   *
+   * @return the aborter currently used by the optimization model
+   */
+  def getAborter(): Aborter = cplex.getAborter
+
+  /**
+   * Removes the aborter from the optimization model
+   * @param aborter
+   */
+  def remove(aborter: Aborter) = cplex.remove(aborter)
+
+  //
   // Piecewise Linear Function
   //
 
@@ -791,6 +894,8 @@ object MpModel {
   type ParameterSet = IloCplex.ParameterSet
   type LongAnnotation = IloCplex.LongAnnotation
   type DoubleAnnotation = IloCplex.DoubleAnnotation
+  type Aborter = IloCplex.Aborter
+  type MIPStartEffort = IloCplex.MIPStartEffort
 
   /**
     * Create and return a new mathematical programming model.
