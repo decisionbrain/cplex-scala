@@ -14,6 +14,8 @@
   * Add API for MIP start, read and write solutions to file
   * Add API to redirect CPLEX info, warnings and errors to output stream
   * Add API for CPLEX aborter
+  * Add API to get the MIP relative gap
+  * Add functional programming API for MIP information callbacks
 
 ## cplex-scala v1.6.0
 

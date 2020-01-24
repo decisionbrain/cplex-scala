@@ -10,7 +10,7 @@ import com.decisionbrain.cplex._
 import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.Modeler._
 import ilog.concert.{IloAddable, IloLPMatrix, IloModeler}
-import ilog.cplex.IloCplex.Param
+import ilog.cplex.IloCplex.{MIPInfoCallback, Param}
 import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
 
 /**
@@ -24,6 +24,7 @@ import ilog.cplex.{IloCplex, IloCplexMultiCriterionExpr}
   * @param name is the name of the model
   */
 class MpModel(val name: String=null) extends Modeler {
+
 
   val cplex: IloCplex = {
     val iloCplex = new IloCplex()
@@ -546,6 +547,13 @@ class MpModel(val name: String=null) extends Modeler {
   def getBestObjValue() = cplex.getBestObjValue
 
   /**
+   * Returns the relative gap.
+   *
+   * @return the relative gap
+   */
+  def getMIPRelativeGap(): Double = cplex.getMIPRelativeGap
+
+  /**
     * Returns the number of multi-criteria objective solves
     *
     * @return the number of multi-criteria objective solves
@@ -869,6 +877,35 @@ class MpModel(val name: String=null) extends Modeler {
   // cplex.addKPI(expr.getIloNumExpr(), name)
     None
 
+  //
+  // User defined callbacks
+  //
+
+  /**
+   * Add a MIP Info call back.
+   *
+   * @param callback is the function that is called by CPLEX
+   * @return the optimization model
+   */
+  def use(callback: (MIPInfo) => Unit): MIPInfoCallback = {
+    val mipInfoCallback = new MIPInfo {
+      override def main(): Unit = callback(this)
+    }
+    cplex.use(mipInfoCallback)
+    mipInfoCallback
+  }
+
+  /**
+   * Remove a user defined CPLEX callback.
+   *
+   * @param callback is the user defined CPLEX callback to remove
+   */
+  def remove(callback: IloCplex.Callback) = cplex.remove(callback)
+
+  /**
+   * Remove all user defined CPLEX callbacks.
+   */
+  def clearCallbacks() = cplex.clearCallbacks()
 
   //
   // This is the End (in reference to the Doors)
@@ -1006,3 +1043,24 @@ object MpModel {
     model.staticLex(exprs, weights, priorities, absTols, relTols)
 
 }
+
+/**
+ * This class allows to access to the CPLEX MIP information. An instance of this class is given as argument to the MIP
+ * information callback.
+ *
+ * @see MpModel.addMIPCallback
+ */
+abstract class MIPInfo extends MIPInfoCallback {
+  override def hasIncumbent: Boolean = super.hasIncumbent
+  override def getIncumbentObjValue: Double = super.getIncumbentObjValue
+  override def getBestObjValue: Double = super.getBestObjValue
+  override def getCplexTime: Double = super.getCplexTime
+  override def getMIPRelativeGap: Double = super.getMIPRelativeGap
+  override def getNnodes: Int = super.getNnodes
+  override def getNnodes64: Long = super.getNnodes64
+  override def getNremainingNodes: Int = super.getNremainingNodes
+  override def getNremainingNodes64: Long = super.getNremainingNodes64
+  override def getNiterations: Int = super.getNiterations
+  override def getNiterations64: Long = super.getNiterations64
+}
+
