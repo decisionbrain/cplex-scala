@@ -5,7 +5,7 @@
  */
 
 group 'com.decisionbrain'
-version '1.7.0-SNAPSHOT'
+version '1.7.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -66,6 +66,14 @@ publishing {
                 password = "$MAVEN_PASSWORD"
             }
         }
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/decisionbrain/cplex-scala")
+//            credentials {
+//                username = "$GITHUB_USER"
+//                password = "$GITHUB_PASSWORD"
+//            }
+//        }
     }
 }
 
