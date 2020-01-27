@@ -1,6 +1,6 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
-## cplex-scala v1.7.0-SNAPSHOT
+## cplex-scala v1.7.0
 
   * Port to CPLEX 12.10 and Scala 2.13
   * Port to Gradle 5.6.2
