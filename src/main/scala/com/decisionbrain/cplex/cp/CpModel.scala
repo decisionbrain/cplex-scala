@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.cp
@@ -197,7 +198,7 @@ class CpModel(val name: String=null) extends Modeler {
     val dict: Map[T, IntervalVar] = keys.map(t => {
       val v: IntervalVar = intervalVar(startMin, startMax, endMin, endMax, sizeMin, sizeMax, optional, namer(t))
       (t, v)
-    })(collection.breakOut)
+    }).toMap
     dict
   }
 

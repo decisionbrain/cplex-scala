@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.mp
@@ -208,8 +209,8 @@ class MpModelTest extends FunSuite with Matchers {
     model2.solve() should equal(true)
 
     // getObjectiveValue
-    model1.getObjectiveValue() should equal(5.0 +- epsilon)
-    model2.getObjectiveValue() should equal(5.0 +- epsilon)
+    model1.getObjValue() should equal(5.0 +- epsilon)
+    model2.getObjValue() should equal(5.0 +- epsilon)
 
     // getBestObjValue
     model1.getBestObjValue() should equal (1.0E75) // was java.lang.Double.POSITIVE_INFINITY

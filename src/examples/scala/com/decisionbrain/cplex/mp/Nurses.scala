@@ -1,13 +1,13 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.mp
 
 import com.decisionbrain.cplex.Modeler._
-import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.NumExprNumeric._
 import com.decisionbrain.cplex.NumExpr
 import com.decisionbrain.cplex.NumVar
@@ -241,7 +241,7 @@ object Nurses {
   class Shift(val tshift: TShift) {
     val (department, day, startTime, endTime, minRequirement, maxRequirement) = tshift
     override def toString() = {
-      val dept2 = department slice (0, 4) toUpperCase()
+      val dept2 = department.slice(0, 4).toUpperCase()
       val dayname = day.toString() slice (0, 3)
       s"$dept2-$dayname-$startTime"
     }
@@ -314,10 +314,10 @@ object Nurses {
   var nursesById: Map[String, Nurse] = _
 
   def setupData(model: MpModel) = {
-    vacationsByNurse = (for (n <- nurses) yield (n, for ((nurseId, day) <- vacations if nurseId == n.name) yield day))(collection.breakOut)
+    vacationsByNurse = (for (n <- nurses) yield (n, for ((nurseId, day) <- vacations if nurseId == n.name) yield day)).toMap
     // compute shift activities (start, end duration)
-    shiftActivities = (for (s <- shifts) yield s -> new ShiftActivity(s.day, s.startTime, s.endTime))(collection.breakOut)
-    nursesById = (for (n <- nurses) yield n.name -> n)(collection.breakOut)
+    shiftActivities = (for (s <- shifts) yield s -> new ShiftActivity(s.day, s.startTime, s.endTime)).toMap
+    nursesById = (for (n <- nurses) yield n.name -> n).toMap
   }
 
   // variables
@@ -486,10 +486,10 @@ object Nurses {
 
   def solve(model: MpModel): Option[Double] = {
     if (model.solve()) {
-      println("solution for a cost of %f".format(model.getObjectiveValue()))
+      println("solution for a cost of %f".format(model.getObjValue()))
       printInformation(model)
       printSolution(model)
-      return Some(model.getObjectiveValue())
+      return Some(model.getObjValue())
     }
     else {
       println("* model is infeasible")

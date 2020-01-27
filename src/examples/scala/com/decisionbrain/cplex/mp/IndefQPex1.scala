@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.mp
@@ -69,7 +70,7 @@ object IndefQPex1 {
       val slacks = model.getSlacks(ranges)
 
       System.out.println("Solution status = " + model.getStatus)
-      System.out.println("Solution value  = " + model.getObjectiveValue())
+      System.out.println("Solution value  = " + model.getObjValue())
 
       for (j <- vars.indices) {
         val value = values(j)

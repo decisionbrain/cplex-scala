@@ -8,24 +8,31 @@
 package com.decisionbrain.cplex.mp
 
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
+import org.scalatestplus.junit.JUnitRunner
 import org.scalatest.{FunSuite, Matchers}
 
+import scala.reflect.io.File
+
 /**
-  * Created by dgodard on 07/02/2017.
-  */
+ *
+ */
+
 @RunWith(classOf[JUnitRunner])
-class IndefQPex1Test extends FunSuite with Matchers {
+class SailcoPWTest  extends FunSuite with Matchers {
 
   private val epsilon = 1e-6
 
-  test("IndefQPex1") {
-    val model = IndefQPex1.buildModel()
-    val status = IndefQPex1.solve()
+  test("sailcopw") {
+    val model = SailcoPW.buildModel()
 
-    status should equal(true)
-    model.getObjValue() should equal(-2.5 +- epsilon)
+//    model.exportModel("sailcopw.lp")
+
+    val status = model.solve()
+
+    status should be (true)
+    model.getObjValue() should equal (78450.0 +- epsilon)
 
     model.end()
   }
+
 }

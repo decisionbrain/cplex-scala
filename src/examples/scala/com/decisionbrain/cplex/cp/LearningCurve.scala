@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.cp
@@ -62,7 +63,7 @@ object LearningCurve {
 
   val NbTaskTtypes = TaskType.max + 1
 
-  val TaskIndex : Vector[Int]= (for (i <- 0 until NbTasks) yield i)(collection.breakOut)
+  val TaskIndex : Vector[Int]= (for (i <- 0 until NbTasks) yield i).toVector
 
   val TaskDurM1 = Vector(
     4, 17,  4,  7, 17, 14,  2, 14,  2,  8,
@@ -131,7 +132,7 @@ object LearningCurve {
         f.setValue(s, e, v)
       }
       f
-    })(collection.breakOut)
+    }).toVector
 
     // transition distance
 
@@ -148,20 +149,20 @@ object LearningCurve {
     // interval variables
 
     val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_TP" + TaskType(i))).toArray
     val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i))).toArray
     val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i))).toArray
 
     // interval variables for learning curve
     lca1 = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="LCA" + i + "_M1_TP" + TaskType(i))).toArray
     lca2 = (for (i <- 0 until NbTasks) yield
-      model.intervalVar(name="LCA" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+      model.intervalVar(name="LCA" + i + "_M2_TP" + TaskType(i))).toArray
 
     // offset variables for learning curve
-    o = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_TP" + TaskType(i)))(collection.breakOut)
+    o = (for (i <- 0 until NbTasks) yield model.intVar(name="O" + i + "_TP" + TaskType(i))).toList
 
     // interval variables on machines are optional
 
@@ -189,8 +190,8 @@ object LearningCurve {
       model.add(lengthOf(a2(i)) == lengthOf(lca2(i)))
     }
 
-    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i))(collection.breakOut)
-    IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i))(collection.breakOut)
+    IndexOfTask = (for (i <- 0 until NbTasks) yield (a1(i) -> i)).toMap
+    IndexOfTask  = IndexOfTask ++ (for (i <- 0 until NbTasks) yield (a2(i) -> i)).toMap
 
     // sequence variables (one per machine)
     s1 = model.intervalSequenceVar(a1, TaskType.toArray)
@@ -255,7 +256,7 @@ object LearningCurve {
         System.out.print(model.getValue(typeOfPrevious(si1, x, IndexOfTask(x), IndexOfTask(x))))
         System.out.print("; learning curve time offset : ")
         val v = o(IndexOfTask(x))
-        System.out.print(model.getMin(v) + ".." + model.getMax(v))
+        System.out.print("%d..%d".format(model.getMin(v), model.getMax(v)))
         System.out.println()
       }
 
@@ -273,7 +274,7 @@ object LearningCurve {
         System.out.print(model.getValue(typeOfPrevious(si2, x, IndexOfTask(x), IndexOfTask(x))))
         System.out.print("; learning curve time offset : ")
         val v = o(IndexOfTask(x))
-        System.out.print(model.getMin(v) + ".." + model.getMax(v))
+        System.out.print("%d..%d".format(model.getMin(v), model.getMax(v)))
         System.out.println()
       }
 

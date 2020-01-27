@@ -1,11 +1,11 @@
 /*
  *  Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
  */
 
 group 'com.decisionbrain'
-version '1.6.0'
+version '1.7.0'
 
 apply plugin: 'java'
 apply plugin: 'scala'
@@ -66,6 +66,14 @@ publishing {
                 password = "$MAVEN_PASSWORD"
             }
         }
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/decisionbrain/cplex-scala")
+//            credentials {
+//                username = "$GITHUB_USER"
+//                password = "$GITHUB_PASSWORD"
+//            }
+//        }
     }
 }
 
@@ -75,6 +83,10 @@ publishing {
 
 compileJava {
     sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+compileScala {
     targetCompatibility = 1.8
 }
 
@@ -98,6 +110,9 @@ sourceSets {
     test {
         scala {
             srcDirs += 'src/examples/scala'
+        }
+        java {
+            srcDirs += 'src/examples/java'
         }
     }
 }
@@ -139,8 +154,9 @@ scaladoc {
 }
 
 ext {
-    scalaVersion = '2.12.8'
-    scalaVersionShort = '2.12'
+    scalaVersion = '2.13.1'
+    scalaVersionShort = '2.13'
+    scalaTestVersion = '3.0.8'
 }
 
 dependencies {
@@ -149,13 +165,13 @@ dependencies {
 
     compile 'org.slf4j:slf4j-api:1.7.10'
     compile 'commons-lang:commons-lang:2.6'
-    compile('org.scala-lang:scala-library:2.12.8')
+    compile("org.scala-lang:scala-library:$scalaVersion")
 
     testCompile "org.hamcrest:hamcrest-core:1.3"
     testCompile "org.hamcrest:hamcrest-library:1.3"
     testCompile('org.mockito:mockito-all:1.9.5')
     testCompile("junit:junit:4.12")
-    testCompile("org.scalatest:scalatest_$scalaVersionShort:3.0.1")
+    testCompile("org.scalatest:scalatest_$scalaVersionShort:$scalaTestVersion")
     testCompile 'org.slf4j:slf4j-simple:1.7.10'
 }
 
@@ -167,7 +183,7 @@ task listJars {
 }
 
 wrapper {
-    gradleVersion = '5.4'
+    gradleVersion = '5.6.2'
     description = 'Install Gradle Wrapper'
 }
 

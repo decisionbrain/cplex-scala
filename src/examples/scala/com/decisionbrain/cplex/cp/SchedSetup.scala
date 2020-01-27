@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.cp
@@ -98,9 +99,9 @@ object SchedSetup {
 
     // interval variables
 
-    val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_TP" + TaskType(i)))(collection.breakOut)
-    val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i)))(collection.breakOut)
-    val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i)))(collection.breakOut)
+    val a: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_TP" + TaskType(i))).toArray
+    val a1: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M1_TP" + TaskType(i))).toArray
+    val a2: Array[IntervalVar] = (for (i <- 0 until NbTasks) yield model.intervalVar(name="A" + i + "_M2_TP" + TaskType(i))).toArray
 
     // interval variables on machines are optional
 

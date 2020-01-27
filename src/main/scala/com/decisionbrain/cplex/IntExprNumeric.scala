@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex
@@ -35,6 +36,8 @@ class IntExprNumeric(modeler: Modeler) extends Numeric[IntExpr] {
   override def toDouble(x: IntExpr): Double = ???
 
   override def compare(x: IntExpr, y: IntExpr): Int = ???
+
+  override def parseString(str: String): Option[IntExpr] = ???
 }
 
 

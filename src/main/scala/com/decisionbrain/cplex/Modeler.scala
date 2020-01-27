@@ -1,14 +1,19 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex
 
+import java.io.OutputStream
+import java.io.PrintStream
+
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex.cp.CpModel
-import ilog.concert.{IloIntExpr, IloIntVar, IloModeler, IloNumExpr, IloNumVar}
+import com.decisionbrain.cplex.mp.MpModel
+import ilog.concert._
 
 import scala.reflect.ClassTag
 
@@ -36,6 +41,78 @@ abstract class Modeler {
   def getName(): Option[String]
 
   /**
+   * Returns the version of the CPLEX
+   *
+   * @return the version of the CPLEX
+   */
+  def getVersion(): String = this match {
+    case model: CpModel => model.cp.getVersion
+    case model: MpModel => model.cplex.getVersion
+  }
+
+  /**
+   * Returns the output stream of the optimization model.
+   *
+   * @return the output stream
+   */
+  def output(): PrintStream = this match {
+    case model: CpModel => model.cp.output()
+    case model: MpModel => model.cplex.output()
+  }
+
+  /**
+   * Returns the warning stream of the optimization model.
+   *
+   * @return the warning stream
+   */
+  def warning(): PrintStream = this match {
+    case model: CpModel => model.cp.warning()
+    case model: MpModel => model.cplex.warning()
+  }
+
+  /**
+   * Returns the warning stream of the optimization model.
+   *
+   * @return the warning stream
+   */
+  def error(): PrintStream = this match {
+    case model: CpModel => model.cp.error()
+//    case model: MpModel => model.cplex.error()
+  }
+
+  /**
+   * Sets the default output stream.
+   *
+   * @param stream is the new default output stream
+   */
+  def setOut(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setOut(stream)
+    case model: MpModel  => model.cplex.setOut(stream)
+  }
+
+  /**
+   * Sets the warning stream of the invoking IloCplex object. After this call, all warnings will be output via the new
+   * stream. Passing null as the new output stream will turn off all warnings.
+   *
+   * @param stream is the new default warning stream
+   */
+  def setWarning(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setWarning(stream)
+    case model: MpModel  => model.cplex.setWarning(stream)
+  }
+
+  /**
+   * Sets the warning stream of the invoking IloCplex object. After this call, all warnings will be output via the new
+   * stream. Passing null as the new output stream will turn off all warnings.
+   *
+   * @param stream is the new default warning stream
+   */
+  def setError(stream: OutputStream) = this match {
+    case model: CpModel  => model.cp.setError(stream)
+//    case model: MpModel  => model.cplex.setError(stream) // not available in CPLEX MIP
+  }
+
+  /**
     * Create a numeric variable.
     *
     * @param lb is the lower bound
@@ -45,6 +122,34 @@ abstract class Modeler {
     */
   def numVar(lb: Double=0.0, ub: Double=Double.MaxValue, name: String=null): NumVar =
     NumVar(modeler.numVar(lb, ub, name))(implicitly(this))
+
+
+  /**
+   * Create a numeric variable for each element in the set and add it in a dictionary
+   * where the key is element of the set and the value is the numeric variable.
+   *
+   * @param set is the set
+   * @param lb is the lowver bound
+   * @param ub is the upper bound
+   * @param defaultValue is the numeric variable returns if the key is not found in the map
+   * @param namer is a function that is used to set the name of a numeric variable
+   * @tparam T it the type of the elements in the set
+   * @return a dictionary of numeric variables indexed by the element of the set
+   */
+  def numVars[T](set: Iterable[T],
+                 lb: Double,
+                 ub: Double,
+                 defaultValue: Option[NumVar],
+                 namer: (T) => String) : Map[T, NumVar] = {
+    val dict = set.map(t => {
+      val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
+      (t, v)
+    })
+    if (defaultValue.isDefined)
+      dict.toMap.withDefaultValue(defaultValue.get)
+    else
+      dict.toMap
+  }
 
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
@@ -61,11 +166,7 @@ abstract class Modeler {
                  lb: Double = 0.0,
                  ub: Double = Double.MaxValue,
                  namer: (T) => String = (t: T) => "") : Map[T, NumVar] = {
-    val dict: Map[T, NumVar] = set.map(t => {
-      val v: NumVar = NumVar(modeler.numVar(lb, ub, namer(t)))(implicitly(this))
-      (t, v)
-    })(collection.breakOut)
-    dict
+    numVars(set, lb, ub, None, namer)
   }
 
   /**
@@ -78,6 +179,33 @@ abstract class Modeler {
     */
   def intVar(min: Int=0, max: Int=Int.MaxValue, name: String=null): IntVar =
     IntVar(modeler.intVar(min, max, name))(implicitly(this))
+
+  /**
+   * Create a numeric variable for each element in the set and add it in a dictionary
+   * where the key is element of the set and the value is the numeric variable.
+   *
+   * @param set is the set
+   * @param min is the minimum value
+   * @param max is the maximum value
+   * @param defaultValue is the numeric variable return if the key is not found
+   * @param namer is a function that is used to set the name of a numeric variable
+   * @tparam T it the type of the elements in the set
+   * @return a dictionary of numeric variables indexed by the element of the set
+   */
+  def intVars[T](set: Iterable[T],
+                 min: Int,
+                 max: Int,
+                 defaultValue: Option[IntVar],
+                 namer: (T) => String) : Map[T, IntVar] = {
+    val dict = set.map(t => {
+      val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
+      (t, v)
+    })
+    if (defaultValue.isDefined)
+      dict.toMap.withDefaultValue(defaultValue.get)
+    else
+      dict.toMap
+  }
 
   /**
     * Create a numeric variable for each element in the set and add it in a dictionary
@@ -94,11 +222,7 @@ abstract class Modeler {
                  min: Int = 0,
                  max: Int= Int.MaxValue,
                  namer: (T) => String = (t: T) => "") : Map[T, IntVar] = {
-    val dict: Map[T, IntVar] = set.map(t => {
-      val v: IntVar = IntVar(modeler.intVar(min, max, namer(t)))(implicitly(this))
-      (t, v)
-    })(collection.breakOut)
-    dict
+    intVars(set, min, max, None, namer)
   }
 
   /**
@@ -148,15 +272,31 @@ abstract class Modeler {
     * Creates and returns a map of binary variables.
     *
     * @param keys is an iterable representing the keys
+    * @param defaultValue the default variable returned if the key is not found
     * @param namer is a function that is used to give a name to the variables
     * @return a map of binary variables
     */
-  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
-    (for (t <- keys) yield {
+  def boolVars[T](keys: Iterable[T], defaultValue: Option[NumVar], namer: (T) => String) : Map[T, NumVar] = {
+    val tmp = (for (t <- keys) yield {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
       v.setName(namer(t))
       t -> v
-    })(collection.breakOut)
+    })
+    if (defaultValue.isDefined)
+         tmp.toMap.withDefaultValue(defaultValue.get)
+    else
+      tmp.toMap
+  }
+
+  /**
+   * Creates and returns a map of binary variables.
+   *
+   * @param keys is an iterable representing the keys
+   * @param namer is a function that is used to give a name to the variables
+   * @return a map of binary variables
+   */
+  def boolVars[T](keys: Iterable[T], namer: (T) => String) : Map[T, NumVar] = {
+    boolVars(keys, None, namer)
   }
 
   /**
@@ -177,12 +317,13 @@ abstract class Modeler {
     * @param namer is a function that is used to give a name to the variables
     * @return a map of binary variables where the key is a tuple (key1, key2)
     */
+  @deprecated("Use the method with one array of iterable", "decisionbrain-cplex-scala-1.7.0")
   def boolVars[T, U](keys1: Iterable[T], keys2: Iterable[U], namer: (T, U) => String) : Map[(T,U), NumVar] = {
     (for (t <- keys1; u <- keys2) yield {
       val v: NumVar = NumVar(modeler.boolVar())(implicitly(this))
       v.setName(namer(t, u))
       (t,u) -> v
-    })(collection.breakOut)
+    }).toMap
   }
 
   /**
@@ -1016,7 +1157,6 @@ object Modeler {
       case model: CpModel => model.element(this, expr)
       case _ => throw new UnsupportedOperationException("Method \'element\' only supported on CpModel")
     }
-
 
     /**
       * Method get creates and returns a new integer expression equal to exprs[index] where index is an integer

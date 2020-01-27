@@ -1,5 +1,22 @@
 # Release Notes of cplex-scala: A Scala library for IBM ILOG CPLEX
 
+## cplex-scala v1.7.0
+
+  * Port to CPLEX 12.10 and Scala 2.13
+  * Port to Gradle 5.6.2
+  * Method `getObjectiveValue` is now obsolete and replaced by method `getObjValue`
+  * Add API for the CPLEX annotations, see methods `newLongAnnotation`, `setAnnotation`, `getAnnotation`...
+  * Add example `Benders` that applies a Benders decomposition using the CPLEX annotations
+  * Add functional programming API for piecewise linear functions.
+  * Add example `SailcoPW` that uses of a piecewise linear function to create the objective.
+  * Add example `Transport.scala`
+  * Add optional parameter when creating a set of variables to specify a default value
+  * Add API for MIP start, read and write solutions to file
+  * Add API to redirect CPLEX info, warnings and errors to output stream
+  * Add API for CPLEX aborter
+  * Add API to get the MIP relative gap
+  * Add functional programming API for MIP information callbacks
+
 ## cplex-scala v1.6.0
 
   * Add API for KPIs in class `CpModel`: see example `PlantLocation.scala`

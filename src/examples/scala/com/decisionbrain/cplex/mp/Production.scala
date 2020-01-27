@@ -1,12 +1,12 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.mp
 
-import com.decisionbrain.cplex.mp.MpModel._
 import com.decisionbrain.cplex.Modeler._
 import com.decisionbrain.cplex._
 
@@ -126,7 +126,7 @@ object Production {
     }
 
     // print the solution: objective, criteria, inside production, outside production
-    val obj = model.getObjectiveValue()
+    val obj = model.getObjValue()
     val totalInsideCostValue = model.getValue(totalInsideCost)
     val totalOutsideCostValue = model.getValue(totalOutsideCost)
 

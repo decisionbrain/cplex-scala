@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.cp
@@ -16,6 +17,9 @@ class LearningCurve2Test extends FunSuite with Matchers {
   val epsilon = 1e-6
 
   test("LearningCurve2") {
+
+    implicit val order = Ordering.Double.IeeeOrdering
+
     val model = LearningCurve2.build()
 
     //    val status = LearningCurve2.solve(timeLimit=600, logPeriod=10000)

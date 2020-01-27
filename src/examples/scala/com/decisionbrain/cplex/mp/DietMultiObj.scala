@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.mp
@@ -85,7 +86,7 @@ object DietMultiObj {
 
     theFoodNutrients =
       (for (t <- foodNutients; n <- nutrients.indices)
-        yield (t._1, nutrients(n)._1) -> t.productElement(1 + n).asInstanceOf[Double])(collection.breakOut).toMap
+        yield (t._1, nutrients(n)._1) -> t.productElement(1 + n).asInstanceOf[Double]).toMap
 
 
     model = new MpModel("diet")
@@ -254,7 +255,7 @@ object DietMultiObj {
   }
 
   def printSolution(): Unit = {
-    val obj = model.getObjectiveValue()
+    val obj = model.getObjValue()
     println("Solution found!")
     println("Total cost: " + obj)
     println("Foods:")

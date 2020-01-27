@@ -1,7 +1,8 @@
 /*
- *  Source file provided under Apache License, Version 2.0, January 2004,
+ * Source file provided under Apache License, Version 2.0, January 2004,
  *  http://www.apache.org/licenses/
- *  (c) Copyright DecisionBrain SAS 2016,2019
+ *  (c) Copyright DecisionBrain SAS 2016,2020
+ *
  */
 
 package com.decisionbrain.cplex.cp
@@ -50,7 +51,7 @@ object SchedCumul {
   def makeHouse(id: Int, releaseDate: Int): (IntExpr, IntervalVarArray) = {
 
     val taskVars: Map[String, IntervalVar] = (for (task <- tasks; (tname, tduration) = task)
-          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname)))(collection.breakOut)
+          yield (tname , model.intervalVar(sizeMin = tduration, sizeMax = tduration, name = "H" + id + "-" + tname))).toMap
 
     workersUsage += model.sum(for (e <- taskVars; (name, v) = e) yield pulse(v, 1))
 
